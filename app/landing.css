@@ -1,0 +1,1749 @@
+/* ════════════════════════════════════════════════════════════════
+   DEEPTI — landing.css
+   PART 2 of the SDP VSL skin: THE COMPONENT SYSTEM.
+
+   Rule of this file: TOKEN-ONLY. Zero literal brand hexes. Every colour
+   resolves through a token declared in globals.css (PART 1). That is the
+   seam that lets the whole page re-theme from one block, and it is what
+   makes this the same design as SDP / Kunal rather than a lookalike.
+
+   Order:
+     00  base + wrap + section-band rhythm
+     01  typography atoms (eyebrow, H2, sub, two-tier H1, reveal)
+     02  media placeholder (pending assets)
+     03  the CTA lockup: button → 3 risk badges → countdown
+     04  beat 0a  announcement strip
+     05  beat 0b  trust row
+     06  beat 1   hero / VSL
+     07  beat 2   this is for you if
+================================================================ */
+
+/* ════════════════════════════════════════════════════════════════
+   00 · BASE + SECTION-BAND RHYTHM
+   The alternating light / light-alt / dark band IS the look. Never
+   flatten the page to one background.
+================================================================ */
+.sdp-root,
+.sdp-root *,
+.sdp-root *::before,
+.sdp-root *::after { box-sizing: border-box; }
+
+/* Cards are --card (#FFFCF5), the page is --bg (#F8F2E8). They are only 1.09:1
+   apart, so a card reads by its BORDER and its lift, never by its fill alone:
+   do not remove the borders here thinking the tint will carry it. */
+.sdp-root {
+  font-family: var(--fb);
+  color: var(--ink);
+  background: var(--bg);
+  line-height: 1.6;
+  font-size: 16px;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.sdp-root h1,
+.sdp-root h2,
+.sdp-root h3,
+.sdp-root h4 {
+  font-family: var(--fh);
+  color: var(--ink);
+  /* Oswald carries a weight axis, so the display voice sits at 500 —
+     Bebas is single-weight 400 and had no choice. */
+  font-weight: var(--fh-weight);
+  line-height: 1.05;
+  letter-spacing: .01em;
+  /* CRITICAL, and the same trap the p rule below warns about, one element
+     up: `margin-block`, never the shorthand. `margin:0 0 .5em` also zeroes
+     left and right, and at (0,1,1) it out-specifies any width-capped heading
+     class at (0,1,0). */
+  margin-block: 0 .5em;
+}
+
+/* CRITICAL (the SDP lesson): bottom margin ONLY. Setting left/right/top here
+   (e.g. `margin:0 0 1em`) out-specifies every child <p>'s `margin:auto` and
+   silently drifts whole sections off-centre. */
+.sdp-root p { font-family: var(--fb); color: var(--ink-soft); margin-bottom: 1em; }
+.sdp-root p:last-child { margin-bottom: 0; }
+
+.sdp-root strong,
+.sdp-root b { font-weight: 700; color: var(--ink); }
+.sdp-root a { color: var(--brand-text); text-decoration: none; }
+/* :where() keeps this at ZERO specificity. As a plain `.sdp-root ul` it is
+   (0,1,1) and out-specifies `.sdp-who-list{margin:0 auto}` at (0,1,0), which
+   pinned that 820px list hard left inside a centred section. Same family of bug
+   as the heading rule above. */
+.sdp-root :where(ul, ol) { list-style: none; margin: 0; padding: 0; }
+.sdp-root img { max-width: 100%; height: auto; display: block; }
+
+.sdp-wrap { max-width: 1180px; margin: 0 auto; padding: 0 22px; }
+
+.sdp-section { padding: 80px 0; position: relative; overflow: hidden; }
+
+.sdp-light     { background: var(--bg);          color: var(--ink); }
+.sdp-aqua { background: var(--bg-aqua); color: var(--ink); }
+.sdp-aqua h1, .sdp-aqua h2, .sdp-aqua h3, .sdp-aqua h4 { color: var(--ink); }
+/* The guarantee band, where aqua and coral deliberately collide. */
+.sdp-deep-aqua { background: var(--bg-deep-aqua); color: #fff; }
+.sdp-deep-aqua h1, .sdp-deep-aqua h2, .sdp-deep-aqua h3, .sdp-deep-aqua h4 { color: #fff; }
+.sdp-deep-aqua p { color: rgba(255,255,255,.90); }
+.sdp-light-alt { background: var(--bg-alt);      color: var(--ink); }
+.sdp-dark      { background: var(--bg-dark);     color: var(--ink-dark); }
+.sdp-dark-alt  { background: var(--bg-dark-alt); color: var(--ink-dark); }
+
+.sdp-dark h1, .sdp-dark h2, .sdp-dark h3, .sdp-dark h4,
+.sdp-dark-alt h1, .sdp-dark-alt h2, .sdp-dark-alt h3, .sdp-dark-alt h4 { color: var(--ink-dark); }
+.sdp-dark p, .sdp-dark-alt p { color: var(--ink-dark-soft); }
+.sdp-dark strong, .sdp-dark b,
+.sdp-dark-alt strong, .sdp-dark-alt b { color: var(--ink-dark); }
+
+/* ════════════════════════════════════════════════════════════════
+   01 · TYPOGRAPHY ATOMS
+================================================================ */
+
+/* Eyebrow — BODY voice, bold uppercase, 24×2 accent dash before it.
+   ALWAYS uppercase (house rule), every section. */
+.sdp-eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--fb);
+  font-size: 11.5px; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase;
+  line-height: 1.4;
+  margin-bottom: 18px;
+  color: var(--brand-deep);
+}
+.sdp-eyebrow::before { content: ""; width: 24px; height: 2px; flex: 0 0 24px; background: var(--brand); }
+.sdp-dark .sdp-eyebrow, .sdp-dark-alt .sdp-eyebrow { color: var(--brand-bright); }
+
+/* A flex + dash eyebrow mis-centres on a multi-word line, so the centred
+   variant goes block and the dash goes inline-block. */
+.sdp-root .sdp-eyebrow.center {
+  display: block; width: 100%; text-align: center;
+  max-width: 720px; margin-left: auto; margin-right: auto;
+}
+.sdp-root .sdp-eyebrow.center::before {
+  display: inline-block; vertical-align: middle; margin-right: 10px;
+}
+
+/* Section H2 — DISPLAY, centred, the accent word flat-coloured (never italic) */
+.sdp-root h2.sdp-h2 {
+  width: 100%; text-align: center;
+  font-size: clamp(28px, 4.4vw, 52px);
+  letter-spacing: .02em; line-height: 1.18;
+  margin-bottom: 14px;
+  text-wrap: balance;
+}
+.sdp-root h2.sdp-h2 em { font-style: normal; color: var(--brand-deep); }
+.sdp-dark h2.sdp-h2 em, .sdp-dark-alt h2.sdp-h2 em { color: var(--brand-bright); }
+
+.sdp-root .sdp-sub {
+  width: 100%; text-align: center;
+  max-width: 680px; margin-left: auto; margin-right: auto; margin-bottom: 44px;
+  font-size: 15px; line-height: 1.65; color: var(--ink-soft);
+}
+.sdp-dark .sdp-sub, .sdp-dark-alt .sdp-sub { color: var(--ink-dark-soft); }
+
+/* Hero H1 — two tiers: big INK line, then the ACCENT-deep qualifier lines */
+.sdp-root .sdp-h1 {
+  max-width: 1000px; margin-left: auto; margin-right: auto; margin-bottom: 18px;
+  line-height: 1.04; letter-spacing: .01em;
+}
+.sdp-h1-l1 {
+  display: block; font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: clamp(34px, 5.6vw, 70px);
+  color: var(--ink); line-height: 1.0; letter-spacing: .02em;
+  text-wrap: balance;
+}
+.sdp-h1-l2,
+.sdp-h1-l3 {
+  display: block; font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: clamp(20px, 3vw, 36px);
+  color: var(--brand-deep); line-height: 1.1;
+  margin-top: 8px; letter-spacing: .02em;
+  text-wrap: balance;
+}
+.sdp-h1-l3 { margin-top: 2px; }
+
+/* ---- Reveal on scroll — FAIL-OPEN ------------------------------
+   Content is server-rendered VISIBLE. JS adds `.sdp-armed` to <html>,
+   which is the only thing that hides it; if JS never runs, or a script
+   throws, the page still reads. Reduced motion never arms. (C7) */
+.sdp-armed .sdp-root [data-sdp-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .7s ease, transform .7s cubic-bezier(.2, .8, .2, 1);
+  transition-delay: var(--d, 0s);
+  will-change: opacity, transform;
+}
+.sdp-armed .sdp-root [data-sdp-reveal].vis { opacity: 1; transform: translateY(0); }
+
+/* ════════════════════════════════════════════════════════════════
+   02 · MEDIA PLACEHOLDER
+   Sized at the REAL asset's aspect ratio and labelled with what belongs
+   there, so the swap is a one-line change and nothing reflows when the
+   artwork lands. Reads as pending, never as a design element.
+================================================================ */
+.sdp-ph {
+  position: relative; width: 100%;
+  display: grid; place-items: center;
+  padding: 18px;
+  border-radius: var(--r);
+  border: 1.5px dashed rgba(var(--brand-rgb), .38);
+  background:
+    repeating-linear-gradient(135deg,
+      rgba(var(--brand-rgb), .05) 0 10px,
+      transparent 10px 20px),
+    var(--bg-alt);
+  color: var(--brand-deep);
+  overflow: hidden;
+}
+.sdp-ph-inner { text-align: center; max-width: 92%; }
+.sdp-ph-icon { display: grid; place-items: center; margin: 0 auto 10px; width: 30px; height: 30px; opacity: .55; }
+.sdp-ph-icon svg { width: 30px; height: 30px; stroke: currentColor; fill: none; stroke-width: 1.4; }
+.sdp-ph-label {
+  display: block;
+  font-family: var(--fb); font-size: 11.5px; font-weight: 800;
+  letter-spacing: .14em; text-transform: uppercase; line-height: 1.5;
+}
+.sdp-ph-note {
+  display: block; margin-top: 6px;
+  font-family: var(--fb); font-size: 10.5px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted);
+}
+.sdp-ph.round { border-radius: 50%; padding: 0; }
+.sdp-dark .sdp-ph, .sdp-dark-alt .sdp-ph {
+  background:
+    repeating-linear-gradient(135deg,
+      rgba(var(--brand-rgb), .10) 0 10px,
+      transparent 10px 20px),
+    var(--bg-dark-alt);
+  color: var(--brand-bright);
+  border-color: rgba(var(--brand-rgb), .45);
+}
+.sdp-dark .sdp-ph-note, .sdp-dark-alt .sdp-ph-note { color: var(--muted-dark); }
+
+/* ════════════════════════════════════════════════════════════════
+   03 · THE CTA LOCKUP
+   One group, repeated verbatim after every proof beat. FIXED ORDER,
+   client-specified, identical at every occurrence:
+       1. the button
+       2. the three risk badges
+       3. the offer countdown
+   Never separate them: Rush and Reassure live at the button.
+================================================================ */
+.sdp-lockup {
+  display: flex; flex-direction: column; align-items: center;
+  width: 100%; text-align: center;
+  margin: 32px auto 0;
+}
+
+/* A WIDE pill — never one hugging a short label. */
+.sdp-root .sdp-cta {
+  display: inline-flex; align-items: center; justify-content: center; gap: 14px;
+  min-width: min(690px, 100%); max-width: 100%;
+  padding: 17px 40px 15px;
+  background: var(--grad-cta);
+  color: var(--cta-ink);
+  border-radius: var(--r);
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: 18px; letter-spacing: .06em; line-height: 1.2;
+  text-align: center; text-decoration: none;
+  border: 0; cursor: pointer;
+  position: relative; overflow: hidden;
+  box-shadow: var(--glow-cta), inset 0 -2px 0 var(--action-edge);
+  transition: transform .2s, filter .2s, box-shadow .2s;
+}
+.sdp-cta .cta-label { min-width: 0; }
+.sdp-cta::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, .45), transparent);
+  transform: skewX(-20deg); transition: left .9s; pointer-events: none;
+}
+.sdp-cta:hover { transform: translateY(-2px); background: var(--action-hover); box-shadow: var(--glow-cta-hover), inset 0 1px 0 rgba(255, 255, 255, .3); }
+.sdp-cta:hover::after { left: 120%; }
+.sdp-cta:focus-visible { outline: 2px solid var(--brand-deep); outline-offset: 3px; }
+.sdp-cta .arrow {
+  flex: 0 0 26px; width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(255, 255, 255, .22);
+  display: grid; place-items: center;
+  transition: transform .25s;
+}
+.sdp-cta:hover .arrow { transform: translateX(4px); }
+.sdp-cta .arrow svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.4; }
+
+/* --- risk badges (3) --- */
+.sdp-risk-strip {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: 16px; margin: 14px auto 0; max-width: 620px;
+}
+.sdp-risk-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--fb); font-size: 12.5px; font-weight: 600;
+  color: var(--ink-soft); line-height: 1.3;
+}
+.sdp-risk-icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; flex: 0 0 16px; }
+.sdp-risk-icon svg { width: 16px; height: 16px; }
+.sdp-risk-icon-green { color: var(--success); }
+.sdp-risk-icon-gold  { color: var(--gold); }
+.sdp-risk-icon-blue  { color: var(--brand-deep); }
+.sdp-dark .sdp-risk-badge, .sdp-dark-alt .sdp-risk-badge { color: var(--ink-dark-soft); }
+.sdp-dark .sdp-risk-icon-blue, .sdp-dark-alt .sdp-risk-icon-blue { color: var(--brand-bright); }
+
+/* --- offer countdown --- */
+.sdp-urgency {
+  display: inline-flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: 14px; margin: 18px auto 0;
+}
+.sdp-urgency-label {
+  font-family: var(--fb); font-size: 12px; font-weight: 800;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-soft); white-space: nowrap;
+}
+.sdp-dark .sdp-urgency-label, .sdp-dark-alt .sdp-urgency-label { color: var(--muted-dark); }
+.sdp-urgency-timer {
+  display: inline-flex; align-items: center;
+  padding: 7px 14px; border-radius: var(--r-sm);
+  background: var(--grad-urgency);
+  box-shadow: 0 4px 14px rgba(var(--action-rgb), .30), inset 0 1px 0 rgba(255, 255, 255, .18);
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  animation: sdpUrgencyPulse 2s ease-in-out infinite;
+}
+@keyframes sdpUrgencyPulse {
+  0%, 100% { box-shadow: 0 4px 14px rgba(var(--danger-rgb), .28), inset 0 1px 0 rgba(255, 255, 255, .18); }
+  50%      { box-shadow: 0 6px 22px rgba(var(--danger-rgb), .45), inset 0 1px 0 rgba(255, 255, 255, .18); }
+}
+.sdp-urgency-cell { display: inline-flex; flex-direction: column; align-items: center; min-width: 36px; }
+.sdp-urgency-cell b {
+  font-family: var(--fh); font-weight: var(--fh-weight); font-size: 26px; line-height: 1;
+  letter-spacing: .03em; color: #fff;
+}
+.sdp-urgency-cell i {
+  font-style: normal; margin-top: 4px;
+  font-family: var(--fb); font-size: 8.5px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--brand-deep);
+}
+/* dot divider, pulled up so it sits on the numeral row, not the captions */
+.sdp-urgency-sep {
+  align-self: flex-start; margin: 11px 9px 0;
+  width: 3px; height: 3px; flex: 0 0 3px; border-radius: 50%;
+  background: rgba(255, 255, 255, .92);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   04 · BEAT 0a — ANNOUNCEMENT STRIP  (§11 Urgency · page-chrome)
+   Two figures, each rendered as a lit number chip + a white label.
+   The number gets a dark chip because bright accent on the accent bar
+   has almost no contrast and reads as blended.
+================================================================ */
+.sdp-announce {
+  background: var(--grad-announce);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 9px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+  line-height: 1.2;
+}
+.sdp-announce-dot {
+  width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%;
+  background: var(--brand-bright);
+  animation: sdpPulse 1.8s ease-in-out infinite;
+}
+@keyframes sdpPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, .5); }
+  50%      { box-shadow: 0 0 0 5px rgba(255, 255, 255, 0); }
+}
+.sdp-announce-copy {
+  display: inline-flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: 8px; min-width: 0; text-align: center;
+}
+.sdp-announce-item { display: inline-flex; align-items: center; gap: 7px; }
+.sdp-announce-num {
+  display: inline-block;
+  background: var(--action);
+  color: #fff;
+  border-radius: 5px; padding: 2px 7px;
+  font-family: var(--fb); font-weight: 800; font-size: 12px;
+  letter-spacing: .08em; text-transform: uppercase;
+}
+.sdp-announce-label {
+  font-family: var(--fb); font-weight: 800; font-size: 12.5px;
+  letter-spacing: .08em; text-transform: uppercase; color: #fff;
+}
+.sdp-announce-sep { opacity: .5; font-weight: 400; }
+
+/* ════════════════════════════════════════════════════════════════
+   05 · BEAT 0b — TRUST ROW  (§12 Authority, light)
+================================================================ */
+.sdp-trust-strip {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: 20px; padding: 10px 16px;
+  background: var(--bg-alt);
+  border-bottom: 1px solid rgba(var(--ink-rgb), .06);
+}
+.sdp-trust-avatars { display: inline-flex; align-items: center; min-width: 0; }
+.sdp-trust-avatar {
+  display: inline-block; width: 32px; height: 32px; flex: 0 0 32px;
+  aspect-ratio: 1 / 1; border-radius: 50%;
+  border: 1.5px solid var(--bg);
+  box-shadow: 0 0 0 1px rgba(var(--ink-rgb), .08);
+  background-color: rgba(var(--ink-rgb), .06);
+  background-size: 140% auto; background-position: center 12%; background-repeat: no-repeat;
+  margin-left: -6px;
+}
+.sdp-trust-avatars > .sdp-trust-avatar:first-child { margin-left: 0; }
+/* No client photography yet: the ring reads as PENDING, not as an
+   anonymous reviewer. Nothing stock, nothing invented. */
+.sdp-trust-avatar.is-empty {
+  border: 1.5px dashed rgba(var(--brand-rgb), .55);
+  background-color: rgba(var(--brand-rgb), .10);
+  box-shadow: none;
+}
+.sdp-trust-item {
+  display: inline-flex; align-items: center; gap: 6px; min-width: 0;
+  font-family: var(--fb); font-size: 13px; font-weight: 600;
+  color: var(--ink); line-height: 1.2;
+}
+.sdp-trust-item b { color: var(--ink); font-weight: 800; }
+.sdp-trust-stars { display: inline-flex; align-items: center; gap: 1px; color: var(--star); }
+.sdp-trust-stars svg { width: 13px; height: 13px; }
+.sdp-trust-check { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; flex: 0 0 18px; color: var(--success); }
+.sdp-trust-check svg { width: 18px; height: 18px; }
+
+/* ════════════════════════════════════════════════════════════════
+   06 · BEAT 1 — HERO / VSL  (§8 Focal media, the heaviest composite)
+   Blueprint-grid stage + accent bloom. Order below the film is the
+   client's and is fixed: CTA lockup → credibility table.
+================================================================ */
+.sdp-hero {
+  padding: 26px 0 48px;
+  background: var(--hero-stage);
+  color: var(--ink);
+  position: relative; overflow: hidden;
+}
+.sdp-hero::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(var(--brand-rgb), .10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--brand-rgb), .10) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 35%, #000 35%, transparent 75%);
+          mask-image: radial-gradient(ellipse at 50% 35%, #000 35%, transparent 75%);
+  opacity: .7;
+}
+.sdp-hero::after {
+  content: ""; position: absolute; top: -140px; left: 50%;
+  width: 680px; height: 680px; transform: translateX(-50%);
+  background: var(--hero-bloom); filter: blur(8px); pointer-events: none;
+}
+.sdp-hero-inner { position: relative; z-index: 1; width: 100%; text-align: center; }
+
+/* --- the audience gate: a bordered pill with a glowing dot --- */
+.sdp-eyebrow-pill {
+  display: inline-flex; align-items: center; gap: 10px;
+  max-width: 780px; margin: 0 auto 20px;
+  padding: 8px 18px 8px 14px; border-radius: 999px;
+  border: 1px solid rgba(var(--brand-rgb), .55);
+  background: var(--brand-fill);
+  font-family: var(--fb); font-size: 11.5px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; line-height: 1.5;
+  color: var(--brand-deep); text-align: left;
+}
+.sdp-eyebrow-pill .glowdot {
+  position: relative; flex: 0 0 8px; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--brand);
+  box-shadow: 0 0 8px 1px rgba(var(--brand-rgb), .70);
+}
+.sdp-eyebrow-pill .glowdot::before {
+  content: ""; position: absolute; inset: -4px; border-radius: 50%;
+  background: var(--brand); opacity: .4;
+  animation: sdpDotPulse 2s ease-out infinite;
+}
+@keyframes sdpDotPulse { 0% { transform: scale(.6); opacity: .5; } 100% { transform: scale(2.6); opacity: 0; } }
+
+/* --- deck + pre-video lead --- */
+.sdp-root .sdp-hero-sub {
+  width: 100%; max-width: 760px;
+  margin-left: auto; margin-right: auto; margin-bottom: 20px;
+  font-size: 15.5px; line-height: 1.7; color: var(--ink-soft); text-align: center;
+}
+.sdp-hero-sub strong { color: var(--ink); font-weight: 700; }
+
+.sdp-root .sdp-hero-lead {
+  width: 100%; max-width: 780px;
+  margin-left: auto; margin-right: auto; margin-bottom: 14px;
+  font-size: 14.5px; line-height: 1.7; color: var(--ink-soft); text-align: center;
+}
+.sdp-hero-lead strong { color: var(--ink); font-weight: 700; }
+.sdp-hero-lead mark {
+  background: rgba(var(--brand-rgb), .15); color: var(--brand-deep);
+  padding: 2px 6px; border-radius: 4px; font-weight: 700;
+}
+
+/* --- marker chips: 8 markers, the copy's two rows of four --- */
+.sdp-hero-markers {
+  display: grid; grid-template-columns: repeat(4, auto);
+  justify-content: center; align-items: stretch;
+  gap: 8px; margin: 6px auto 18px; max-width: 860px;
+}
+.sdp-marker-chip {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  font-family: var(--fb); font-size: 12px; font-weight: 700;
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid rgba(var(--brand-rgb), .38);
+  padding: 7px 14px; border-radius: 999px;
+  letter-spacing: .05em; line-height: 1.3;
+  box-shadow: 0 1px 2px rgba(var(--ink-rgb), .04), inset 0 1px 0 rgba(255, 255, 255, .6);
+  transition: transform .3s cubic-bezier(.34, 1.56, .64, 1), background .25s, border-color .25s, box-shadow .25s;
+}
+.sdp-marker-chip:hover {
+  transform: translateY(-2px);
+  background: var(--brand-fill);
+  border-color: var(--brand);
+  box-shadow: 0 6px 18px rgba(var(--brand-rgb), .18), inset 0 1px 0 rgba(255, 255, 255, .7);
+}
+.sdp-marker-dot {
+  flex: 0 0 7px; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--brand);
+  box-shadow: 0 0 0 3px rgba(var(--brand-rgb), .18);
+  animation: sdpMarkerPulse 2.4s ease-in-out infinite;
+}
+@keyframes sdpMarkerPulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(var(--brand-rgb), .18); }
+  50%      { box-shadow: 0 0 0 5px rgba(var(--brand-rgb), .05); }
+}
+
+/* --- the watch cue --- */
+/* scoped to .sdp-root so it out-specifies the base `.sdp-root a` colour */
+.sdp-root .sdp-above-vsl {
+  display: inline-flex; align-items: center; gap: 9px;
+  margin: 4px auto 14px;
+  padding: 8px 18px; border-radius: 999px;
+  font-family: var(--fb); font-size: 12.5px; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase; line-height: 1.2;
+  color: var(--ink);
+  background: var(--action-fill);
+  border: 1px solid var(--action);
+  cursor: pointer;
+  transition: background .18s ease, transform .18s ease;
+}
+.sdp-root .sdp-above-vsl:hover { background: rgba(var(--action-rgb), .16); transform: translateY(-1px); }
+.sdp-root .sdp-above-vsl:focus-visible { outline: 2px solid var(--brand-deep); outline-offset: 2px; }
+.sdp-above-vsl-arrow { display: inline-flex; color: var(--action); width: 14px; height: 14px; }
+.sdp-above-vsl-arrow svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.6; }
+
+/* --- VSL frame: one lit focal object on a soft-bordered stage --- */
+.sdp-vsl-frame {
+  position: relative; width: 100%; max-width: 820px;
+  margin: 0 auto 18px;
+  padding: 6px; border-radius: var(--r-lg);
+  background:
+    linear-gradient(135deg, rgba(var(--brand-rgb), .32), rgba(var(--brand-rgb), .10) 60%, transparent),
+    var(--bg);
+  border: 1px solid rgba(var(--brand-rgb), .18);
+  box-shadow: 0 24px 64px rgba(var(--ink-rgb), .12), 0 0 0 1px rgba(var(--brand-rgb), .08);
+}
+.sdp-vsl {
+  position: relative; width: 100%; aspect-ratio: 16 / 9;
+  border-radius: var(--r-lg); overflow: hidden;
+  background: var(--ink);
+}
+.sdp-vsl.is-live { cursor: pointer; }
+.sdp-vsl .sdp-ph { position: absolute; inset: 0; height: 100%; border-radius: 0; border: 0; }
+.sdp-vsl-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.sdp-vsl-shade {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(var(--ink-rgb), .14), rgba(var(--ink-rgb), .42));
+  transition: background .3s;
+}
+.sdp-vsl-disc {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 82px; height: 82px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--action); color: var(--cta-ink);
+  box-shadow: 0 10px 30px rgba(var(--action-rgb), .45);
+  transition: transform .3s cubic-bezier(.2, .8, .2, 1);
+}
+.sdp-vsl-disc svg { width: 26px; height: 26px; fill: currentColor; margin-left: 4px; }
+.sdp-vsl-disc::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid rgba(var(--action-rgb), .55);
+  animation: sdpDiscPing 2.6s ease-out infinite;
+}
+@keyframes sdpDiscPing { 0% { transform: scale(1); opacity: .6; } 100% { transform: scale(1.5); opacity: 0; } }
+.sdp-vsl.is-live:hover .sdp-vsl-disc { transform: translate(-50%, -50%) scale(1.06); }
+/* pending: the disc is present but inert and unlit — a play affordance that
+   plays nothing is a lie, so it does not ping and does not glow. */
+.sdp-vsl-disc.pending {
+  background: transparent; color: var(--brand-deep);
+  border: 1.5px dashed rgba(var(--brand-rgb), .5);
+  box-shadow: none;
+}
+.sdp-vsl-disc.pending::after { display: none; }
+/* playing: every decorative layer yields to the native player (C12) */
+.sdp-vsl.playing .sdp-vsl-shade,
+.sdp-vsl.playing .sdp-vsl-disc,
+.sdp-vsl.playing .sdp-vsl-poster { display: none; }
+.sdp-vsl iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+/* --- credibility table: four stats, ruled by the accent hairline --- */
+.sdp-cred-row {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px; max-width: 760px; margin: 26px auto 0;
+}
+.sdp-cred-card {
+  position: relative; min-width: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 12px; text-align: center;
+  box-shadow: var(--shadow-card);
+  transition: transform .3s, box-shadow .3s, border-color .3s;
+}
+.sdp-cred-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--brand);
+  border-radius: var(--r) var(--r) 0 0;
+}
+.sdp-cred-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(var(--brand-rgb), .35);
+  box-shadow: 0 12px 28px rgba(var(--brand-rgb), .18);
+}
+.sdp-cred-num {
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: clamp(20px, 3vw, 30px);
+  color: var(--ink); line-height: 1; letter-spacing: .04em;
+  margin-bottom: 5px;
+}
+.sdp-cred-num .star { color: var(--star); }
+.sdp-cred-lbl {
+  font-family: var(--fb); font-size: 10.5px; font-weight: 700;
+  color: var(--muted); letter-spacing: .1em; text-transform: uppercase; line-height: 1.3;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   07 · BEAT 2 — THIS IS FOR YOU IF  (§2 Contrast, one-sided ✓ list)
+   A single centred column. Self-recognition, not persuasion: the reader
+   has to find themselves in one of the five rows.
+================================================================ */
+.sdp-who { padding: 80px 0; background: var(--bg); color: var(--ink); position: relative; }
+.sdp-who .sdp-wrap { display: flex; flex-direction: column; align-items: center; }
+.sdp-who .sdp-wrap > * { width: 100%; max-width: 820px; min-width: 0; }
+
+.sdp-who-list {
+  width: 100%; max-width: 820px; margin: 8px auto 0;
+  display: flex; flex-direction: column; gap: 14px;
+  align-self: center;
+}
+.sdp-who-list li {
+  display: flex; align-items: flex-start; gap: 14px; min-width: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px 22px;
+  font-size: 14.5px; line-height: 1.65; color: var(--ink-soft);
+  text-align: left;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+.sdp-who-list li > span:last-child { min-width: 0; }
+.sdp-who-list li strong { color: var(--ink); font-weight: 700; }
+.sdp-who-list li:hover {
+  border-color: var(--brand);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(var(--brand-rgb), .12);
+}
+.sdp-who-list .ck {
+  flex: 0 0 26px; width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(var(--brand-rgb), .12);
+  border: 1.5px solid var(--brand);
+  color: var(--brand-deep);
+  display: grid; place-items: center;
+  margin-top: 2px;
+  transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), background .25s;
+}
+.sdp-who-list .ck svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 3; }
+.sdp-who-list li:hover .ck { transform: scale(1.15) rotate(-8deg); background: rgba(var(--brand-rgb), .20); }
+
+/* ── the repeating CTA lockup, one spacing rule for the whole page ──
+   Seven lockups across the page, and each one used to carry its own
+   margin from the section it was written in. That drift is exactly what
+   a reader feels as "assembled" without being able to name it, so the
+   spacing is set ONCE here and the sections only say where. */
+.sdp-who-cta,
+.sdp-proof-cta,
+.sdp-coach-cta,
+.sdp-prog-cta,
+.sdp-guar-cta {
+  width: 100%; text-align: center; margin-top: 44px;
+}
+.sdp-who-cta .sdp-lockup,
+.sdp-proof-cta .sdp-lockup,
+.sdp-coach-cta .sdp-lockup,
+.sdp-prog-cta .sdp-lockup,
+.sdp-guar-cta .sdp-lockup { margin-top: 0; }
+
+/* ════════════════════════════════════════════════════════════════
+   08 · BEATS 3/4 — PROOF  (§6 Proof, three groups, three FORMS)
+   The vary-adjacent-proof rule, applied inside one section: the three
+   groups the copy lists are three different kinds of evidence, so they
+   get three different exhibit shapes. Same card three times would read
+   as one undifferentiated wall and the reader would scan none of it.
+     group A · 4 video testimonials → vertical play tiles
+     group B · 5 case-study cards   → framed exhibit grid
+     group C · 5 B&A + report PAIRS → paired two-pane exhibit
+================================================================ */
+.sdp-proof { padding: 80px 0; background: var(--bg-dark); color: var(--ink-dark); }
+.sdp-proof-group { margin-top: 44px; }
+.sdp-proof-group:first-of-type { margin-top: 8px; }
+
+/* --- group A: video testimonial tiles (9:16, one lit play disc each) --- */
+.sdp-vt-card {
+  position: relative; width: 100%;
+  border-radius: var(--r-lg); overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+.sdp-vt-card:hover { border-color: var(--brand); transform: translateY(-3px); box-shadow: var(--shadow-card-hover); }
+/* inside a video tile the DISC is the centre mark, so the placeholder
+   drops its own glyph and sits its caption in the lower third — two
+   centred marks stacked on each other is the sloppiest kind of slop */
+.sdp-vt-card .sdp-ph { border: 0; border-radius: 0; align-items: end; padding-bottom: 22px; }
+.sdp-vt-card .sdp-ph-icon { display: none; }
+.sdp-vt-disc {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 52px; height: 52px; border-radius: 50%;
+  display: grid; place-items: center;
+  color: var(--brand-deep);
+  border: 1.5px dashed rgba(var(--brand-rgb), .5);
+  background: rgba(255, 255, 255, .55);
+}
+.sdp-vt-disc svg { width: 20px; height: 20px; fill: currentColor; margin-left: 3px; }
+/* once real footage lands, `.is-live` turns the disc into the lit control */
+.sdp-vt-card.is-live .sdp-vt-disc {
+  background: var(--grad-cta); color: var(--cta-ink);
+  border: 0; box-shadow: var(--glow-cta);
+}
+
+/* --- group B: framed exhibit grid (designed case-study cards, 4:5) --- */
+.sdp-case-tile {
+  position: relative;
+  padding: 8px; border-radius: var(--r-lg);
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+.sdp-case-tile::before {
+  content: ""; position: absolute; top: 0; left: 14px; right: 14px; height: 3px;
+  background: linear-gradient(90deg, var(--brand), var(--brand-bright));
+  border-radius: 0 0 3px 3px;
+}
+.sdp-case-tile:hover { border-color: var(--brand); transform: translateY(-3px); box-shadow: var(--shadow-card-hover); }
+.sdp-case-tile .sdp-ph { border-radius: var(--r-sm); }
+
+/* --- group C: the paired exhibit -------------------------------
+   The pairing IS the meaning: the transformation and the bloodwork
+   belong to ONE person, and split across two loose tiles that claim
+   evaporates. So they share a card, an ordinal and a seam. */
+.sdp-pair {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: border-color .2s, box-shadow .2s;
+}
+.sdp-pair:hover { border-color: var(--brand); box-shadow: var(--shadow-card-hover); }
+.sdp-pair-head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-alt);
+}
+.sdp-pair-ord {
+  font-family: var(--fh); font-weight: var(--fh-weight); font-size: 18px;
+  letter-spacing: .06em; color: var(--brand-deep);
+  line-height: 1;
+}
+.sdp-pair-rule { flex: 1 1 auto; height: 1px; background: var(--border-strong); }
+.sdp-pair-tag {
+  font-family: var(--fb); font-size: 10px; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--muted);
+}
+.sdp-pair-body {
+  display: grid; grid-template-columns: 1fr 1px 1fr;
+  align-items: start; gap: 18px;
+  padding: 18px;
+}
+.sdp-pair-seam { align-self: stretch; width: 1px; background: var(--border); }
+.sdp-pair-cap {
+  display: block; margin-top: 10px;
+  font-family: var(--fb); font-size: 10.5px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
+  text-align: center;
+}
+
+/* spacing lives in the shared lockup rule above */
+
+/* ── THE RATIO CONTRACT ─────────────────────────────────────────────
+   The placeholders are ratio-sized so nothing reflows when artwork
+   lands. That promise is worthless unless the REAL image is pinned to
+   the same ratio too — otherwise the first slightly-off crop someone
+   exports re-flows the grid the placeholders were protecting. So every
+   swap target is locked here, once. */
+.sdp-vt-card > img      { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; }
+.sdp-case-tile > img    { width: 100%; aspect-ratio: 4 / 5;  object-fit: cover; border-radius: var(--r-sm); }
+.sdp-wa-card > img      { width: 100%; aspect-ratio: 4 / 5;  object-fit: cover; }
+.sdp-coach-photo > img  { width: 100%; aspect-ratio: 4 / 5;  object-fit: cover; }
+.sdp-logo-tile > img    { width: 100%; aspect-ratio: 5 / 2;  object-fit: contain; padding: 8px 12px; }
+.sdp-pair-pane.ba > img     { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--r-sm); }
+.sdp-pair-pane.report > img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: var(--r-sm); }
+.sdp-vsl-poster         { aspect-ratio: 16 / 9; }
+
+/* ════════════════════════════════════════════════════════════════
+   09 · BEAT 4b — WHATSAPP WINS WALL  (§6 Proof, volume-at-a-glance)
+   Two counter-scrolling rows. The counter-motion is the point: it reads
+   as an unending stream rather than a curated set of five, which is the
+   whole claim ("hundreds of journeys"). Edge-masked so screenshots
+   arrive and leave rather than popping.
+================================================================ */
+.sdp-wa { padding: 80px 0; background: var(--bg-alt); color: var(--ink); overflow: hidden; }
+.sdp-wa-rows { display: flex; flex-direction: column; gap: 16px; }
+.sdp-wa-row {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.sdp-wa-track {
+  display: flex; gap: 16px; width: max-content;
+  will-change: transform;
+}
+.sdp-wa-row.ltr .sdp-wa-track { animation: sdpWaLtr 48s linear infinite; }
+.sdp-wa-row.rtl .sdp-wa-track { animation: sdpWaRtl 48s linear infinite; }
+@keyframes sdpWaLtr { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+@keyframes sdpWaRtl { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.sdp-wa-card {
+  flex: 0 0 auto; width: 208px;
+  border-radius: var(--r); overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+}
+.sdp-wa-card .sdp-ph { border: 0; border-radius: 0; }
+/* pausing on hover lets someone actually read a win they spotted */
+.sdp-wa-row:hover .sdp-wa-track { animation-play-state: paused; }
+
+/* ════════════════════════════════════════════════════════════════
+   10 · BEATS 5a/5b — MEET YOUR COACH  (DARK band)
+   The band rhythm puts dark on authority. 5b is the blueprint's one
+   reliably-TEXT beat: a first-person decade of practice is narrative,
+   not a structure, and boxing it into a graphic would be decoration.
+   The only structure here is 5a — the credential SET — which earns the
+   logo marquee.
+================================================================ */
+.sdp-coach { padding: 80px 0; background: var(--bg); color: var(--ink); position: relative; overflow: hidden; }
+.sdp-coach::before {
+  content: ""; position: absolute; top: -90px; right: -90px;
+  width: 380px; height: 380px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--brand-rgb), .16), transparent 65%);
+  filter: blur(8px); pointer-events: none;
+}
+.sdp-coach .sdp-wrap { position: relative; z-index: 1; }
+
+.sdp-coach-grid {
+  display: grid; grid-template-columns: 360px 1fr;
+  gap: 44px; align-items: start;
+  max-width: 1040px; margin: 0 auto;
+}
+.sdp-coach-photo {
+  position: relative;
+  border-radius: var(--r-lg); overflow: hidden;
+  border: 1px solid var(--border-dark-strong);
+  background: linear-gradient(160deg, var(--bg-dark-elev), var(--bg-dark));
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .38);
+}
+.sdp-coach-photo::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; z-index: 1;
+  background: linear-gradient(90deg, var(--brand), var(--brand-bright), var(--brand));
+}
+.sdp-coach-photo .sdp-ph { border: 0; border-radius: 0; }
+
+/* 5b — the story. Prose set as prose: measure, rhythm, nothing else. */
+.sdp-root .sdp-coach-body p {
+  font-size: 15px; line-height: 1.85; color: var(--ink-soft);
+  margin-bottom: 18px; max-width: 62ch;
+}
+.sdp-root .sdp-coach-body p:last-child { margin-bottom: 0; }
+.sdp-coach-body p strong { color: var(--ink-dark); }
+.sdp-coach-body .lede::first-letter {
+  font-family: var(--fh); font-weight: var(--fh-weight); font-size: 2.6em; line-height: .82;
+  float: left; margin: 6px 10px 0 0; color: var(--brand-bright);
+}
+
+/* 5a — the credential set as a right-to-left logo marquee */
+.sdp-logos {
+  margin-top: 48px; padding-top: 30px;
+  border-top: 1px solid var(--border-dark);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+.sdp-logo-track {
+  display: flex; align-items: center; gap: 20px; width: max-content;
+  animation: sdpWaRtl 34s linear infinite;
+  will-change: transform;
+}
+.sdp-logos:hover .sdp-logo-track { animation-play-state: paused; }
+.sdp-logo-tile {
+  flex: 0 0 auto; width: 190px;
+  border-radius: var(--r); overflow: hidden;
+  border: 1px solid var(--border-dark-strong);
+  background: var(--bg-dark-alt);
+}
+/* a logo lockup is short and wide: no glyph, tighter type, or the slot
+   overflows its own 5:2 box */
+.sdp-logo-tile .sdp-ph { border: 0; border-radius: 0; padding: 8px 12px; }
+.sdp-logo-tile .sdp-ph-icon { display: none; }
+.sdp-logo-tile .sdp-ph-label { font-size: 10px; letter-spacing: .1em; line-height: 1.35; }
+.sdp-logo-tile .sdp-ph-note { margin-top: 3px; font-size: 9px; letter-spacing: .08em; }
+
+/* spacing lives in the shared lockup rule */
+
+/* ════════════════════════════════════════════════════════════════
+   11 · BEAT 7 — WHAT'S INCLUDED  (§3 Accumulation, LIGHT-ALT)
+   Six components that sum to one programme. Not a sequence: the deck
+   says "everything working together", so they are NOT steps and must
+   not be rendered as a timeline. The numbered badge is an inventory
+   mark, not an order of operations.
+================================================================ */
+.sdp-prog { padding: 80px 0; background: var(--bg-aqua); color: var(--ink); }
+.sdp-prog-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 18px; max-width: 1040px; margin: 0 auto;
+}
+.sdp-prog-card {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 26px;
+  box-shadow: var(--shadow-card);
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+.sdp-prog-card:hover { border-color: var(--brand); transform: translateY(-2px); box-shadow: var(--shadow-card-hover); }
+.sdp-pillar-num {
+  /* NO TILE. A tinted box on a tinted band is a box you cannot see, and at
+     46px square with a numeral crammed inside it read as a widget rather than
+     as a number. The brief asks for big aqua numbers, so that is what this is:
+     the numeral itself, large, with a short coral rule under it. */
+  display: block;
+  font-family: var(--fh);
+  font-weight: var(--fh-weight);
+  font-size: 42px;
+  line-height: 1;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--brand-deep);
+  position: relative;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+/* the tiny coral element the brief asks for inside each card */
+.sdp-pillar-num::after {
+  content: ""; position: absolute; left: 0; bottom: 0;
+  width: 24px; height: 3px; border-radius: 3px; background: var(--action);
+}
+.sdp-root .sdp-prog-title {
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: 23px; line-height: 1.15; letter-spacing: .03em;
+  color: var(--ink); margin-bottom: 8px;
+}
+.sdp-root .sdp-prog-desc {
+  font-size: 13.5px; line-height: 1.75; color: var(--ink-soft); margin-bottom: 0;
+}
+/* spacing lives in the shared lockup rule */
+
+/* ════════════════════════════════════════════════════════════════
+   12 · BEAT 8 — GUARANTEE  (assurance + seal, DARK)
+   The second gravity band. One card, because a guarantee that is
+   scattered across a section stops reading as a single undertaking.
+   The two asks are a real set (conditions), so they earn rows; the
+   qualifying line is a coda below a hairline, authored-caveat style —
+   a clarification of record, not buried fine print.
+================================================================ */
+.sdp-guar { padding: 80px 0; background: var(--bg-deep-aqua); color: #fff; position: relative; overflow: hidden; }
+.sdp-guarantee-card {
+  max-width: 880px; margin: 0 auto; text-align: center;
+  background: var(--grad-guarantee);
+  border: 1px solid rgba(var(--brand-rgb), .25);
+  border-radius: var(--r-xl);
+  padding: 48px 40px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 16px 48px rgba(var(--brand-rgb), .18);
+}
+.sdp-guarantee-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+  background: linear-gradient(90deg, var(--brand), var(--brand-bright), var(--brand));
+}
+.sdp-guarantee-icon {
+  width: 88px; height: 88px; margin: 0 auto 22px; border-radius: 22px;
+  background: linear-gradient(145deg, var(--brand), var(--brand-deep));
+  display: grid; place-items: center;
+  box-shadow: 0 8px 24px rgba(var(--brand-rgb), .4);
+  transform: rotate(-4deg); transition: transform .4s;
+}
+.sdp-guarantee-card:hover .sdp-guarantee-icon { transform: rotate(0) scale(1.04); }
+.sdp-guarantee-icon svg { width: 42px; height: 42px; stroke: #fff; fill: none; stroke-width: 1.9; }
+.sdp-root .sdp-guarantee-badge {
+  display: inline-block; margin-bottom: 14px;
+  font-family: var(--fb); font-size: 11px; font-weight: 800;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--brand-bright);
+  background: rgba(var(--brand-rgb), .14);
+  border: 1px solid rgba(var(--brand-rgb), .3);
+  border-radius: 6px; padding: 5px 12px;
+}
+.sdp-root .sdp-guarantee-promise {
+  width: 100%; max-width: 640px; margin: 0 auto; text-align: center;
+  font-size: 15.5px; line-height: 1.8; color: var(--ink-dark-soft);
+}
+
+.sdp-ask {
+  margin: 34px auto 0; max-width: 660px; text-align: left;
+  padding-top: 26px; border-top: 1px solid var(--border-dark-strong);
+}
+.sdp-root .sdp-ask-title {
+  font-family: var(--fb); font-size: 11px; font-weight: 800;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--brand-bright); text-align: center;
+  margin-bottom: 18px;
+}
+.sdp-ask-row {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-dark);
+}
+.sdp-ask-row:last-of-type { border-bottom: 0; }
+.sdp-ask-ord {
+  flex: 0 0 auto;
+  font-family: var(--fh); font-weight: var(--fh-weight); font-size: 15px;
+  letter-spacing: .06em; color: var(--brand-bright); line-height: 1.6;
+}
+.sdp-root .sdp-ask-row p { margin-bottom: 0; font-size: 14px; line-height: 1.75; color: var(--ink-dark-soft); }
+.sdp-root .sdp-guarantee-coda {
+  margin: 22px auto 0; max-width: 620px; text-align: center;
+  padding-top: 18px; border-top: 1px solid var(--border-dark);
+  font-size: 13px; line-height: 1.7; font-style: italic; color: var(--muted-dark);
+}
+/* spacing lives in the shared lockup rule */
+
+/* ════════════════════════════════════════════════════════════════
+   13 · BEAT 10 — FAQ  (§5 Objection, ruled ledger, rotate-to-×)
+   Hairline rows, no card boxes. Open = white + accent border + the
+   icon rotates 45° into an ×. Physical and audited: it reads like a
+   record of questions actually asked, not a marketing block.
+================================================================ */
+.sdp-faq { padding: 80px 0; background: var(--bg); color: var(--ink); }
+.sdp-faq-list { max-width: 860px; margin: 0 auto; }
+.sdp-q {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px; margin-bottom: 12px; overflow: hidden;
+  transition: border-color .25s, background .25s, box-shadow .25s;
+}
+.sdp-q.open { border-color: var(--brand); background: var(--bg); box-shadow: 0 8px 24px rgba(var(--brand-rgb), .10); }
+.sdp-q-head {
+  width: 100%; text-align: left;
+  padding: 20px 24px;
+  display: flex; align-items: center; justify-content: space-between; gap: 18px;
+  font-family: var(--fb); font-size: 15.5px; font-weight: 600; line-height: 1.5;
+  color: var(--ink);
+  background: none; border: 0; cursor: pointer;
+}
+.sdp-q-head:focus-visible { outline: 2px solid var(--brand); outline-offset: -3px; }
+.sdp-q-head .qn {
+  font-family: var(--fh); font-weight: var(--fh-weight); font-size: 15px;
+  letter-spacing: .08em; color: var(--brand-text); margin-right: 12px;
+}
+.sdp-q-head .ic {
+  flex: 0 0 30px; width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(var(--brand-rgb), .12);
+  border: 1px solid rgba(var(--brand-rgb), .25);
+  color: var(--brand-deep);
+  display: grid; place-items: center;
+  transition: transform .3s, background .3s, border-color .3s, color .3s;
+}
+.sdp-q-head .ic svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.6; }
+.sdp-q.open .sdp-q-head .ic {
+  background: var(--brand); border-color: var(--brand); color: var(--cta-ink);
+  transform: rotate(45deg);
+}
+.sdp-q-body { max-height: 0; overflow: hidden; transition: max-height .45s cubic-bezier(.2, .8, .2, 1); }
+.sdp-q.open .sdp-q-body { max-height: 900px; }
+.sdp-q-inner { padding: 0 24px 22px; }
+.sdp-root .sdp-q-inner p { font-size: 14px; line-height: 1.8; color: var(--ink-soft); margin-bottom: 12px; }
+.sdp-root .sdp-q-inner p:last-child { margin-bottom: 0; }
+/* the in-page proof link that replaces the source's [SEE OUR PROOF] marker */
+.sdp-root .sdp-q-inner a.sdp-proof-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-weight: 700; color: var(--brand-deep);
+  border-bottom: 1px solid rgba(var(--brand-rgb), .4);
+  transition: border-color .2s, color .2s;
+}
+.sdp-root .sdp-q-inner a.sdp-proof-link:hover { color: var(--brand-deep); border-bottom-color: var(--brand-deep); }
+.sdp-q-inner a.sdp-proof-link svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.6; }
+
+/* ════════════════════════════════════════════════════════════════
+   14 · BEAT 11 — FINAL CTA  (the peak, DARK)
+   The closing beat earns the most depth on the page. This is the
+   closing-stage weld: a floor ramp, stacked mesh blooms, a faint
+   edge-masked dot grid drifting behind, a lit top seam marking the
+   stage boundary, and a fading hairline above the colophon. Pure
+   atmosphere — it adds no content and makes no claim.
+================================================================ */
+.sdp-finale {
+  position: relative; overflow: hidden;
+  padding: 96px 0 40px;
+  background:
+    radial-gradient(60% 70% at 12% 0%, rgba(var(--brand-rgb), .20), transparent 60%),
+    radial-gradient(50% 60% at 88% 10%, rgba(var(--brand-rgb), .14), transparent 62%),
+    radial-gradient(70% 80% at 50% 40%, rgba(var(--brand-rgb), .10), transparent 70%),
+    linear-gradient(180deg, var(--bg-dark-alt) 0%, var(--bg-dark) 60%, var(--bg-dark) 100%);
+  color: var(--ink-dark);
+}
+/* lit top seam: the stage boundary */
+.sdp-finale::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent 8%, var(--brand-bright) 50%, transparent 92%);
+}
+/* edge-masked dot grid, drifting slowly */
+.sdp-finale::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: radial-gradient(rgba(var(--brand-rgb), .28) 1px, transparent 1px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 45%, #000 20%, transparent 72%);
+          mask-image: radial-gradient(ellipse at 50% 45%, #000 20%, transparent 72%);
+  opacity: .5;
+  animation: sdpFinaleDrift 26s linear infinite;
+}
+@keyframes sdpFinaleDrift { from { background-position: 0 0; } to { background-position: 26px 26px; } }
+.sdp-finale .sdp-wrap { position: relative; z-index: 1; }
+.sdp-finale-inner { width: 100%; text-align: center; }
+.sdp-root .sdp-finale .sdp-h1 { margin-bottom: 26px; }
+.sdp-finale .sdp-h1-l1 { color: var(--ink-dark); font-size: clamp(28px, 4.4vw, 52px); }
+.sdp-finale .sdp-h1-l2,
+.sdp-finale .sdp-h1-l3 { color: var(--brand-bright); font-size: clamp(17px, 2.4vw, 28px); }
+
+/* colophon — centred, folded in. No standalone footer. */
+.sdp-colophon {
+  position: relative;
+  margin-top: 64px; padding-top: 30px;
+  width: 100%; text-align: center;
+}
+.sdp-colophon::before {
+  content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: min(560px, 90%); height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-dark-strong) 50%, transparent);
+}
+.sdp-colophon-line {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 12px;
+  font-family: var(--fb); font-size: 11.5px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted-dark);
+}
+.sdp-colophon-mark { font-family: var(--fh); font-weight: var(--fh-weight); font-size: 15px; letter-spacing: .18em; color: var(--ink-dark); }
+.sdp-colophon-star { color: var(--brand-bright); }
+.sdp-root .sdp-colophon a { color: var(--muted-dark); transition: color .2s; }
+.sdp-root .sdp-colophon a:hover { color: var(--brand-bright); }
+
+/* ════════════════════════════════════════════════════════════════
+   15 · BEAT 12 — STICKY CTA  (page-chrome)
+   Dark glass, an accent top seam that sweeps, slides up past the hero
+   and back down at the finale so it never competes with the peak.
+================================================================ */
+.sdp-stuck {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 999;
+  background: linear-gradient(180deg, rgba(var(--ink-rgb), .92), rgba(var(--ink-rgb), .98));
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+          backdrop-filter: blur(20px) saturate(140%);
+  padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(var(--brand-rgb), .35);
+  box-shadow: 0 -16px 40px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(var(--brand-rgb), .15);
+  transform: translateY(120%);
+  transition: transform .45s cubic-bezier(.2, .8, .2, 1);
+}
+.sdp-stuck.on { transform: translateY(0); }
+.sdp-stuck::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent 10%, var(--brand-bright) 50%, transparent 90%);
+  background-size: 200% 100%;
+  animation: sdpStuckSweep 5s linear infinite;
+}
+@keyframes sdpStuckSweep { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.sdp-stuck-inner {
+  max-width: 1120px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 28px);
+  display: flex; align-items: center; justify-content: space-between; gap: 18px;
+}
+.sdp-stuck-tag {
+  display: inline-flex; align-items: center; gap: 8px; flex: 0 0 auto;
+  font-family: var(--fb); font-size: 12px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--brand-bright);
+}
+.sdp-stuck-tag .dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--brand-bright);
+  box-shadow: 0 0 0 3px rgba(var(--brand-rgb), .25);
+}
+.sdp-root .sdp-stuck-go {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  flex: 1 1 auto; max-width: 620px;
+  padding: 12px 24px; border-radius: 999px;
+  background: var(--grad-cta); color: var(--cta-ink);
+  font-family: var(--fh); font-weight: var(--fh-weight); font-size: 15px; letter-spacing: .04em;
+  line-height: 1.2; text-align: center;
+  box-shadow: var(--glow-cta);
+  position: relative; overflow: hidden;
+  transition: filter .2s, box-shadow .2s;
+}
+.sdp-root .sdp-stuck-go:hover { filter: brightness(1.05); box-shadow: var(--glow-cta-hover); }
+.sdp-stuck-go .arrow {
+  flex: 0 0 20px; width: 20px; height: 20px; border-radius: 50%;
+  background: rgba(255, 255, 255, .22); display: grid; place-items: center;
+}
+.sdp-stuck-go .arrow svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.6; }
+
+/* ════════════════════════════════════════════════════════════════
+   RESPONSIVE
+================================================================ */
+@media (max-width: 1040px) {
+  .sdp-coach-grid { grid-template-columns: 300px 1fr; gap: 32px; }
+}
+
+@media (max-width: 960px) {
+  .sdp-cred-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+}
+
+@media (max-width: 768px) {
+  .sdp-section, .sdp-who, .sdp-proof, .sdp-wa, .sdp-coach,
+  .sdp-prog, .sdp-guar, .sdp-faq { padding: 56px 0; }
+  .sdp-finale { padding: 66px 0 32px; }
+  .sdp-prog-grid { grid-template-columns: 1fr; gap: 14px; }
+  .sdp-guarantee-card { padding: 34px 22px; }
+  .sdp-guarantee-icon { width: 70px; height: 70px; border-radius: 18px; }
+  .sdp-guarantee-icon svg { width: 34px; height: 34px; }
+  .sdp-coach-grid { grid-template-columns: 1fr; gap: 28px; max-width: 560px; }
+  .sdp-coach-photo { max-width: 380px; margin: 0 auto; }
+  .sdp-proof-group { margin-top: 34px; }
+  .sdp-wa-card { width: 176px; }
+  .sdp-logo-tile { width: 158px; }
+  .sdp-hero { padding: 20px 0 40px; }
+  .sdp-hero-markers { grid-template-columns: 1fr 1fr; max-width: 360px; gap: 8px; margin: 8px auto 14px; }
+  .sdp-marker-chip { width: 100%; font-size: 11px; padding: 7px 10px; letter-spacing: .04em; gap: 6px; }
+  .sdp-marker-dot { width: 6px; height: 6px; box-shadow: 0 0 0 2px rgba(var(--brand-rgb), .18); }
+  .sdp-eyebrow-pill { letter-spacing: .1em; font-size: 10.5px; padding: 8px 14px 8px 12px; }
+  .sdp-vsl-disc { width: 62px; height: 62px; }
+  .sdp-vsl-disc svg { width: 20px; height: 20px; }
+}
+
+@media (max-width: 640px) {
+  .sdp-announce { font-size: 10.5px; padding: 8px 12px; gap: 8px; }
+  .sdp-announce-label { font-size: 10.5px; letter-spacing: .06em; }
+  .sdp-announce-num { font-size: 10.5px; padding: 2px 6px; }
+  .sdp-trust-strip { gap: 12px; padding: 9px 12px; }
+  .sdp-trust-avatar { width: 28px; height: 28px; flex: 0 0 28px; margin-left: -5px; }
+  .sdp-trust-item { font-size: 12px; }
+
+  .sdp-root .sdp-cta { font-size: 15px; padding: 14px 22px 12px; gap: 10px; letter-spacing: .04em; }
+  .sdp-cta .arrow { flex: 0 0 22px; width: 22px; height: 22px; }
+  .sdp-risk-strip { gap: 10px 16px; }
+  .sdp-risk-badge { font-size: 11.5px; }
+  .sdp-urgency { gap: 10px; }
+  .sdp-urgency-label { font-size: 11px; letter-spacing: .12em; }
+  .sdp-urgency-timer { padding: 6px 12px; }
+  .sdp-urgency-cell { min-width: 30px; }
+  .sdp-urgency-cell b { font-size: 22px; }
+  .sdp-urgency-sep { margin: 9px 6px 0; }
+
+  .sdp-cred-row { grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 100%; margin-top: 18px; }
+  .sdp-cred-card { background: rgba(var(--brand-rgb), .06); border-color: rgba(var(--brand-rgb), .2); padding: 12px 8px; }
+  .sdp-cred-num { font-size: 20px; }
+  .sdp-cred-lbl { font-size: 9.5px; letter-spacing: .08em; }
+
+  .sdp-who-list li { padding: 14px 16px; font-size: 13.5px; gap: 12px; }
+
+  /* the paired exhibit stacks, and the seam turns from a vertical rule
+     into a horizontal one so the two panes still read as ONE person */
+  .sdp-pair-body { grid-template-columns: 1fr; gap: 14px; padding: 14px; }
+  .sdp-pair-seam { width: 100%; height: 1px; align-self: auto; }
+  .sdp-wa-card { width: 152px; }
+  /* same single rule on mobile: all seven lockups sit at one distance */
+  .sdp-who-cta,
+  .sdp-proof-cta,
+  .sdp-coach-cta,
+  .sdp-prog-cta,
+  .sdp-guar-cta { margin-top: 32px; }
+
+  .sdp-prog-card { padding: 20px 18px; }
+  .sdp-pillar-num { font-size: 34px; margin-bottom: 12px; }
+  .sdp-root .sdp-prog-title { font-size: 20px; }
+  .sdp-q-head { padding: 16px 18px; font-size: 14.5px; gap: 12px; }
+  .sdp-q-head .qn { margin-right: 8px; font-size: 14px; }
+  .sdp-q-inner { padding: 0 18px 18px; }
+  .sdp-root .sdp-q-inner p { font-size: 13.5px; }
+  .sdp-ask { padding-top: 20px; margin-top: 26px; }
+  .sdp-colophon { margin-top: 44px; }
+  .sdp-colophon-line { gap: 8px; font-size: 10.5px; letter-spacing: .08em; }
+
+  /* the sticky drops its tag so the button owns the full width — the
+     button is the only thing on that bar that has a job */
+  .sdp-stuck-tag { display: none; }
+  .sdp-root .sdp-stuck-go { max-width: 100%; font-size: 13.5px; padding: 12px 16px; letter-spacing: .02em; }
+}
+
+@media (max-width: 420px) {
+  .sdp-h1-l1 { font-size: 30px; }
+  .sdp-h1-l2, .sdp-h1-l3 { font-size: 17px; }
+  .sdp-root .sdp-cta { font-size: 14px; }
+}
+
+/* Touch devices: no sticky tap-hover */
+@media (hover: none) {
+  .sdp-who-list li:hover,
+  .sdp-who-list li:hover .ck,
+  .sdp-marker-chip:hover,
+  .sdp-cred-card:hover,
+  .sdp-vt-card:hover,
+  .sdp-case-tile:hover,
+  .sdp-prog-card:hover { transform: none; }
+  .sdp-guarantee-card:hover .sdp-guarantee-icon { transform: rotate(-4deg); }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   REDUCED MOTION — globals.css already flattens durations; this kills
+   the decorative loops outright so nothing idles on the page.
+================================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .sdp-marker-dot,
+  .sdp-announce-dot,
+  .sdp-eyebrow-pill .glowdot::before,
+  .sdp-vsl-disc::after,
+  .sdp-urgency-timer,
+  .sdp-finale::after,
+  .sdp-stuck::before { animation: none; }
+  /* the sticky still appears and disappears, it just doesn't slide */
+  .sdp-stuck { transition: none; }
+  .sdp-armed .sdp-root [data-sdp-reveal] { opacity: 1; transform: none; }
+
+  /* Marquees stop. They become plain horizontal scrollers instead of
+     disappearing, so no proof is lost: the wins are still all there, the
+     reader just moves them by hand. */
+  .sdp-wa-track,
+  .sdp-logo-track { animation: none; transform: none; }
+  .sdp-wa-row,
+  .sdp-logos {
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    -webkit-mask-image: none; mask-image: none;
+  }
+}
+
+
+/* ---------------------------------------------------------------------
+   THE PRICE. Coral owns everything transactional (₹97, discounts, urgency,
+   the CTA), and the eye is trained by that consistency.
+
+   But coral as TYPE on white is 2.32:1, and the deeper coral is still only
+   2.96:1, so neither clears large text. The price therefore wears the colour
+   as a FILL with charcoal on it (6.68:1) instead of being set in it. It stays
+   unmistakably part of the coral system, and it shouts louder than coloured
+   type would have.
+   --------------------------------------------------------------------- */
+.sdp-cred-card.is-price { background: var(--action-fill); border-color: rgba(var(--action-rgb), .45); }
+.sdp-cred-card.is-price::before { background: var(--action); }
+.sdp-cred-card.is-price .sdp-cred-num { color: var(--ink); }
+.sdp-cred-card.is-price .sdp-cred-lbl { color: var(--action-hover); }
+
+/* Proof band on charcoal: white heading, aqua highlight, CORAL result numbers. */
+.sdp-dark .sdp-case-tile,
+.sdp-dark .sdp-pair { background: var(--bg-dark-alt); border-color: var(--border-dark); }
+.sdp-dark .sdp-case-num,
+.sdp-dark .sdp-pair-num { color: var(--action); }
+.sdp-dark em, .sdp-dark .sdp-hl { color: var(--brand-bright); font-style: normal; }
+
+/* The guarantee's coral badge, on the deep-aqua band. */
+.sdp-deep-aqua .sdp-guarantee-badge,
+.sdp-guar .sdp-guarantee-badge {
+  background: var(--action); color: var(--ink);
+  border: 0; padding: 7px 14px; border-radius: 999px;
+}
+
+
+/* =====================================================================
+   BAND RE-TOKENING. Four sections changed ground, and every colour inside
+   them had to move too. This is the failure the skin's PART 3 warns about:
+   a beat written in one band's tokens renders invisible in another.
+   ===================================================================== */
+
+/* ---- PROOF, now charcoal ---- */
+.sdp-proof .sdp-case-tile,
+.sdp-proof .sdp-pair        { background: var(--bg-dark-alt); border-color: var(--border-dark); }
+.sdp-proof .sdp-pair-head   { background: var(--bg-dark-elev); }
+.sdp-proof .sdp-pair-seam,
+.sdp-proof .sdp-pair-rule   { background: var(--border-dark-strong); }
+.sdp-proof .sdp-pair-tag,
+.sdp-proof .sdp-pair-cap    { color: var(--muted-dark); }
+.sdp-proof .sdp-pair-ord    { color: var(--brand-bright); }
+/* the result number is the point of the card, so it takes the action colour */
+.sdp-proof .sdp-case-num,
+.sdp-proof .sdp-pair-num    { color: var(--action); }
+.sdp-proof p                { color: var(--ink-dark-soft); }
+.sdp-proof .sdp-case-tile::before { background: var(--brand); }
+
+/* ---- COACH, now white. Her credibility should read professional, so the
+   panel behind her is soft aqua rather than a dark stage. ---- */
+.sdp-coach::before          { display: none; }
+.sdp-coach-photo            { background: var(--bg-aqua); }
+.sdp-coach-photo::before    { background: var(--brand); }
+.sdp-coach-body p strong    { color: var(--ink); }
+.sdp-coach-body .lede::first-letter { color: var(--brand-deep); }
+
+/* ---- GUARANTEE, now deep aqua. The card must not be the same colour as the
+   band it sits on, which is what made it read as a flat slab. ---- */
+.sdp-guar .sdp-guarantee-card {
+  background: #fff;
+  border: 1px solid rgba(255,255,255,.5);
+  border-radius: var(--r-lg);
+  box-shadow: 0 18px 44px -24px rgba(0,0,0,.35);
+  backdrop-filter: none;
+}
+.sdp-guar .sdp-guarantee-card::before { background: var(--action); }
+.sdp-guar .sdp-guarantee-icon {
+  background: var(--brand-fill); color: var(--brand-deep); box-shadow: none;
+}
+/* Inside the white card the text goes back to the LIGHT tokens. The band is
+   aqua, the card is not, and the card's contents follow the card. */
+.sdp-guar .sdp-guarantee-card h2,
+.sdp-guar .sdp-guarantee-card h3    { color: var(--ink); }
+.sdp-guar .sdp-guarantee-promise    { color: var(--ink-soft); }
+.sdp-guar .sdp-guarantee-coda       { color: var(--muted); }
+/* Outside the card, on the aqua, everything is white. */
+.sdp-guar > .sdp-wrap > h2,
+.sdp-guar .sdp-masthead h2,
+.sdp-guar .sdp-masthead p,
+.sdp-guar .sdp-eyebrow              { color: #fff; }
+
+/* ---- PROGRAMME cards ---- */
+.sdp-prog-card { background: var(--card); }
+
+
+/* =====================================================================
+   PROOF RAILS. All three proof rows slide, per Atul: the video
+   testimonials, the case studies, and the before/after + report pairs.
+   They were stacked grids, which turned the section into a column of very
+   large boxes.
+
+   Built on the SAME machinery as the credential marquee above rather than a
+   second system: mask-image edges (they work on any ground, unlike gradient
+   fades, which have to be re-grounded per band), width:max-content, and a
+   -50% translate over a doubled track.
+
+   Two things that matter:
+     · It PAUSES on hover and on focus-within. These cards are clickable, and
+       you cannot press play on a moving target.
+     · It is hand-scrollable as well as animated, and under reduced-motion the
+       animation stops entirely. Without that, a reader who prefers reduced
+       motion is left with a frozen rail and no way to reach the rest of it.
+   ===================================================================== */
+.sdp-proof-rail {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+}
+.sdp-proof-rail::-webkit-scrollbar { display: none; }
+.sdp-proof-track {
+  display: flex; align-items: stretch; gap: 16px; width: max-content;
+  animation: sdpWaRtl 64s linear infinite;
+  will-change: transform;
+}
+.sdp-proof-rail:hover .sdp-proof-track,
+.sdp-proof-rail:focus-within .sdp-proof-track { animation-play-state: paused; }
+
+/* each rail travels at roughly the same speed, so a wider row takes longer */
+.sdp-proof-rail.is-vt   .sdp-proof-track { animation-duration: 52s; }
+.sdp-proof-rail.is-case .sdp-proof-track { animation-duration: 58s; }
+.sdp-proof-rail.is-pair .sdp-proof-track { animation-duration: 86s; }
+
+/* On a rail a card has to carry its own width: it is no longer a grid cell. */
+.sdp-proof-track > * { flex: 0 0 auto; }
+.sdp-proof-rail.is-vt   .sdp-vt-card  { width: 232px; }
+.sdp-proof-rail.is-case .sdp-case-tile { width: 300px; }
+.sdp-proof-rail.is-pair .sdp-pair      { width: 520px; }
+
+@media (max-width: 640px) {
+  .sdp-proof-rail.is-vt   .sdp-vt-card  { width: 190px; }
+  .sdp-proof-rail.is-case .sdp-case-tile { width: 250px; }
+  .sdp-proof-rail.is-pair .sdp-pair      { width: 300px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sdp-proof-track { animation: none; }
+  /* The duplicate half is dead weight once nothing moves. Keyed on [inert],
+     which is what the markup actually sets on it: an earlier draft of this rule
+     looked for a data-attribute that was never written, so the duplicates
+     stayed visible for exactly the readers who could not scroll past them. */
+  .sdp-proof-track > [inert] { display: none; }
+}
+
+
+/* =====================================================================
+   PART 3 · THREE-VOICE TYPE (added with the INK & BONE theme)
+
+   PART 2 above was written for a two-sans theme: everything is --fh (a
+   geometric display sans) or --fb, and tracking is set positive because a
+   geometric sans needs opening up. Both assumptions break under a serif
+   display plus a mono spec voice, so the corrections live here rather than
+   being edited into PART 2, which stays the shared SDP anatomy.
+
+   The rule that decides every assignment below: MONO IS THE SPEC VOICE.
+   If a thing is a measurement, a label, an ordinal, a count or a piece of
+   metadata, it is mono. If it is an argument, it is serif. If it is a
+   sentence, it is sans. Nothing else gets mono, or it stops meaning
+   "this is data" and starts meaning "this is a style".
+   ===================================================================== */
+
+/* ---- SERIF TRACKING. PART 2's +.01 to +.04em was tuned for the geometric
+   sans. A high-contrast serif at display size needs to close up, not open. */
+.sdp-root h2.sdp-h2      { letter-spacing: -.012em; }
+.sdp-root .sdp-h1        { letter-spacing: -.012em; }
+.sdp-h1-l1               { letter-spacing: -.018em; }
+.sdp-h1-l2,
+.sdp-h1-l3               { letter-spacing: -.008em; }
+
+/* ---- THE ACCENT WORD IS NOW ITALIC (C1: one <em> is italic in headlines).
+   PART 2 forced font-style:normal because a geometric sans has no italic
+   worth using. Fraunces does, and it is a quieter, more expensive way to
+   lift a word than colour alone. Colour stays, so the lift is doubled. */
+.sdp-root h2.sdp-h2 em   { font-style: italic; }
+
+/* ---- MONO · the spec voice ---------------------------------------- */
+
+/* Eyebrows. Every section, still uppercase (house rule). Mono at 500 with
+   slightly tighter tracking than the sans version: mono is already wide.
+   The pill is deliberately split out WITHOUT letter-spacing: PART 2's mobile
+   block retunes it to .1em, and a later rule beats a media query at equal
+   specificity, so setting it here would silently undo the mobile fix. */
+.sdp-eyebrow,
+.sdp-root .sdp-eyebrow.center {
+  font-family: var(--fm); font-weight: 500; letter-spacing: .14em;
+}
+.sdp-eyebrow-pill { font-family: var(--fm); font-weight: 500; }
+
+/* Marker chips. The single most important mono on the page: HbA1c, Thyroid
+   Markers, Fatty Liver Grades 1-3, LDL, Uric Acid. In sans they were
+   buzzwords; in mono they are readings off a report.
+   Tracking is left to PART 2 for the same media-query reason as the pill. */
+.sdp-marker-chip { font-family: var(--fm); font-weight: 500; }
+
+/* Credibility table. 700+, 12wk, 5.0, 97 are measurements, not headlines,
+   so the numbers leave the serif and take the mono. Tabular figures so the
+   four cards align on the digit, which is the whole point of a stat row. */
+.sdp-cred-num {
+  font-family: var(--fm); font-weight: 600; letter-spacing: -.01em;
+  font-variant-numeric: tabular-nums;
+}
+.sdp-cred-lbl { font-family: var(--fm); font-weight: 500; letter-spacing: .08em; }
+
+/* Announcement strip and risk badges: labels and counts. Tracking is left to
+   PART 2 in every case below. Those values (.08em to .16em) were tuned for
+   UPPERCASE micro-labels, and uppercase wants wide tracking whatever the
+   family; only the family and the weight are wrong for mono. */
+.sdp-announce-num,
+.sdp-announce-label,
+.sdp-risk-badge { font-family: var(--fm); font-weight: 500; }
+
+/* The countdown. A timer is the most literal spec object on the page, and
+   mono is also the only voice where the digits stop reflowing as they tick. */
+.sdp-urgency-label { font-family: var(--fm); font-weight: 500; letter-spacing: .12em; }
+.sdp-urgency-cell b {
+  font-family: var(--fm); font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.sdp-urgency-cell i { font-family: var(--fm); font-weight: 400; font-style: normal; }
+
+/* Case-file metadata on the proof run: uppercase tags and captions, so a
+   before/after reads as an exhibit rather than an advert. Tracking untouched. */
+.sdp-pair-tag,
+.sdp-pair-cap,
+.sdp-stuck-tag,
+.sdp-ph-label { font-family: var(--fm); font-weight: 500; }
+
+/* Ordinals are numerals, not labels, so they close up and go tabular. These
+   two carry --fh in PART 2; a serif ordinal beside a mono tag reads as a
+   mismatch, and the ordinal is the more spec-like of the pair. */
+.sdp-pair-ord,
+.sdp-ask-ord {
+  font-family: var(--fm); font-weight: 600; letter-spacing: .02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Trust strip: three specific facts, so they read as facts. */
+.sdp-trust-item { font-family: var(--fm); font-weight: 500; }
+/* Plex Mono is loaded at 400/500/600 only. PART 2 asks this one for 800,
+   which the browser would synthesise into a smeared faux-bold. */
+.sdp-trust-item b { font-weight: 600; }
+
+/* The video cue line stays sans: it is an instruction to the reader, not a
+   spec. Left here as a note so nobody "completes the set" later. */
+
+/* ---- SERIF DISCIPLINE ---------------------------------------------
+   C1 says the serif never drops below headline size. Audited: the only PART 2
+   rule using --fh below display size is .sdp-prog-title at 23px, which is a
+   sub-headline and correctly stays serif. .sdp-ask-title and
+   .sdp-colophon-line are already --fb. .sdp-pillar-num keeps --fh because a
+   big lit ordinal IS the display voice. Nothing to correct here, and this
+   note exists so the audit is not repeated. */
+
+
+/* =====================================================================
+   PART 3b · GUARANTEE BAND RE-TOKENING (and the CTA lockup on any dark band)
+
+   This is exactly the failure PART 2 warns about above: a beat written in
+   one band's tokens goes invisible in another. The guarantee band moved
+   from a MID-tone (aqua #159EA1, then deep aqua) to #290911, the darkest
+   surface on the page, and the card inside it is white. So the section now
+   has BOTH extremes in it, and several elements were left holding the
+   token for the wrong one.
+
+   Measured before the fix. Everything here was under 4.2:1, most under 2.7:1:
+     ask-title / ask-ord   brand-bright on the WHITE card   2.09
+     "What We Ask" body    ink-dark-soft on the WHITE card   1.36  (worst)
+     shield icon           #fff stroke on pale blush fill    1.18
+     risk badges           ink-soft on the #290911 band      2.62
+     risk icon (blue)      brand-deep on the band            1.38
+     countdown digits      #fff on the GOLD chip             2.22
+
+   Three of these predate the garnet theme: the card has been white since
+   the aqua build, so the ask rows were already near-invisible and the
+   shield icon has never been visible. The theme change surfaced them
+   rather than caused them. The countdown was 2.2:1 on coral before and is
+   2.22:1 on gold now: same bug, different colour.
+
+   THE RULE, so this stops recurring: inside the white card use LIGHT
+   tokens, on the band use DARK tokens, and never let a #fff literal decide
+   either. Follow the surface, not the section.
+   ===================================================================== */
+
+/* ---- INSIDE the white card: light tokens ---- */
+.sdp-guar .sdp-ask-title            { color: var(--brand-deep); }      /* 13.38 */
+.sdp-guar .sdp-ask-ord              { color: var(--brand); }           /*  8.47 */
+.sdp-root .sdp-guar .sdp-ask-row p  { color: var(--ink-soft); }        /*  7.03 */
+.sdp-guar .sdp-ask-row              { border-bottom-color: var(--border); }
+.sdp-root .sdp-guar .sdp-guarantee-coda { border-top-color: var(--border); }
+
+/* The shield: a DARK GARNET tile with a GOLD shield on it (Atul's call).
+   PART 2's band rule had swapped the tile to pale blush, which is what left
+   the hardcoded #fff stroke at 1.18:1. Going dark instead of light also
+   makes the tile the one dark object on the white card, so the seal reads
+   as a seal.
+   The gradient runs brand-deep to bg-dark rather than PART 2's brand to
+   brand-deep: on the lighter end gold only reaches 3.81:1, and this way the
+   stroke holds 6.02 to 7.55 across the whole tile. */
+.sdp-guar .sdp-guarantee-icon {
+  background: linear-gradient(145deg, var(--brand-deep), var(--bg-dark));
+  box-shadow: 0 8px 24px rgba(var(--brand-rgb), .28);
+}
+.sdp-guar .sdp-guarantee-icon svg   { stroke: var(--action); }         /* 6.02 to 7.55 */
+
+/* "The Risk Is <em>Ours.</em>" takes the light pink on the band. PART 2 gives
+   .sdp-dark and .sdp-dark-alt this em treatment but not .sdp-guar, so the
+   whole headline was being forced flat white by the band rule below it. */
+.sdp-guar h2.sdp-h2 em,
+.sdp-deep-aqua h2.sdp-h2 em         { color: var(--brand-bright); }    /*  8.82 */
+
+/* ---- ON the band: dark tokens. PART 2 gives .sdp-dark and .sdp-dark-alt
+   these overrides but not .sdp-guar / .sdp-deep-aqua, which is why the
+   lockup under the guarantee lost its risk strip and its timer label. ---- */
+.sdp-guar .sdp-risk-badge,
+.sdp-deep-aqua .sdp-risk-badge      { color: var(--ink-dark-soft); }   /* 13.48 */
+.sdp-guar .sdp-risk-icon-blue,
+.sdp-deep-aqua .sdp-risk-icon-blue  { color: var(--brand-bright); }    /*  8.82 */
+.sdp-guar .sdp-urgency-label,
+.sdp-deep-aqua .sdp-urgency-label   { color: var(--muted-dark); }      /*  7.08 */
+
+/* The green and gold risk icons were never given a dark-band value at all,
+   so they are dim on EVERY dark band, not just this one: 3.72 and 4.16,
+   both under the 3:1 they clear only because they are icons. Fixed for all
+   four dark surfaces at once. */
+.sdp-dark .sdp-risk-icon-green,
+.sdp-dark-alt .sdp-risk-icon-green,
+.sdp-guar .sdp-risk-icon-green,
+.sdp-deep-aqua .sdp-risk-icon-green { color: var(--success-dark); }    /*  9.01 */
+.sdp-dark .sdp-risk-icon-gold,
+.sdp-dark-alt .sdp-risk-icon-gold,
+.sdp-guar .sdp-risk-icon-gold,
+.sdp-deep-aqua .sdp-risk-icon-gold  { color: var(--action); }          /*  8.28 */
+
+/* ---- The countdown chip, everywhere on the page ----
+   PART 2 sets #fff on the timer because the chip used to be coral. On gold
+   that is 2.22:1 and the digits wash out. The chip is the same object as the
+   CTA (a gold fill), so it takes the CTA's label colour. */
+.sdp-urgency-timer                  { color: var(--cta-ink); }
+.sdp-urgency-cell b                 { color: var(--cta-ink); }         /*  7.64 */
+.sdp-urgency-sep                    { background: rgba(35,26,28,.55); }
+
+
+/* =====================================================================
+   PART 3c · LIVE VIDEO TESTIMONIALS (group A)
+
+   The films went live 2026-09-08: 15 Vimeo ids, posters still pending. The
+   tile stops being a picture with a decorative disc and becomes a player,
+   so it needs three things PART 2 never gave it.
+   ===================================================================== */
+
+/* 1. A ratio of its own. Until now the tile borrowed its height from the
+   placeholder or the poster inside it. A playing tile contains an iframe,
+   which has no intrinsic ratio, so the card has to hold the shape itself.
+   --vt-ratio is set per tile from TESTIMONIAL_RATIO in Proof.tsx, so the
+   aspect lives in ONE constant and the CSS follows the markup. */
+.sdp-vt-card { aspect-ratio: var(--vt-ratio, 9 / 16); }
+.sdp-vt-card > .sdp-ph,
+.sdp-vt-card > img { width: 100%; height: 100%; object-fit: cover; }
+.sdp-vt-card iframe {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border: 0; display: block;
+}
+
+/* 2. The name. Attribution is what separates a testimonial from a clip, so
+   it is on the tile rather than under it. Top-left, because the player owns
+   the centre: Vimeo draws its own thumbnail and its own centred play control.
+
+   pointer-events:none is load-bearing, not tidiness. The caption sits ON TOP
+   of a live third-party player, and without it the chip would swallow every
+   click landing in that corner, including Vimeo's own chrome.
+
+   Mono, per the spec voice: a named person is case-file metadata. */
+.sdp-vt-name {
+  position: absolute; top: 10px; left: 10px; z-index: 2;
+  pointer-events: none;
+  max-width: calc(100% - 20px);
+  font-family: var(--fm); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-dark);
+  background: rgba(35, 26, 28, .62);
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: var(--r-sm);
+  padding: 4px 8px;
+  backdrop-filter: blur(6px);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* 3. RETIRED with the direct-embed change (2026-09-08). The tiles no longer
+   render a poster, a placeholder or a custom disc, so PART 2's .sdp-vt-disc
+   rules and the click-to-play affordances here style nothing. Left in PART 2
+   untouched; removed from PART 3 rather than kept as rules that describe a
+   component that no longer exists. */

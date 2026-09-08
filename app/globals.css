@@ -1,0 +1,273 @@
+/* ════════════════════════════════════════════════════════════════
+   DEEPTI · globals.css
+   PART 1 of the SDP VSL skin: the THEME token block (the only thing
+   that swaps per client). Component design lives in landing.css and is
+   token-only, so it re-themes from here and stays identical to SDP.
+
+   Theme: GARNET & GOLD (deep garnet + warm cream + gold).
+   Third theme on this build. FRESH METABOLIC RESET (aqua + coral) read
+   fitness-app on a page about fatty liver. INK & BONE fixed the cheapness
+   but read boring, because a near-neutral page has no colour presence.
+   This one keeps the warm ground and puts a real jewel hue on it.
+
+   GARNET carries authority and every dark band. GOLD is action, and only
+   action. CREAM is the ground. Nothing else is a hue.
+================================================================ */
+
+:root {
+  /* ═══ GARNET & GOLD ═══════════════════════════════════════════════════
+     GARNET = authority, headings, every dark band.
+     GOLD   = action, and nothing else on the page.
+     CREAM  = the ground.   INK = body copy.
+
+     MEASURED, and these decide where each colour may be used:
+       · Gold #E0A32E is 2.00:1 on cream, so it is a FILL ONLY: the button,
+         the timer, the CTA edge, the lit number on a dark band. It never
+         sets type on a light surface.
+       · Ink on gold is 7.64:1, which makes the CTA the best-contrast object
+         on the page. That is the right way round for a sales page.
+       · Garnet is safe as type at every size: brand-deep #5A1526 is 12.01:1
+         and brand #8C2740 is 7.61:1, so headings, eyebrows and icons can all
+         take it without a large-text-only caveat.
+       · Gold and garnet are 105 degrees apart in hue, not complementary, so
+         the pair reads as a jewel setting rather than as a festive-sale
+         collision. That was the failure mode we rejected on indigo/yellow.
+       · The ONE discipline that keeps this premium: gold never grows past
+         button scale on a light band. A gold-filled section next to a garnet
+         section is where this palette would turn into a wedding invitation.
+     ════════════════════════════════════════════════════════════════════ */
+
+  /* ---- GARNET = AUTHORITY (the skin's --brand slot) ---- */
+  --brand:        #8C2740;  --brand-rgb: 140,39,64;    /* lit garnet: fills, dots, rules, icons */
+  --brand-deep:   #5A1526;                             /* headings + eyebrows: 12.01:1 */
+  --brand-bright: #E8A0AE;                             /* garnet family on the dark bands */
+  --brand-fill:   #F7E9EC;                             /* soft garnet tint */
+  --brand-text:   #7A2036;                             /* links and small garnet type: 9.03:1 */
+  --brand-soft:   rgba(var(--brand-rgb), .10);
+  --brand-ring:   rgba(var(--brand-rgb), .25);
+
+  /* ---- GOLD = ACTION ---- */
+  --action:       #E0A32E;  --action-rgb: 224,163,46;
+  --action-hover: #C88C1C;
+  --action-fill:  #FBF0D9;                             /* soft gold tint */
+  --action-edge:  #9A6A0E;                             /* the CTA's 2px bottom edge */
+
+  /* ---- NEUTRALS: warm cream, warm ink ---- */
+  --bg:            #F8F2E8;   /* CREAM. The ground. */
+  --card:          #FFFCF5;   /* cards lift off the cream by a hair */
+  --bg-alt:        #F0E7D9;   /* deeper sand: separation, and the hero stage */
+  --bg-aqua:       #F9EDEF;   /* BLUSH, a pale garnet tint. Keeps its old token */
+                              /* name so landing.css is untouched. This is the */
+                              /* programme section. */
+  --ink:           #231A1C;  --ink-rgb: 35,26,28;      /* warm near-black, red cast */
+  --ink-soft:      #61565A;
+  --muted:         #6F6266;
+  --border:        #E6DACD;
+  --border-strong: #D2C2B2;
+
+  /* ---- DARK BANDS: all garnet, three depths ---- */
+  --bg-dark:           #3A0D19;   /* garnet-black: proof, coach, conversion resets */
+  --bg-dark-alt:       #46121F;
+  --bg-dark-elev:      #56192A;
+  --bg-deep-aqua:      #290911;   /* THE GUARANTEE BAND, and deliberately the */
+                                  /* deepest surface on the page. "The Risk Is */
+                                  /* Ours" is the emotional peak, so it gets the */
+                                  /* most weight. White on it is 18.40:1. */
+  --ink-dark:          #FFFFFF;
+  --ink-dark-soft:     #EBD8DC;
+  --muted-dark:        #B49AA1;
+  --border-dark:       #56192A;
+  --border-dark-strong:#6B2436;
+
+  /* ---- FUNCTIONAL: icon-scale only, never sections ---- */
+  --success: #56794E;                                  /* the trust-row check, 18px */
+  --success-dark: #9CBF93;                             /* the same check on a garnet band */
+  --danger:  #B8791A;  --danger-rgb: 184,121,26;       /* the timer pulse, gold not red */
+  --star:    #9C7020;                                  /* deeper than the CTA gold, so a */
+  --gold:    #9C7020;                                  /* rating never competes with it */
+
+  /* ---- TYPE: THREE VOICES (design-system.base.md C1). The original build
+     ran display-sans + body-sans and no mono, which is the base file's first
+     failure mode. Now:
+       DISPLAY = Fraunces, high-contrast serif. Emotion and authorship.
+       MONO    = IBM Plex Mono. Spec, precision, credibility. Every number,
+                 marker, label and ordinal on the page.
+       BODY    = Manrope. Neutral.
+     Serif never drops below headline size. Weight is 600, not 800: on a serif
+     the stroke contrast carries the authority, so extra weight only muddies
+     it. Fraunces on cream with garnet is the pairing this theme is built on;
+     the serif is doing as much of the premium read as the colour is. ---- */
+  --fh: var(--font-display), 'Fraunces', Georgia, 'Times New Roman', serif;
+  --fm: var(--font-mono), 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --fb: var(--font-manrope), 'Manrope', 'Helvetica Neue', sans-serif;
+  --fh-weight: 600;
+
+  /* ---- RADII: small. A jewel setting has edges, not pills. ---- */
+  --r-sm: 4px; --r: 8px; --r-lg: 12px; --r-xl: 16px;
+
+  /* ---- ACCENT ADAPTATIONS ---- */
+  --cta-ink:            #231A1C;            /* INK on gold: 7.64:1 */
+  --accent-text-light:  var(--brand-deep);
+  --accent-text-dark:   var(--brand-bright);
+
+  /* ---- DERIVED ---- */
+  --grad-brand:     linear-gradient(135deg, var(--brand-deep), var(--brand));
+  --grad-announce:  var(--brand-deep);      /* top strip: flat garnet, colour from line one */
+  --grad-cta:       var(--action);          /* flat gold, not glossy */
+  --grad-urgency:   var(--action);          /* the timer is gold. No red. */
+  --grad-guarantee: var(--bg-deep-aqua);
+  --hero-stage:     var(--bg-alt);          /* the hero sits on the deeper sand */
+  /* A warm lift behind the video, not a coloured glow. A garnet bloom on sand
+     goes muddy and a gold one goes brassy. */
+  --hero-bloom:     radial-gradient(circle, rgba(255,252,245,.92), transparent 68%);
+  --glow-cta:       0 6px 18px rgba(var(--action-rgb), .32);
+  --glow-cta-hover: 0 10px 24px rgba(var(--action-rgb), .42);
+  --shadow-card:    0 2px 12px rgba(var(--ink-rgb), .07);
+  --shadow-card-hover: 0 10px 26px rgba(var(--ink-rgb), .13);
+  --inset-hi:       inset 0 1px 0 rgba(255,255,255,.18);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--fb);
+  line-height: 1.6;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--brand-text); text-decoration: none; }
+img { max-width: 100%; height: auto; display: block; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ════════════════════════════════════════════════════════════════
+   THE SITE FOOTER  ·  .dp-foot  ·  one component, every surface
+
+   The VSL blueprint's fifth surface. It lives HERE, in globals.css,
+   rather than in landing.css or legal.css, because globals.css is the
+   only stylesheet the root layout loads on every route. A shared
+   component whose CSS only ships with one route renders unstyled on the
+   others, which is skin PART 3 law 3 and cost a debugging cycle on the
+   sandesh build.
+
+   Token-only, like every other block on this project, so it re-themes
+   from the block above with no edits here.
+
+   SPECIFICITY IS DELIBERATE. Every rule is (0,2,x): `.dp-foot .dp-foot-x`,
+   never a bare `p` or `a`. On the landing page this footer renders inside
+   .sdp-root, where `.sdp-root p { color: var(--ink-soft) }` and
+   `.sdp-root a { color: var(--brand-text) }` are (0,1,1). Both are light
+   band colours, and this footer sits on a garnet-black band, so a bare
+   selector here would tie or lose and paint the merchant details nearly
+   invisible. That is the exact "a beat's colour tokens move with its
+   band" failure. Class-scoped rules win outright and cannot regress.
+================================================================ */
+.dp-foot {
+  background: var(--bg-dark);
+  border-top: 1px solid var(--border-dark);
+  padding: 38px 0 34px;
+  text-align: center;
+}
+.dp-foot .dp-foot-wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 22px;
+}
+
+/* the mark: display voice, the one serif on the band */
+.dp-foot .dp-foot-mark {
+  font-family: var(--fh);
+  font-weight: var(--fh-weight);
+  font-size: 17px;
+  letter-spacing: .02em;
+  color: var(--ink-dark);
+  margin-bottom: 12px;
+}
+
+/* the merchant block. Body voice, generous leading: this is four facts a
+   human reviewer reads in one pass, not decoration. */
+.dp-foot .dp-foot-lines {
+  font-family: var(--fb);
+  font-size: 13px;
+  line-height: 1.85;
+  color: var(--muted-dark);
+  margin: 0 0 18px;
+}
+.dp-foot .dp-foot-lines .dp-foot-entity {
+  color: var(--ink-dark-soft);
+  font-weight: 600;
+}
+.dp-foot .dp-foot-lines a {
+  color: var(--brand-bright);
+  border-bottom: 1px solid transparent;
+  transition: border-color .2s;
+}
+.dp-foot .dp-foot-lines a:hover { border-bottom-color: var(--brand-bright); }
+.dp-foot .dp-foot-lines a:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+.dp-foot .dp-foot-sep { color: var(--border-dark-strong); margin: 0 9px; }
+
+/* the legal links: mono, because they are labels */
+.dp-foot .dp-foot-links {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 10px 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-dark);
+}
+.dp-foot .dp-foot-links a {
+  font-family: var(--fm);
+  font-size: 11px; font-weight: 500;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-dark-soft);
+  border-bottom: 1px solid transparent;
+  transition: color .2s, border-color .2s;
+}
+.dp-foot .dp-foot-links a:hover { color: var(--ink-dark); border-bottom-color: var(--brand-bright); }
+.dp-foot .dp-foot-links a:focus-visible { outline: 2px solid var(--action); outline-offset: 3px; }
+
+.dp-foot .dp-foot-copy {
+  font-family: var(--fm);
+  font-size: 11px; letter-spacing: .06em;
+  color: var(--muted-dark);
+  margin: 16px 0 0;
+}
+
+/* ---- FOLDED: the landing page. No band, no border, no standalone
+   footer. It sits inside the finale's dark stage under a fading
+   hairline, which is where the colophon was, so the peak stays the last
+   thing on the page while the merchant facts still render on it. ---- */
+.dp-foot.dp-foot-folded {
+  position: relative;
+  background: none;
+  border-top: 0;
+  margin-top: 60px;
+  padding: 30px 0 0;
+}
+.dp-foot.dp-foot-folded::before {
+  content: "";
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: min(560px, 90%); height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-dark-strong) 50%, transparent);
+}
+
+@media (max-width: 560px) {
+  .dp-foot { padding: 30px 0 26px; }
+  .dp-foot .dp-foot-lines { font-size: 12.5px; }
+  .dp-foot .dp-foot-links { gap: 8px 16px; }
+  .dp-foot .dp-foot-links a { font-size: 10px; letter-spacing: .08em; }
+  .dp-foot.dp-foot-folded { margin-top: 42px; }
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

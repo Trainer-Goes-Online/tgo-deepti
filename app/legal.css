@@ -1,0 +1,410 @@
+/* ════════════════════════════════════════════════════════════════
+   POLICY PAGES · scoped to .dp-policy
+   The VSL blueprint's policy surface, beat for beat.
+
+   ANATOMY (the blueprint, not invention):
+     pill-eyebrow masthead on the hero stage, with the blueprint grid
+       → a 240px sticky "On this page" rail beside the body
+       → an accent-left-bordered intro callout
+       → anchored clauses, each marked and ruled off from the next
+       → list items as bordered cards, not ruled rows
+       → a dark contact close
+       → the identity footer (.dp-foot, in globals.css: it is shared)
+
+   Same tokens as the funnel (PART 1 in globals.css), different anatomy.
+   The landing skin is scoped to .sdp-root and must not leak here, so this
+   file shares nothing with landing.css except the token layer. Re-theming
+   PART 1 re-themes these pages too, with no edits here.
+
+   The generic child names (.hero, .legal, .toc, .contact) are the
+   blueprint's own, and they are safe only because every rule below is
+   scoped under .dp-policy. Nothing here is written unscoped.
+
+   The register is quieter than the funnel: no CTAs, no lifts, no reveals.
+   A legal page that sells is a legal page nobody trusts. What it borrows
+   from the funnel is the type system, because a policy set in the same
+   three voices reads as the same company.
+
+   THEME ADAPTATIONS from the SDP reference, all deliberate:
+     · Titles are sentence case. The reference sets a condensed grotesque
+       all-caps; this build's display voice is Fraunces 600, and stroke
+       contrast is what carries it. Uppercase at 58px throws that away.
+     · Clauses keep a mono ordinal as well as the accent bar. The Terms
+       prose cites "clause 02" and "clause 06" in its own sentences, so
+       the numbers are load-bearing text, not decoration.
+     · Gold appears on these pages ONLY on an unconfirmed term. The theme
+       rule is that gold is action and nothing else; on a page with no
+       actions, the one thing still demanding one is a pending clause.
+================================================================ */
+
+.dp-policy {
+  font-family: var(--fb);
+  color: var(--ink);
+  background: var(--bg);
+  line-height: 1.6;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+.dp-policy .wrap { max-width: 1180px; margin: 0 auto; padding: 0 22px; }
+
+/* ════════════════════════════════════════════════════════════════
+   MASTHEAD
+================================================================ */
+.dp-policy .hero {
+  position: relative; overflow: hidden;
+  padding: 76px 0 60px;
+  text-align: center;
+  background: var(--hero-stage);
+  border-bottom: 1px solid var(--border);
+}
+/* the same blueprint grid as the landing hero, at the same reduced weight.
+   Without it the masthead is a flat band and the page has no opening. */
+.dp-policy .hero::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(var(--ink-rgb), .05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--ink-rgb), .05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 35%, #000 35%, transparent 75%);
+          mask-image: radial-gradient(ellipse at 50% 35%, #000 35%, transparent 75%);
+  opacity: .5;
+}
+.dp-policy .hero .wrap { position: relative; z-index: 1; }
+
+/* pill eyebrow: mono, because an eyebrow is a label */
+.dp-policy .eyebrow {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: var(--fm); font-size: 11px; font-weight: 500;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--brand-deep);
+  border: 1px solid var(--brand-ring);
+  background: var(--brand-fill);
+  padding: 7px 16px; border-radius: 999px;
+  margin-bottom: 20px;
+}
+
+.dp-policy .hero h1 {
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: clamp(32px, 5.4vw, 58px);
+  line-height: 1.06; letter-spacing: -.015em;
+  color: var(--ink);
+  margin: 0 auto;
+  max-width: 15ch;
+}
+/* ONE accent word, flat-coloured. Garnet is 7.61:1 on cream, so it is
+   safe as type at this size and every size below it. */
+.dp-policy .hero h1 em { font-style: normal; color: var(--brand); }
+
+.dp-policy .hero-sub {
+  max-width: 660px; margin: 22px auto 0;
+  font-size: 16px; line-height: 1.75; color: var(--ink-soft);
+}
+.dp-policy .hero-sub p { margin: 0; }
+
+.dp-policy .hero-meta {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 14px;
+  margin-top: 26px;
+}
+.dp-policy .hero-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 999px; padding: 7px 15px;
+  font-family: var(--fm); font-size: 11px; font-weight: 400;
+  letter-spacing: .04em; color: var(--muted);
+}
+.dp-policy .hero-chip b { font-weight: 500; color: var(--ink); }
+.dp-policy .hero-chip .pip {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--brand);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BODY + STICKY CONTENTS RAIL
+================================================================ */
+.dp-policy .legal { padding: 60px 0 72px; background: var(--bg); }
+.dp-policy .legal-grid {
+  display: grid; grid-template-columns: 240px minmax(0, 1fr);
+  gap: 56px; align-items: start;
+}
+
+.dp-policy .toc {
+  position: sticky; top: 24px;
+  background: var(--bg-alt); border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 18px 16px; font-size: 13px;
+}
+.dp-policy .toc-label {
+  display: flex; align-items: center; gap: 9px;
+  font-family: var(--fm); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--brand-deep);
+  padding: 4px 6px 12px;
+  border-bottom: 1px solid var(--border-strong);
+  margin-bottom: 8px;
+}
+.dp-policy .toc-label::before {
+  content: ""; width: 16px; height: 2px; background: var(--brand); flex: 0 0 16px;
+}
+.dp-policy .toc ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.dp-policy .toc a {
+  display: block; padding: 8px 10px;
+  color: var(--ink-soft); font-weight: 600; line-height: 1.4;
+  border-radius: var(--r-sm);
+  transition: color .2s, background .2s, padding-left .2s;
+}
+.dp-policy .toc a:hover { color: var(--brand-deep); background: var(--brand-soft); padding-left: 14px; }
+.dp-policy .toc a.active { color: var(--brand-deep); background: var(--brand-ring); }
+.dp-policy .toc a:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+/* an unconfirmed clause, visible from the rail the whole way down */
+.dp-policy .toc-pending {
+  display: inline-block; vertical-align: middle;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--action); border: 1px solid var(--action-edge);
+  margin-left: 7px;
+}
+
+.dp-policy .legal-body { min-width: 0; }
+
+/* ---- the intro callout. On this build it carries the pending register:
+   the count, and a jump link to each unconfirmed clause, before a single
+   line of policy is read. ---- */
+.dp-policy .legal-intro {
+  border: 1px solid var(--brand-ring);
+  border-left: 3px solid var(--brand);
+  border-radius: 0 var(--r) var(--r) 0;
+  background: var(--brand-fill);
+  padding: 20px 22px; margin-bottom: 38px;
+  font-size: 15px; line-height: 1.75; color: var(--ink-soft);
+}
+.dp-policy .legal-intro.pending {
+  border-color: var(--action);
+  border-left-color: var(--action-edge);
+  background: var(--action-fill);
+}
+/* The tag is INK, not gold. Gold is 2.00:1 on cream and --action-edge is
+   4.18:1 on --action-fill, which fails at 10.5px. The theme's own rule is
+   that gold is a FILL and never sets type on a light surface, so the fill
+   and the 3px edge carry the alarm and the words stay legible. */
+.dp-policy .legal-intro-tag {
+  display: block; margin-bottom: 9px;
+  font-family: var(--fm); font-size: 10.5px; font-weight: 600;
+  letter-spacing: .13em; text-transform: uppercase;
+  color: var(--ink);
+}
+.dp-policy .legal-intro p { margin: 0; color: var(--ink); font-size: 15px; }
+.dp-policy .legal-intro-jump {
+  list-style: none; margin: 12px 0 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.dp-policy .legal-intro-jump a {
+  display: inline-block;
+  font-family: var(--fm); font-size: 11.5px; font-weight: 500;
+  letter-spacing: .04em;
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--action);
+  border-radius: 999px; padding: 6px 13px;
+  transition: background .2s;
+}
+.dp-policy .legal-intro-jump a:hover { background: var(--action-fill); }
+.dp-policy .legal-intro-jump a:focus-visible { outline: 2px solid var(--action-edge); outline-offset: 2px; }
+
+/* ════════════════════════════════════════════════════════════════
+   CLAUSES
+   Each is anchored, marked, and ruled off from the next: a policy is a
+   document somebody cites back at you, and a clause that can be linked
+   to and numbered is a clause that reads as a term rather than as copy.
+================================================================ */
+.dp-policy .legal-section {
+  padding: 0 0 36px; margin-bottom: 36px;
+  border-bottom: 1px solid var(--border);
+  scroll-margin-top: 24px;
+}
+.dp-policy .legal-section:last-of-type { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+
+/* the clause marker: the blueprint's accent bar and the ordinal the Terms
+   prose cites, as one unit, so the heading itself stays clean */
+.dp-policy .l-mark { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+.dp-policy .l-bar {
+  width: 5px; height: 15px; border-radius: 2px;
+  background: var(--brand); flex: 0 0 5px;
+}
+.dp-policy .l-ord {
+  font-family: var(--fm); font-size: 11px; font-weight: 500;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--brand);
+}
+
+.dp-policy .legal-section h2 {
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: clamp(21px, 2.7vw, 30px);
+  line-height: 1.2; letter-spacing: -.01em;
+  color: var(--brand-deep);
+  margin: 0 0 14px;
+}
+.dp-policy .legal-section p {
+  font-size: 15.5px; line-height: 1.75; color: var(--ink-soft);
+  margin: 0 0 1em;
+}
+.dp-policy .legal-section p:last-child { margin-bottom: 0; }
+.dp-policy .legal-section b,
+.dp-policy .legal-section strong { color: var(--ink); font-weight: 700; }
+
+.dp-policy .legal-section a {
+  color: var(--brand-text);
+  border-bottom: 1px solid var(--border-strong);
+  transition: border-color .2s, color .2s;
+}
+.dp-policy .legal-section a:hover { color: var(--brand); border-bottom-color: var(--brand); }
+.dp-policy .legal-section a:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+
+/* ---- list items are CARDS, not ruled rows (blueprint). A policy list is
+   a set of separate undertakings; a dotted row makes them read as one
+   sentence broken up, a bordered card makes each read as its own term.
+   Both the bare <ul> and the blueprint's ul.l-list are matched, so the
+   clause files need no markup change. ---- */
+.dp-policy .legal-section ul,
+.dp-policy .legal-section ul.l-list {
+  list-style: none; margin: 0 0 1em; padding: 0;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.dp-policy .legal-section ul:last-child { margin-bottom: 0; }
+.dp-policy .legal-section ul li {
+  position: relative;
+  padding: 13px 16px 13px 38px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r);
+  font-size: 15px; line-height: 1.7; color: var(--ink-soft);
+}
+.dp-policy .legal-section ul li::before {
+  content: ""; position: absolute; left: 15px; top: 22px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+
+/* ---- the PENDING callout inside its clause. Deliberately loud.
+   A commercial term nobody has confirmed must not be able to ship by
+   looking like finished prose. Gold is the page's only fill, and this is
+   the one place it appears outside a button, precisely because the page
+   is otherwise quiet enough for it to shout. ---- */
+.dp-policy .l-pending {
+  background: var(--action-fill);
+  border: 1px solid var(--action);
+  border-left: 4px solid var(--action-edge);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  padding: 16px 18px;
+  margin: 0 0 16px;
+}
+.dp-policy .l-pending-tag {
+  display: block; margin-bottom: 7px;
+  font-family: var(--fm); font-size: 10.5px; font-weight: 600;
+  letter-spacing: .13em; text-transform: uppercase;
+  color: var(--ink);   /* ink, not gold: see .legal-intro-tag above */
+}
+.dp-policy .l-pending p { font-size: 15px; color: var(--ink); margin: 0; }
+
+/* ---- the business-details ledger. A label-to-value fact set, rendered
+   as one. Payment gateways require these to be reachable, so this is a
+   real anchored section, not footer chrome. ---- */
+.dp-policy .l-dl {
+  display: grid; grid-template-columns: 176px minmax(0, 1fr);
+  gap: 0;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); overflow: hidden;
+}
+.dp-policy .l-dl dt {
+  font-family: var(--fm); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted);
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-alt);
+}
+.dp-policy .l-dl dd {
+  font-size: 15px; color: var(--ink);
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  min-width: 0; overflow-wrap: anywhere;
+}
+.dp-policy .l-dl dt:nth-last-of-type(1),
+.dp-policy .l-dl dd:nth-last-of-type(1) { border-bottom: none; }
+.dp-policy .l-dl a {
+  color: var(--brand-text); border-bottom: 1px solid var(--border-strong);
+}
+.dp-policy .l-dl a:hover { border-bottom-color: var(--brand-text); }
+.dp-policy .l-dl a:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+
+/* ════════════════════════════════════════════════════════════════
+   THE CONTACT CLOSE (dark band)
+   The page ends on the deepest surface it has, the same way the funnel
+   does. No offer, no price: a policy that closes with a CTA is a policy
+   nobody believes.
+================================================================ */
+.dp-policy .contact {
+  background: var(--bg-dark); color: var(--ink-dark);
+  text-align: center;
+  padding: 76px 0 84px;
+  position: relative; overflow: hidden;
+}
+.dp-policy .contact-icon {
+  width: 60px; height: 60px; margin: 0 auto 22px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  border: 1px solid var(--border-dark-strong);
+  color: var(--brand-bright);
+}
+.dp-policy .contact-icon svg { width: 26px; height: 26px; stroke-width: 1.6; }
+.dp-policy .contact h2 {
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: clamp(25px, 3.6vw, 38px);
+  line-height: 1.16; letter-spacing: -.015em;
+  color: var(--ink-dark);
+  margin: 0 0 14px;
+}
+.dp-policy .contact h2 em { font-style: normal; color: var(--brand-bright); }
+.dp-policy .contact p {
+  max-width: 560px; margin: 0 auto 10px;
+  font-size: 15.5px; line-height: 1.7; color: var(--ink-dark-soft);
+}
+.dp-policy .contact-lines {
+  font-family: var(--fm); font-size: 13.5px; letter-spacing: .02em;
+}
+.dp-policy .contact-lines a {
+  color: var(--brand-bright);
+  border-bottom: 1px solid transparent; transition: border-color .2s;
+}
+.dp-policy .contact-lines a:hover { border-bottom-color: var(--brand-bright); }
+.dp-policy .contact-lines a:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+.dp-policy .contact-sep { color: var(--border-dark-strong); margin: 0 10px; }
+.dp-policy .home-link {
+  display: inline-block; margin-top: 26px;
+  font-family: var(--fm); font-size: 11px; font-weight: 500;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-dark);
+  border: 1px solid var(--border-dark-strong); border-radius: 999px;
+  padding: 11px 22px;
+  transition: background .2s, border-color .2s;
+}
+.dp-policy .home-link:hover { background: var(--bg-dark-elev); border-color: var(--brand-bright); }
+.dp-policy .home-link:focus-visible { outline: 2px solid var(--action); outline-offset: 3px; }
+
+/* ════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   The rail folds at 900px, not at a phone width: a 760px tablet has the
+   same squeezed column and the same problem (skin PART 3, law 7).
+================================================================ */
+@media (max-width: 900px) {
+  .dp-policy .legal-grid { grid-template-columns: 1fr; gap: 28px; }
+  .dp-policy .toc { position: static; }
+  .dp-policy .hero { padding: 56px 0 46px; }
+}
+
+@media (max-width: 560px) {
+  .dp-policy .legal { padding: 40px 0 52px; }
+  .dp-policy .hero h1 { max-width: none; }
+  .dp-policy .legal-section { padding-bottom: 28px; margin-bottom: 28px; }
+  .dp-policy .l-dl { grid-template-columns: 1fr; }
+  .dp-policy .l-dl dt { padding: 12px 16px 4px; border-bottom: none; background: none; }
+  .dp-policy .l-dl dd { padding: 0 16px 12px; }
+  .dp-policy .contact { padding: 56px 0 62px; }
+}
