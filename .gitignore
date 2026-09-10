@@ -31,6 +31,11 @@ yarn-error.log*
 # env files (DO NOT COMMIT)
 .env*.local
 .env
+# .env.example holds no secrets (empty values plus setup notes), so the usual
+# convention is to commit it. Excluded here on Atul's instruction 2026-09-09.
+# Consequence: whoever sets up a deploy has no in-repo manifest of the 15
+# required vars, so the file has to reach them another way.
+.env.example
 
 # typescript
 *.tsbuildinfo

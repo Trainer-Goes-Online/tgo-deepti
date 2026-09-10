@@ -1,5 +1,6 @@
 import './landing.css';
 
+import FunnelTracker from '@/components/shared/FunnelTracker';
 import { ScrollReveal } from '@/components/shared/ScrollReveal';
 import { AnnounceStrip } from '@/components/landing/AnnounceStrip';
 import { TrustRow } from '@/components/landing/TrustRow';
@@ -51,6 +52,12 @@ import { StickyCta } from '@/components/landing/StickyCta';
 export default function LandingPage() {
   return (
     <main className="sdp-root">
+      {/* ViewContent + GA4 view_item, once per SESSION. Renders nothing.
+          AddToCart deliberately does NOT live here: it fires from the
+          checkout's own mount, because this page carries seven CTA lockups
+          and a reader who taps two of them would be counted twice. See
+          components/shared/FunnelTracker.tsx. */}
+      <FunnelTracker />
       <ScrollReveal />
       <AnnounceStrip />
       <TrustRow />

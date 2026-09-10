@@ -1,0 +1,320 @@
+/* ════════════════════════════════════════════════════════════════
+   DEEPTI · bookacall.css  ·  scope: .dp-book
+
+   The sixth surface, loaded only by /book-a-call.
+
+   Rebuilt 2026-09-09 to the anatomy of vsl.teamfitarjun.com/book-a-call.
+   The structural correction from the first attempt: this page is a SINGLE
+   CENTRED COLUMN, not a calendar beside a sidebar. The calendar is the
+   only action on the page, so nothing sits next to it competing for the
+   eye, and everything else stacks underneath in the order that walks a
+   paid buyer to a booked one.
+
+   TOKEN-ONLY. The calendar renders inside Cal's own iframe, so its type
+   and chrome are Cal's: the page frames the embed, it never restyles it.
+================================================================ */
+
+.dp-book,
+.dp-book *,
+.dp-book *::before,
+.dp-book *::after { box-sizing: border-box; }
+
+.dp-book {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--fb);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.dp-book .wrap { max-width: 860px; margin: 0 auto; padding: 0 22px; width: 100%; }
+.dp-book .bk-body { flex: 1; padding: 0 0 68px; }
+
+/* ── 1 · confirmation strip ───────────────────────────────────── */
+.dp-book .bk-strip {
+  background: var(--brand-deep); color: var(--ink-dark);
+  font-family: var(--fm); font-size: 11px; font-weight: 500;
+  letter-spacing: .1em; text-transform: uppercase;
+  text-align: center; padding: 11px 18px;
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 8px;
+}
+.dp-book .bk-strip-tick { color: var(--action); }
+.dp-book .bk-strip-sep { opacity: .45; }
+
+/* ── 2 · step dots ────────────────────────────────────────────── */
+.dp-book .bk-steps {
+  list-style: none; margin: 30px 0 22px; padding: 0;
+  display: flex; align-items: center; justify-content: center; gap: 0;
+}
+.dp-book .bk-steps li {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--fm); font-size: 11px; font-weight: 500;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted);
+}
+.dp-book .bk-steps li.now { color: var(--ink); }
+/* the connector is the gap between the two steps, drawn rather than boxed */
+.dp-book .bk-steps li + li::before {
+  content: ""; width: 46px; height: 1px; background: var(--border-strong);
+  margin: 0 14px;
+}
+.dp-book .bk-dot {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 11px; letter-spacing: 0;
+}
+.dp-book .bk-steps li.done .bk-dot { background: var(--brand-deep); color: var(--ink-dark); }
+.dp-book .bk-steps li.now .bk-dot { background: var(--action); color: var(--cta-ink); font-weight: 600; }
+
+/* ── 3 · masthead ─────────────────────────────────────────────── */
+.dp-book .bk-mast { text-align: center; margin: 0 auto 32px; max-width: 700px; }
+.dp-book .bk-pill {
+  display: inline-block;
+  font-family: var(--fm); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--brand-deep); background: var(--brand-fill);
+  border: 1px solid rgba(var(--brand-rgb), .28);
+  border-radius: 999px; padding: 6px 14px; margin-bottom: 18px;
+}
+.dp-book .bk-mast h1 {
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: clamp(27px, 4vw, 42px); line-height: 1.14; letter-spacing: -.015em;
+  color: var(--ink); margin: 0 0 14px; text-wrap: balance;
+}
+/* the accent line is italic AND garnet, the same double lift the funnel's
+   headlines use, so the two pages read as one voice */
+.dp-book .bk-mast h1 em { font-style: italic; color: var(--brand-deep); }
+.dp-book .bk-deck {
+  font-size: 15.5px; line-height: 1.7; color: var(--ink-soft);
+  margin: 0 auto; max-width: 540px;
+}
+
+/* ── 4 · the calendar card ────────────────────────────────────── */
+.dp-book .bk-card {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+  padding: 22px;
+  scroll-margin-top: 18px;
+}
+.dp-book .bk-card-head { margin-bottom: 16px; }
+.dp-book .bk-card-head h2 {
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: 20px; line-height: 1.25; letter-spacing: -.008em;
+  color: var(--ink); margin: 0 0 4px;
+}
+.dp-book .bk-card-head p { font-size: 13.5px; color: var(--ink-soft); margin: 0; }
+
+/* the embed sits on a neutral LIGHT inset inside the card: the brand frames
+   the third-party UI, it does not try to repaint it */
+.dp-book .bk-cal-inset {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  min-height: 560px;
+}
+.dp-book .bk-cal {
+  /* Cal's own snippet ships width:100%;height:100%;overflow:scroll on the
+     mount point. height:100% would collapse here (no sized parent), so the
+     inset holds the height and this scrolls inside it. */
+  width: 100%; min-height: 560px; overflow: auto;
+}
+.dp-book .bk-cal iframe { width: 100%; border: 0; display: block; }
+
+.dp-book .bk-cal-note {
+  font-family: var(--fm); font-size: 11.5px; letter-spacing: .06em;
+  color: var(--muted); text-align: center; padding: 26px 16px 0; margin: 0;
+}
+/* failure speaks in the gold open-item register, not a red error: nothing has
+   gone wrong with their payment, only with an embed */
+.dp-book .bk-cal-note.failed {
+  font-family: var(--fb); font-size: 14px; line-height: 1.6; letter-spacing: 0;
+  color: var(--ink); text-align: left;
+  background: var(--action-fill);
+  border-left: 4px solid var(--action-edge);
+  padding: 14px 16px; margin: 14px;
+  border-radius: var(--r-sm);
+}
+.dp-book .bk-direct {
+  font-size: 13px; color: var(--ink-soft); text-align: center;
+  padding: 14px 8px 0; margin: 0;
+}
+.dp-book .bk-direct a { color: var(--brand-text); border-bottom: 1px solid var(--border-strong); }
+.dp-book .bk-direct a:hover { border-bottom-color: var(--brand-text); }
+
+/* three reassurances, inside the card, under the embed */
+.dp-book .bk-reassure {
+  list-style: none; margin: 18px 0 0; padding: 16px 0 0;
+  border-top: 1px solid var(--border-strong);
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+}
+.dp-book .bk-reassure li {
+  display: flex; gap: 9px; font-size: 13px; line-height: 1.55; color: var(--ink-soft);
+}
+.dp-book .bk-reassure b { color: var(--ink); font-weight: 600; }
+.dp-book .bk-check {
+  flex: 0 0 16px; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--brand-fill); color: var(--brand-deep);
+  display: grid; place-items: center; font-size: 10px; margin-top: 2px;
+}
+
+/* ── 5 · section headings shared below the card ───────────────── */
+.dp-book .bk-h2 {
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: clamp(22px, 3vw, 30px); line-height: 1.2; letter-spacing: -.012em;
+  color: var(--ink); text-align: center; margin: 58px 0 8px; text-wrap: balance;
+}
+.dp-book .bk-h2 em { font-style: italic; color: var(--brand-deep); }
+.dp-book .bk-h2-sub {
+  text-align: center; font-size: 14px; color: var(--ink-soft); margin: 0 0 26px;
+}
+
+/* ── 6 · proof strips ─────────────────────────────────────────── */
+.dp-book .bk-proof { margin-top: 6px; }
+.dp-book .bk-strips { display: flex; flex-direction: column; gap: 14px; overflow: hidden; }
+.dp-book .bk-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.dp-book .bk-track { display: flex; gap: 14px; width: max-content; will-change: transform; }
+.dp-book .bk-marquee.ltr .bk-track { animation: dpBkLtr 90s linear infinite; }
+.dp-book .bk-marquee.rtl .bk-track { animation: dpBkRtl 90s linear infinite; }
+@keyframes dpBkLtr { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+@keyframes dpBkRtl { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.dp-book .bk-marquee:hover .bk-track { animation-play-state: paused; }
+.dp-book .bk-shot {
+  flex: 0 0 auto; width: 176px;
+  border-radius: var(--r); overflow: hidden;
+  background: var(--card); border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+}
+.dp-book .bk-shot > img { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; display: block; }
+.dp-book .bk-mid-cta { text-align: center; margin-top: 26px; }
+
+/* ── 7 · the button. Gold, ink label, the funnel's only action colour ── */
+.dp-book .bk-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--action); color: var(--cta-ink);
+  font-family: var(--fb); font-size: 15px; font-weight: 700;
+  padding: 14px 26px; border-radius: var(--r-sm);
+  border-bottom: 2px solid var(--action-edge);
+  box-shadow: var(--glow-cta);
+  transition: background .2s, box-shadow .2s, transform .2s;
+}
+.dp-book .bk-btn:hover { background: var(--action-hover); box-shadow: var(--glow-cta-hover); transform: translateY(-1px); }
+.dp-book .bk-btn:focus-visible { outline: 2px solid var(--brand-deep); outline-offset: 3px; }
+.dp-book .bk-btn.lg { font-size: 16px; padding: 16px 30px; }
+
+/* ── 8 · what you walk away with ──────────────────────────────── */
+.dp-book .bk-value {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+}
+.dp-book .bk-value li {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 20px 18px;
+  box-shadow: var(--shadow-card);
+}
+.dp-book .bk-ord {
+  display: inline-block;
+  font-family: var(--fm); font-size: 11px; font-weight: 600; letter-spacing: .1em;
+  color: var(--cta-ink); background: var(--action);
+  border-radius: var(--r-sm); padding: 3px 8px; margin-bottom: 12px;
+}
+.dp-book .bk-value h3 {
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: 17px; line-height: 1.3; color: var(--ink); margin: 0 0 8px;
+}
+.dp-book .bk-value p { font-size: 13.5px; line-height: 1.65; color: var(--ink-soft); margin: 0; }
+
+/* ── 9 · the nudge ────────────────────────────────────────────── */
+.dp-book .bk-nudge {
+  margin-top: 46px; text-align: center;
+  background: var(--brand-fill);
+  border: 1px solid rgba(var(--brand-rgb), .28);
+  border-radius: var(--r-lg);
+  padding: 34px 26px;
+}
+.dp-book .bk-nudge h2 {
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: clamp(21px, 2.8vw, 28px); line-height: 1.2; letter-spacing: -.012em;
+  color: var(--ink); margin: 0 0 12px; text-wrap: balance;
+}
+.dp-book .bk-nudge h2 em { font-style: italic; color: var(--brand-deep); }
+.dp-book .bk-nudge p {
+  font-size: 15px; line-height: 1.7; color: var(--ink-soft);
+  max-width: 520px; margin: 0 auto 22px;
+}
+
+/* ── 10 · objections ──────────────────────────────────────────── */
+.dp-book .bk-faq { display: flex; flex-direction: column; gap: 10px; }
+.dp-book .bk-faq details {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r); overflow: hidden;
+}
+.dp-book .bk-faq details[open] { border-color: rgba(var(--brand-rgb), .35); }
+.dp-book .bk-faq summary {
+  cursor: pointer; list-style: none;
+  padding: 16px 18px; font-size: 15px; font-weight: 600; color: var(--ink);
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+}
+.dp-book .bk-faq summary::-webkit-details-marker { display: none; }
+.dp-book .bk-faq summary::after {
+  content: "+"; font-family: var(--fm); color: var(--brand); font-size: 17px; line-height: 1;
+}
+.dp-book .bk-faq details[open] summary::after { content: "–"; }
+.dp-book .bk-faq summary:focus-visible { outline: 2px solid var(--action); outline-offset: -3px; }
+.dp-book .bk-faq p {
+  padding: 0 18px 18px; margin: 0;
+  font-size: 14px; line-height: 1.75; color: var(--ink-soft);
+}
+
+/* ── 11 · closing card ────────────────────────────────────────── */
+.dp-book .bk-final {
+  margin-top: 46px; text-align: center;
+  background: var(--bg-dark); color: var(--ink-dark);
+  border-radius: var(--r-lg);
+  padding: 40px 26px;
+}
+.dp-book .bk-final h2 {
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: clamp(23px, 3vw, 32px); line-height: 1.18; letter-spacing: -.012em;
+  color: var(--ink-dark); margin: 0 0 10px;
+}
+.dp-book .bk-final h2 em { font-style: italic; color: var(--brand-bright); }
+.dp-book .bk-final p { font-size: 15px; color: var(--ink-dark-soft); margin: 0 0 24px; }
+
+.dp-book .bk-help {
+  text-align: center; font-size: 13px; color: var(--ink-soft);
+  margin: 30px 0 0;
+}
+.dp-book .bk-help a { color: var(--brand-text); overflow-wrap: anywhere; }
+.dp-book .bk-help a:hover { border-bottom: 1px solid var(--brand-text); }
+
+/* ── responsive ───────────────────────────────────────────────── */
+@media (max-width: 780px) {
+  .dp-book .bk-reassure { grid-template-columns: 1fr; gap: 12px; }
+  .dp-book .bk-value { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .dp-book .bk-strip { font-size: 10px; letter-spacing: .06em; gap: 6px; padding: 10px 14px; }
+  .dp-book .bk-steps { margin: 22px 0 18px; }
+  .dp-book .bk-steps li + li::before { width: 26px; margin: 0 9px; }
+  .dp-book .bk-steps li { font-size: 10px; letter-spacing: .06em; }
+  .dp-book .bk-card { padding: 14px; }
+  .dp-book .bk-shot { width: 132px; }
+  .dp-book .bk-h2 { margin-top: 44px; }
+  .dp-book .bk-final { padding: 32px 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* the proof strips become plain scrollers: the proof stays, the reader
+     moves it by hand */
+  .dp-book .bk-marquee { overflow-x: auto; }
+  .dp-book .bk-track { animation: none !important; }
+}

@@ -1,45 +1,37 @@
 import { CtaLockup } from '@/components/shared/CtaLockup';
 import { SectionMasthead } from '@/components/shared/SectionMasthead';
-import { MediaPlaceholder } from '@/components/shared/MediaPlaceholder';
 import { TestimonialTile } from '@/components/landing/TestimonialTile';
 import { asset } from '@/components/shared/asset-version';
 
 /**
- * BEATS 3 / 4 — PROOF.
+ * BEATS 3 / 4 · PROOF.
  *
- * Shape: PROOF-SET, three times over. The copy lists three separate
- * groups, and they are three different KINDS of evidence:
- *   A · 15 video testimonials  — the client says it in their own face
- *   B · 5 case-study cards     — a designed summary of one journey
- *   C · 5 before/after + report PAIRS — the body and the bloodwork
+ * Shape: PROOF-SET, twice over. TWO kinds of evidence, so two exhibit
+ * forms (the blueprint's vary-adjacent-proof rule, applied inside one
+ * section):
+ *   A · 15 video testimonials  the client says it in their own face
+ *   B · 32 before and afters   the same person, a year apart
  *
- * So they get three different exhibit forms (the blueprint's
- * vary-adjacent-proof rule, applied inside one section). Three identical
- * grids would collapse into one wall the reader scans none of.
+ * ── CHANGED 2026-09-09 (Atul) ──────────────────────────────────────────
+ * The designed case-study cards are GONE, and so is the blood-report half
+ * of the old paired exhibit. What was a three-group section built around
+ * placeholders is now two groups built around assets that actually exist.
  *
- * Group C is the one that matters most and it is built as a PAIR, not as
- * ten tiles. The whole claim of this funnel is that the weight and the
- * markers moved together, in the same person — split the photo from the
- * report and the reader has no way to know they belong to each other.
- * One card, one ordinal, one seam: the pairing is the argument.
+ * Dropping the reports also drops a launch blocker with them: those images
+ * carried patient names and needed redacting before they could ship.
  *
- * Every slot is a labelled placeholder at the real asset's ratio. The
- * video tiles' play discs are dashed and inert until footage exists.
+ * ── WHY THE BEFORE AND AFTERS ARE NOT CROPPED ──────────────────────────
+ * They arrive at every ratio from 0.66 to 2.91, and most of them carry the
+ * client's own words burned into the image. A uniform tile with
+ * object-fit:cover would slice those captions off, which on a proof beat
+ * means cropping away the actual testimony. So the rail is a FIXED HEIGHT
+ * and every image keeps its own width. Ragged widths are the correct
+ * outcome here: it reads as a set of real photographs rather than a
+ * designed grid, which is what this evidence is.
  *
  * Server component.
  */
 
-/* Real files drop in here, in order. Empty = still pending. Every path
-   goes through asset() so a re-crop under the same filename actually
-   reaches returning visitors (bump ASSET_V in the same pass). */
-/* GROUP A · the 15 video testimonials. Vimeo ids client-supplied 2026-09-08.
-   Each tile mounts the Vimeo player directly, so Vimeo supplies the thumbnail
-   and the play control and there are no poster frames to source.
-
-   ASPECT RATIO IS AN ASSUMPTION. The tile group was designed 9:16 for vertical
-   testimonial clips and the ids could not be checked against Vimeo from here.
-   If these films are landscape, change this ONE constant and the tiles, the
-   placeholders and the players all follow. */
 const TESTIMONIAL_RATIO = '9 / 16';
 
 const TESTIMONIALS: { name: string; vimeoId: string }[] = [
@@ -59,13 +51,49 @@ const TESTIMONIALS: { name: string; vimeoId: string }[] = [
   { name: 'Divya', vimeoId: '1223587737' },
   { name: 'Anuja', vimeoId: '1223587883' },
 ];
-const CASE_CARDS: string[] = ['', '', '', '', ''];
-const PAIRS: { ba: string; report: string }[] = [
-  { ba: '', report: '' },
-  { ba: '', report: '' },
-  { ba: '', report: '' },
-  { ba: '', report: '' },
-  { ba: '', report: '' },
+
+/* Client-supplied 2026-09-09, /public/before-after. Filenames are the
+   client's own exports and 24 of the 32 contain spaces, brackets or both,
+   so each one is encodeURIComponent'd at render. The stems are left exactly
+   as the client named them, which keeps the link back to whatever they hold
+   on their side; only the extension changed.
+
+   WebP 2026-09-09: 900px tall at q82, past 2x retina for a 380px rail.
+   14.0MB became 1.3MB. WebP is the ONLY copy kept: the original exports were
+   deleted on Atul's instruction. */
+const BEFORE_AFTER: string[] = [
+  '1617392290947.webp',
+  '1617392394382.webp',
+  '1617392498166.webp',
+  '1617392508458.webp',
+  '1617393049014.webp',
+  '1617393470550.webp',
+  'IMG-20240614-WA0003.webp',
+  'IMG_20200826_004713 - Copy.webp',
+  'IMG_20200826_004742.webp',
+  'Screenshot 2025-10-17 at 3.13.57 PM.webp',
+  'Screenshot 2025-10-17 at 3.14.05 PM.webp',
+  'Screenshot 2026-09-01 at 2.40.08 AM.webp',
+  'Screenshot 2026-09-01 at 2.40.43 AM.webp',
+  'Screenshot 2026-09-01 at 2.40.55 AM.webp',
+  'Screenshot 2026-09-01 at 2.41.09 AM.webp',
+  'Screenshot 2026-09-01 at 2.41.19 AM.webp',
+  'Screenshot 2026-09-01 at 2.41.26 AM.webp',
+  'Screenshot 2026-09-01 at 2.42.55 AM.webp',
+  'Screenshot 2026-09-01 at 2.43.02 AM.webp',
+  'Screenshot 2026-09-01 at 2.43.06 AM.webp',
+  'Screenshot 2026-09-01 at 2.43.16 AM.webp',
+  'Screenshot 2026-09-01 at 2.43.25 AM.webp',
+  'Screenshot 2026-09-01 at 2.43.33 AM.webp',
+  'Shruti Transformation.webp',
+  'photo_2026-09-01 02.44.27.webp',
+  'photo_2026-09-01 02.44.34.webp',
+  'photo_2026-09-01 02.44.45.webp',
+  'photo_2026-09-01 02.44.51.webp',
+  'photo_2026-09-01 02.44.55.webp',
+  'photo_2026-09-01 02.44.58.webp',
+  'photo_2026-09-01 02.45.20.webp',
+  'photo_2026-09-01 02.48.03.webp',
 ];
 
 export function Proof() {
@@ -83,105 +111,37 @@ export function Proof() {
           delay=".06s"
         />
 
-        {/* ── group A · 15 video testimonials, players mounted directly ──
-             The track no longer duplicates the set. Duplication existed to
-             make four tiles fill a marquee; fifteen fill it on their own, and
-             thirty tiles would mean thirty Vimeo players in the DOM. */}
+        {/* group A · 15 video testimonials, players mounted directly */}
         <div className="sdp-proof-group sdp-proof-rail is-vt">
           <div className="sdp-proof-track">
-          {TESTIMONIALS.map((t, i) => (
-            <div
-              key={`vt-${t.vimeoId}`}
-              data-sdp-reveal
-              style={{ '--d': `${0.04 + Math.min(i, 8) * 0.06}s` } as React.CSSProperties}
-            >
-              <TestimonialTile
-                name={t.name}
-                vimeoId={t.vimeoId}
-                ratio={TESTIMONIAL_RATIO}
-              />
-            </div>
-          ))}
-          </div>
-        </div>
-
-        {/* ── group B · designed case-study cards (4:5) ──────────────── */}
-        <div className="sdp-proof-group sdp-proof-rail is-case">
-          <div className="sdp-proof-track">
-          {[...CASE_CARDS, ...CASE_CARDS].map((src, i) => (
-            <div
-              className="sdp-case-tile"
-              key={`case-${i}`}
-              aria-hidden={i >= CASE_CARDS.length || undefined}
-              inert={i >= CASE_CARDS.length || undefined}
-              data-sdp-reveal
-              style={{ '--d': `${0.04 + i * 0.05}s` } as React.CSSProperties}
-            >
-              {src ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={asset(src)} alt="" width={800} height={1000} loading="lazy" decoding="async" />
-              ) : (
-                <MediaPlaceholder
-                  ratio="4 / 5"
-                  label={`Case study card ${i + 1} of 5`}
-                  note="4:5 · designed card"
-                />
-              )}
-            </div>
-          ))}
-          </div>
-        </div>
-
-        {/* ── group C · before/after + report, PAIRED ─────────────────── */}
-        <div className="sdp-proof-group sdp-proof-rail is-pair">
-          <div className="sdp-proof-track">
-          {[...PAIRS, ...PAIRS].map((p, i) => (
-            <article
-              className="sdp-pair"
-              key={`pair-${i}`}
-              aria-hidden={i >= PAIRS.length || undefined}
-              inert={i >= PAIRS.length || undefined}
-              data-sdp-reveal
-              style={{ '--d': `${0.04 + i * 0.05}s` } as React.CSSProperties}
-            >
-              <header className="sdp-pair-head">
-                <span className="sdp-pair-ord">{String(i + 1).padStart(2, '0')}</span>
-                <span className="sdp-pair-rule" aria-hidden />
-              </header>
-
-              <div className="sdp-pair-body">
-                <div className="sdp-pair-pane ba">
-                  {p.ba ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={asset(p.ba)} alt="" width={800} height={1000} loading="lazy" decoding="async" />
-                  ) : (
-                    <MediaPlaceholder
-                      ratio="4 / 5"
-                      label={`Before & after ${i + 1}`}
-                      note="4:5 · same client as report"
-                    />
-                  )}
-                  <span className="sdp-pair-cap">Before &amp; after</span>
-                </div>
-
-                <span className="sdp-pair-seam" aria-hidden />
-
-                <div className="sdp-pair-pane report">
-                  {p.report ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={asset(p.report)} alt="" width={750} height={1000} loading="lazy" decoding="async" />
-                  ) : (
-                    <MediaPlaceholder
-                      ratio="3 / 4"
-                      label={`Report ${i + 1}`}
-                      note="3:4 · markers redacted of name"
-                    />
-                  )}
-                  <span className="sdp-pair-cap">Report</span>
-                </div>
+            {TESTIMONIALS.map((t, i) => (
+              <div
+                key={`vt-${t.vimeoId}`}
+                data-sdp-reveal
+                style={{ '--d': `${0.04 + Math.min(i, 8) * 0.06}s` } as React.CSSProperties}
+              >
+                <TestimonialTile name={t.name} vimeoId={t.vimeoId} ratio={TESTIMONIAL_RATIO} />
               </div>
-            </article>
-          ))}
+            ))}
+          </div>
+        </div>
+
+        {/* group B · before and afters. Fixed height, natural widths, no crop. */}
+        <div className="sdp-proof-group sdp-ba-rail" data-sdp-reveal>
+          <div className="sdp-ba-track">
+            {[0, 1].map((copy) =>
+              BEFORE_AFTER.map((src) => (
+                <figure className="sdp-ba" key={`${copy}-${src}`} aria-hidden={copy === 1 ? true : undefined}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={asset(`/before-after/${encodeURIComponent(src)}`)}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </figure>
+              ))
+            )}
           </div>
         </div>
 

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { business, addressLine, site } from '@/lib/site';
+import { business, addressLine } from '@/lib/site';
 
 /**
  * THE SITE FOOTER. One component, every surface.
@@ -45,8 +45,6 @@ export function SiteFooter({ folded = false }: { folded?: boolean }) {
   return (
     <footer className={folded ? 'dp-foot dp-foot-folded' : 'dp-foot'}>
       <div className="dp-foot-wrap">
-        <div className="dp-foot-mark">{site.brand}</div>
-
         <p className="dp-foot-lines">
           <span className="dp-foot-entity">{business.legalName}</span>
           <br />

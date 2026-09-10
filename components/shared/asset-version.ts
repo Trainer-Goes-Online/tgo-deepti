@@ -18,7 +18,7 @@
  * deploy" — the same pass, or the bump gets forgotten and the mechanism
  * is dead weight.
  */
-export const ASSET_V = '1';
+export const ASSET_V = '7';
 
 /**
  * @param path a /public path, e.g. '/proof/testimonial-01.jpg'

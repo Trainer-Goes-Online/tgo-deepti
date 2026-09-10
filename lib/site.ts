@@ -1,6 +1,5 @@
 /** Central site config. The assessment fee is the copy's "₹97 To Start". */
 export const site = {
-  brand: 'Deepti',
   /** LAUNCH's half of the funnel, not built yet; the LP links here. */
   checkoutUrl: '/checkout',
   feeInr: Number(process.env.NEXT_PUBLIC_ASSESSMENT_FEE ?? '97') || 97,
@@ -51,3 +50,22 @@ export const addressLine = [
 
 export const CTA_LABEL =
   'Click Here To Get Your Personalised Weight Loss & Metabolic Health Plan';
+
+/**
+ * DERIVED MONEY. The single-source law: `site.feeInr` above is the only
+ * declaration of a price in this codebase, and these two are computed from
+ * it. One number therefore sets the label the buyer reads, the amount
+ * Razorpay charges in paise, and the `value` on every Meta and GA4 event.
+ *
+ * Two sources drift, and the drift stays invisible until the charge and the
+ * label disagree on a live page. There is no hardcoded rupee figure in any
+ * JSX on this build: every one of them renders from here.
+ *
+ * Note the guard on `feeInr` itself. It is `Number(x ?? '97') || 97`, which
+ * catches the case `??` alone does not: a .env.local copied from
+ * .env.example ships the key present but BLANK, and `Number('')` is 0, which
+ * would give a page advertising a fee of zero and a Razorpay order for zero
+ * paise with nothing throwing anywhere.
+ */
+export const feePaise = site.feeInr * 100;
+export const feeLabel = `₹${site.feeInr.toLocaleString('en-IN')}`;

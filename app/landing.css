@@ -1747,3 +1747,415 @@
    rules and the click-to-play affordances here style nothing. Left in PART 2
    untouched; removed from PART 3 rather than kept as rules that describe a
    component that no longer exists. */
+
+
+/* =====================================================================
+   PART 3d · THE WINS WALL AT REAL SCALE (beat 4b)
+
+   104 client chat screenshots landed 2026-09-09, against a component
+   built for ten. Two things that were right for ten are wrong for 104.
+
+   1. THE CROP. PART 2 crops each card to 4:5 and the placeholder note
+      said "crop to 4:5". These are phone screenshots: 63 of the 104 sit
+      at roughly 0.45, and object-fit:cover would throw away 44% of the
+      height, cutting every conversation mid-message. 9:16 is the closest
+      the wall gets to a phone without the rows becoming a wall of glass.
+      Mixed ratios still crop, which is correct: a uniform tile is what
+      makes the row read as a stream rather than a ragged collage.
+
+   2. THE SPEED. The track is duplicated for the seamless loop, so a row
+      is now ~23,300px of content per copy. At PART 2's 48s that is
+      485px/s, which strobes. 240s puts it near 97px/s: a drift you can
+      follow, and slow enough that hover-to-pause is a real affordance
+      rather than a reflex test.
+   ===================================================================== */
+.sdp-wa-card > img { aspect-ratio: 9 / 16; }
+.sdp-wa-row.ltr .sdp-wa-track,
+.sdp-wa-row.rtl .sdp-wa-track { animation-duration: 240s; }
+
+
+/* =====================================================================
+   PART 3e · BEFORE AND AFTERS (beat 3/4, group B)
+
+   Replaces the paired before-after + blood-report exhibit. Atul cut the
+   case-study cards and the report half on 2026-09-09; 32 real before and
+   after images arrived in their place.
+
+   THE RULE THAT SHAPES THIS RAIL: do not crop them. They arrive at every
+   ratio from 0.66 to 2.91 and most carry the client's own words burned
+   into the image, so object-fit:cover would slice the testimony off the
+   bottom of the proof. A fixed HEIGHT with natural widths keeps every
+   composite whole. The ragged right edge of each tile is the correct
+   outcome: it reads as a stack of real photographs rather than a designed
+   grid, which is exactly what this evidence is.
+
+   Built on the same machinery as the other rails: mask-image edges (they
+   work on any band, unlike gradient fades), width:max-content, a -50%
+   translate over a doubled track, pause on hover, and hand-scrollable so
+   reduced-motion readers can still reach the far end.
+
+   PART 2's .sdp-case-* and .sdp-pair-* rules are left where they are.
+   They style nothing now and break nothing, and PART 2 is the shared SDP
+   anatomy rather than this build's to edit.
+   ===================================================================== */
+.sdp-ba-rail {
+  margin-top: 44px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+}
+.sdp-ba-rail::-webkit-scrollbar { display: none; }
+.sdp-ba-track {
+  display: flex; align-items: stretch; gap: 16px; width: max-content;
+  will-change: transform;
+  animation: sdpBaSlide 150s linear infinite;
+}
+@keyframes sdpBaSlide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.sdp-ba-rail:hover .sdp-ba-track,
+.sdp-ba-rail:focus-within .sdp-ba-track { animation-play-state: paused; }
+
+.sdp-ba {
+  flex: 0 0 auto; margin: 0;
+  height: 380px;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--bg-dark-alt);
+  border: 1px solid var(--border-dark);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .28);
+}
+/* height drives, width follows. This is the whole point of the rail. */
+.sdp-ba > img {
+  display: block;
+  height: 100%; width: auto; max-width: none;
+}
+
+@media (max-width: 900px) { .sdp-ba { height: 300px; } }
+@media (max-width: 640px) { .sdp-ba { height: 240px; } .sdp-ba-track { gap: 10px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  /* the rail becomes a plain scroller: the proof stays, the reader moves it */
+  .sdp-ba-track { animation: none !important; }
+}
+
+
+/* =====================================================================
+   PART 3f · CREDENTIAL LOGOS (beat 5a)
+
+   The three logos landed 2026-09-09 and every one of them is DARK ink on
+   transparent: cult.fit black, AAFT red and navy, Habuild navy.
+
+   PART 2 gives the tile `background: var(--bg-dark-alt)` with a dark
+   border. It was drawn for a dark coach band; the band is `.sdp-light`
+   now, and either way a dark mark on a dark tile is three invisible
+   rectangles. So the tile goes LIGHT.
+
+   This is the skin's own rule for third-party marks: a coloured logo sits
+   on a light tile and is never recoloured to monochrome to "fit" the
+   brand. It is somebody else's trademark, and a repainted one is both
+   wrong and, for AAFT and Habuild, a misrepresentation of their mark.
+   ===================================================================== */
+.sdp-logo-tile {
+  background: var(--card);
+  border-color: var(--border);
+}
+/* Contain, not cover, and a little breathing room: the three marks have
+   different intrinsic ratios (2.66, 2.68, 3.06) against a 5/2 tile, so they
+   letterbox slightly rather than being cropped into each other's shape. */
+.sdp-logo-tile > img { padding: 14px 16px 10px; }
+
+/* THE POSITION, under the mark. A logo alone says she was in the room; the
+   position says what she was doing there, which is the half the bio actually
+   claims. Mono, because a credential is a matter of record, and the tile
+   becomes a column so the caption sits under the mark rather than over it.
+
+   The tile also loses its fixed height here: PART 2 sized it for an image
+   alone, and a caption inside a clipped box is a caption nobody reads. */
+.sdp-logo-tile {
+  display: flex; flex-direction: column;
+  height: auto; overflow: visible;
+}
+.sdp-logo-role {
+  display: block;
+  padding: 0 12px 12px;
+  font-family: var(--fm); font-size: 9.5px; font-weight: 500;
+  letter-spacing: .1em; text-transform: uppercase;
+  line-height: 1.4; text-align: center;
+  color: var(--muted);
+}
+/* Tiles stretch to the tallest, which is whichever caption wraps to two
+   lines ("Hormonal & Liver Detox" does at this width, the other two do not).
+   ONE auto margin, on the caption: it pins every position to the bottom edge
+   while the marks stay aligned along the top. Putting auto on both children
+   would split the free space between them and misalign both. */
+.sdp-logo-track { align-items: stretch; }
+.sdp-logo-role { margin-top: auto; }
+
+
+/* =====================================================================
+   PART 3g · STICKY BAR, rebuilt to the house reference (2026-09-09)
+
+   Measured off vsl.teamfitarjun.com's `.af-stuck`, not eyeballed:
+     height          100px
+     background      flat warm cream, NO backdrop blur
+     border-top      1px, one step darker than the bar
+     shadow          0 -8px 28px at .10 alpha
+     padding         11px top, 10px bottom
+     button          centred pill, 999px, 12px 24px, serif, 700
+     under it        two risk badges with small ring icons
+
+   PART 2's bar is dark glass with a tag on the left, a button on the
+   right and a shine sweeping across the top edge. All three are undone
+   here rather than in PART 2, which stays the shared SDP anatomy.
+
+   ONE DELIBERATE DEPARTURE from the reference: its button is white on a
+   gold gradient, which measures about 3.4:1 and fails at 14px. Ours keeps
+   ink on gold at 7.64:1. Matching the layout is worth doing; matching a
+   contrast failure is not, and on the one control the whole page exists
+   to get pressed it matters more here than anywhere.
+   ===================================================================== */
+.sdp-stuck {
+  background: var(--card);
+  -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+  border-top: 1px solid var(--border-strong);
+  box-shadow: 0 -8px 28px rgba(var(--ink-rgb), .10);
+  padding: 11px 0 calc(10px + env(safe-area-inset-bottom));
+}
+/* the sweep was drawn to read across dark glass; on cream it is invisible
+   at best and a smear at worst */
+.sdp-stuck::before { content: none; }
+
+.sdp-stuck-inner {
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  max-width: 760px;
+}
+
+.sdp-root .sdp-stuck-go {
+  flex: 0 0 auto;
+  width: auto; max-width: 100%;
+  align-self: center;
+}
+
+.sdp-stuck-risk {
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 6px 22px;
+}
+.sdp-stuck-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--fm); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--ink-soft);
+  line-height: 1.3;
+}
+/* the reference rings each badge glyph rather than setting it bare, which
+   is what keeps two small marks from reading as bullet points */
+.sdp-stuck-badge-icon {
+  flex: 0 0 20px; width: 20px; height: 20px; border-radius: 50%;
+  display: grid; place-items: center;
+  color: var(--action-edge);
+  background: var(--action-fill);
+  border: 1px solid rgba(var(--action-rgb), .45);
+}
+.sdp-stuck-badge-icon svg { width: 11px; height: 11px; }
+
+@media (max-width: 640px) {
+  /* the badges are the first thing to go: the button is the only thing down
+     there with a job, and two lines of chrome above the fold-bottom is worse
+     than none. 640 to match PART 2, which switches the rest of the page
+     there: a band where half the page is mobile and half is not is worse
+     than either. */
+  .sdp-stuck-risk { display: none; }
+  .sdp-root .sdp-stuck-go { width: 100%; }
+  .sdp-stuck-inner { gap: 0; }
+}
+
+
+/* =====================================================================
+   PART 3g-2 · THE BAR NEVER RETREATS (2026-09-09, Atul)
+
+   PART 2 parks the bar off-screen at translateY(120%) and slides it in on
+   `.on`. The component now always renders `.on`, so the transform already
+   resolves to zero; both are neutralised here anyway so nothing is left
+   animating a state that no longer exists.
+   ===================================================================== */
+.sdp-stuck { transform: none; transition: none; }
+
+/* THE SPACER, and it is not cosmetic.
+   A bar that used to retreat needed no room reserved for it. One that never
+   retreats sits permanently on top of whatever the page ends with, and this
+   page ends with the finale, which is where SiteFooter carries the
+   registered name, full postal address, phone and email. Those four are
+   what Razorpay's merchant review looks for on the site. A bar covering
+   them is a bar that fails the review.
+
+   Measured from the bar's own parts rather than guessed: 11px top padding
+   + a 43px button + an 8px gap + 20px of badges + 10px bottom. The badges
+   are hidden under 560px, so the reserve drops with them. */
+.sdp-root { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+
+/* Anchor jumps have to clear the bar too, or a link into the finale lands
+   with its last lines underneath it. */
+.sdp-root { scroll-padding-bottom: calc(104px + env(safe-area-inset-bottom)); }
+
+/* The mobile reserve is set in PART 3i, at 640 to match PART 2 and computed
+   from the measured two-line button. An earlier 560px block guessing 70px was
+   removed rather than left to argue with it. */
+
+
+/* =====================================================================
+   PART 3h · TRUST ROW AVATARS (beat 0b)
+
+   Five real client faces landed 2026-09-09, cropped from the before/after
+   photographs already running in the proof beat.
+
+   PART 2 sets `background-size: 140% auto; background-position: center 12%`
+   on these rings. That is the right treatment for a RAW portrait, where the
+   face sits high in a full-body frame and has to be zoomed and pulled up.
+   These files are already 128px squares centred on the face, so applying it
+   again zooms past the face and clips foreheads and chins. Cover, centred.
+   ===================================================================== */
+.sdp-trust-avatar {
+  background-size: cover;
+  background-position: center;
+}
+
+
+/* =====================================================================
+   PART 3i · MOBILE, MEASURED (2026-09-09)
+
+   Law 5: measure the type, do not guess. Widths below are computed from
+   the woff2 files Next actually shipped, not estimated.
+
+   THE ONE REAL BUG. The CTA label is 70 characters:
+     "Click Here To Get Your Personalised Weight Loss & Metabolic Health Plan"
+   At the mobile 13.5px it measures 452.7px. The bar's inner width is 328px
+   at 420px viewport and 270px at 360px, so it wraps to TWO LINES on every
+   phone. That makes the bar 77px tall, and PART 3g-2 reserved 70px. The
+   footer's merchant details were sitting under the bar by 7px on exactly
+   the devices most people will open this on.
+
+   Reserve, recomputed from the parts: 11px top + (2 lines x 13.5 x 1.2 =
+   32.4) + 24px button padding + 10px bottom = 77.4, rounded to 84 for the
+   descender and the hairline border.
+
+   The label itself is not shortened. It is the client's own words and the
+   same string in all seven lockups; a mobile-only rewrite would be a
+   different offer on a different device.
+   ===================================================================== */
+@media (max-width: 640px) {
+  .sdp-root {
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+    scroll-padding-bottom: calc(92px + env(safe-area-inset-bottom));
+  }
+
+  /* The credential tile carries a caption now, and "HORMONAL & LIVER DETOX"
+     measures 127.3px against the 134px of usable width in PART 2's 158px
+     mobile tile. That is a 7px margin before it wraps and unbalances the
+     rail, so the tile widens rather than the type shrinking: the mark is
+     the point of the tile and shrinking type to protect a logo is backwards. */
+  .sdp-logo-tile { width: 178px; }
+  .sdp-logo-role { font-size: 9px; letter-spacing: .07em; padding: 0 8px 11px; }
+  .sdp-logo-tile > img { padding: 12px 12px 8px; }
+}
+
+@media (max-width: 420px) {
+  /* Nothing here needs to get smaller: at 360px the longest measured strings
+     still fit their containers (announce 196.9px in 336, marker chip 135.7px
+     in 316, stat label 133.4px in 143). Only the two-line button grows, and
+     it is already accounted for above. Left as a note so the next pass does
+     not re-measure. */
+  .sdp-logo-tile { width: 164px; }
+}
+
+
+/* =====================================================================
+   PART 3j · MOBILE HERO HIERARCHY (2026-09-09, Atul)
+
+   "The heading is supposed to be bigger so that focus can be brought in
+   and body has to be smaller."  Correct, and the measurements say the
+   hero was doing the opposite of both.
+
+   MEASURED CEILINGS, single line, from the shipped Fraunces:
+                              360px vw    390px vw    420px vw
+     "Lose 5-15 Kilos,"        44.4px      48.6px      52.8px
+     "Even If You Have..."     22.5px      24.7px      26.8px
+     "Fatty Liver, Chole..."   16.2px      17.8px      19.3px
+
+   PART 2 sets the big line to 30px at this width. That is 68% of what the
+   line can hold: the loudest thing on the page was leaving a third of its
+   room unused. It goes to 38px, which keeps roughly 10% in hand for the
+   600 weight being wider than the Regular instance these numbers came from.
+
+   The qualifier lines were 17px against a 16.2px ceiling, so the longest
+   of them WAS ALREADY WRAPPING at 360px, quietly, on the most common phone
+   width there is. They go to 15px. That fits, and it widens the step
+   between the two tiers from 1.8x to 2.5x, which is where the focus he
+   is asking for actually comes from: not from the headline alone but from
+   the distance between the headline and everything around it.
+
+   Body drops with it. Nothing goes under 13px, which is the floor for
+   comfortable reading; smaller than that is not hierarchy, it is a
+   different problem.
+   ===================================================================== */
+@media (max-width: 640px) {
+  /* THE HEADLINE, up.
+     The finale is listed alongside because it repeats this exact headline
+     and PART 2 scopes it at `.sdp-finale .sdp-h1-l1` (0,2,0), which
+     out-specifies a bare `.sdp-h1-l1`. Without it the hero would jump to
+     38px while the closing peak stayed at its 28px floor: the same words
+     at two sizes on one page, and the smaller of them on the beat that is
+     supposed to be the loudest. */
+  .sdp-h1-l1,
+  .sdp-finale .sdp-h1-l1 { font-size: 38px; letter-spacing: -.022em; line-height: .98; }
+  /* THE MIDDLE TIER. 15px sat 1.5px above the 13.5px deck under it, so the
+     qualifier read as body rather than as part of the headline. The tier has
+     to be visibly a headline, and the only thing stopping it was a refusal
+     to let the longest line wrap.
+
+     So it wraps. Measured at 19px: L2 fits one line at every phone width;
+     L3 takes two at 360 and 390 and one at 420. Three stacked lines becoming
+     four is not a cost on a beat that is already a stack, and it buys the
+     step that matters: 38 over 19 is 2x down from the big line, and 19 over
+     13.5 is 1.4x up from the deck. Both gaps now read. */
+  .sdp-h1-l2,
+  .sdp-h1-l3,
+  .sdp-finale .sdp-h1-l2,
+  .sdp-finale .sdp-h1-l3 {
+    font-size: 19px; letter-spacing: -.006em; line-height: 1.22;
+  }
+  /* Tighter than PART 2's 8px so the wrapped third line still reads as one
+     block with the second rather than as two loose lines. */
+  .sdp-h1-l3 { margin-top: 1px; }
+  .sdp-root .sdp-h1 { margin-bottom: 14px; }
+  .sdp-h1-l2 { margin-top: 10px; }
+
+  /* THE BODY, down */
+  .sdp-root .sdp-hero-sub { font-size: 13.5px; line-height: 1.65; margin-bottom: 16px; }
+  .sdp-root .sdp-hero-lead { font-size: 13px; line-height: 1.65; margin-bottom: 12px; }
+  .sdp-root .sdp-sub { font-size: 13.5px; line-height: 1.65; margin-bottom: 32px; }
+  .sdp-eyebrow-pill { font-size: 10px; letter-spacing: .1em; }
+  .sdp-marker-chip { font-size: 10.5px; }
+
+  /* Section headings take the same treatment for the same reason: a 28px
+     h2 over 15px body is a weaker step than the desktop page has, so the
+     mobile page reads flatter than the design it came from. */
+  .sdp-root h2.sdp-h2 { font-size: 30px; letter-spacing: -.02em; line-height: 1.12; }
+}
+
+@media (max-width: 380px) {
+  /* At 360 the big line's ceiling is 44.4px on the Regular instance, so 38
+     still clears it. This is only for the narrow end (320 to 380) where it
+     would not. */
+  .sdp-h1-l1,
+  .sdp-finale .sdp-h1-l1 { font-size: 34px; }
+  .sdp-h1-l2,
+  .sdp-h1-l3,
+  .sdp-finale .sdp-h1-l2,
+  .sdp-finale .sdp-h1-l3 { font-size: 17px; }
+  .sdp-root h2.sdp-h2 { font-size: 27px; }
+}

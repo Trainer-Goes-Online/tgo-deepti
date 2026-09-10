@@ -178,14 +178,6 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 /* the mark: display voice, the one serif on the band */
-.dp-foot .dp-foot-mark {
-  font-family: var(--fh);
-  font-weight: var(--fh-weight);
-  font-size: 17px;
-  letter-spacing: .02em;
-  color: var(--ink-dark);
-  margin-bottom: 12px;
-}
 
 /* the merchant block. Body voice, generous leading: this is four facts a
    human reviewer reads in one pass, not decoration. */
@@ -252,7 +244,11 @@ button { font-family: inherit; cursor: pointer; }
   background: linear-gradient(90deg, transparent, var(--border-dark-strong) 50%, transparent);
 }
 
-@media (max-width: 560px) {
+/* 640 to match the landing page, which is the one surface where this footer
+   renders folded inside another layout. The rules here are type and spacing
+   only, so moving the switch point cannot break a layout, and a footer still
+   in desktop type while the page around it has gone mobile reads as a seam. */
+@media (max-width: 640px) {
   .dp-foot { padding: 30px 0 26px; }
   .dp-foot .dp-foot-lines { font-size: 12.5px; }
   .dp-foot .dp-foot-links { gap: 8px 16px; }

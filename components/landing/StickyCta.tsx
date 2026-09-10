@@ -1,77 +1,62 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import { site, CTA_LABEL } from '@/lib/site';
-import { ArrowRightIcon } from '@/components/shared/icons';
+import { ArrowRightIcon, StarIcon, FlameIcon } from '@/components/shared/icons';
 
 /**
- * BEAT 12 — STICKY CTA. Page-chrome, not a section.
+ * BEAT 12 · STICKY CTA. Page-chrome, not a section.
  *
- * Two rules it obeys, and both are about not competing:
- *  · it stays hidden until the hero has left the screen, because the
- *    hero already has the button and a second one over it is noise;
- *  · it slides back down the moment the finale is in view, because the
- *    finale is the page's peak and a bar of dark glass across it is
- *    exactly the kind of chrome that flattens a peak.
+ * ── ALWAYS ON, from 2026-09-09 (Atul) ─────────────────────────────────
+ * It used to stay hidden until the hero had scrolled away and retreat
+ * again at the finale. Both observers are gone, and that takes the whole
+ * client island with them: with nothing to show or hide there is no
+ * state, no useEffect and no JS. It is a server component now, so the bar
+ * paints with the first frame instead of after hydration.
  *
- * Because it retreats at the finale it needs no spacer in normal flow.
+ * TWO THINGS THAT ONLY MATTER BECAUSE IT NEVER RETREATS:
+ *  · The page needs a spacer. `.sdp-root` takes bottom padding in PART 3g,
+ *    or the bar sits permanently on top of the finale, and the finale is
+ *    where SiteFooter carries the registered name, address, phone and
+ *    email that Razorpay's merchant review looks for. A bar covering
+ *    those is a bar that fails the review.
+ *  · The button is no longer focus-trapped. `tabIndex` used to flip to -1
+ *    while the bar was hidden so a keyboard user could not tab into an
+ *    invisible control. Always visible means always tabbable, so it goes.
  *
- * The tag reads "₹97 To Start" — the client's own words from the hero's
- * credibility table, so the bar introduces no new copy. On phones the tag
- * hides and the button takes the whole bar: the button is the only thing
- * down there with a job.
+ * ── SHAPE, from vsl.teamfitarjun.com's bar (measured, not eyeballed) ───
+ * A LIGHT cream bar, not dark glass: a 1px warm border along the top, a
+ * soft upward shadow, a CENTRED pill button, and two risk badges under
+ * it. Ours previously ran a price tag left and the button right with a
+ * shine sweeping the top edge; the tag's space goes to the badges, and
+ * the sweep was drawn to read across dark glass and does nothing on
+ * cream.
+ *
+ * The badges are the first two from the CTA lockup, so the bar still
+ * introduces no copy that is not already the client's own.
  */
+const BAR_BADGES = [
+  { label: '100% Results Guarantee', Icon: StarIcon },
+  { label: '700+ Success Stories', Icon: FlameIcon },
+] as const;
+
 export function StickyCta() {
-  const [on, setOn] = useState(false);
-
-  useEffect(() => {
-    const hero = document.getElementById('top');
-    const finale = document.getElementById('start');
-    if (!hero) return;
-
-    let pastHero = false;
-    let atFinale = false;
-    const sync = () => setOn(pastHero && !atFinale);
-
-    const heroIo = new IntersectionObserver(
-      ([e]) => {
-        pastHero = !e.isIntersecting && e.boundingClientRect.top < 0;
-        sync();
-      },
-      { threshold: 0 }
-    );
-    heroIo.observe(hero);
-
-    let finaleIo: IntersectionObserver | undefined;
-    if (finale) {
-      finaleIo = new IntersectionObserver(
-        ([e]) => {
-          atFinale = e.isIntersecting;
-          sync();
-        },
-        { threshold: 0 }
-      );
-      finaleIo.observe(finale);
-    }
-
-    return () => {
-      heroIo.disconnect();
-      finaleIo?.disconnect();
-    };
-  }, []);
-
   return (
-    <div className={`sdp-stuck${on ? ' on' : ''}`} aria-hidden={!on}>
+    <div className="sdp-stuck on">
       <div className="sdp-stuck-inner">
-        <span className="sdp-stuck-tag">
-          <span className="dot" aria-hidden />₹{site.feeInr} To Start
-        </span>
-        <a className="sdp-stuck-go" href={site.checkoutUrl} tabIndex={on ? 0 : -1}>
+        <a className="sdp-stuck-go" href={site.checkoutUrl}>
           {CTA_LABEL}
           <span className="arrow" aria-hidden>
             <ArrowRightIcon size={11} />
           </span>
         </a>
+        <div className="sdp-stuck-risk">
+          {BAR_BADGES.map(({ label, Icon }) => (
+            <span className="sdp-stuck-badge" key={label}>
+              <span className="sdp-stuck-badge-icon" aria-hidden>
+                <Icon size={11} />
+              </span>
+              {label}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );

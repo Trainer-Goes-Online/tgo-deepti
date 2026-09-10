@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import { Fraunces, IBM_Plex_Mono, Manrope } from 'next/font/google';
 import './globals.css';
 
+import Analytics from '@/components/shared/Analytics';
+import MetaPixel from '@/components/shared/MetaPixel';
+
 /* THREE VOICES (design-system.base.md, C1). The aqua build ran two sans and
    no mono, which is the base file's first-listed failure mode and the reason
    the page read cheap rather than clinical.
@@ -49,7 +52,32 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${mono.variable} ${manrope.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+
+        {/* ── TAGS, MOUNTED HERE AND NOWHERE ELSE ───────────────────────
+            Both render nothing when their env ids are missing, so an
+            unfilled variable leaves no broken script tag behind.
+
+            They mount in the ROOT layout rather than on the landing page
+            because both have work to do on every surface. MetaPixel also
+            captures first-touch attribution and the _fbc cookie, and it
+            does that ABOVE its own pixel-id guard: a retargeting ad or an
+            email can drop somebody straight onto /checkout, and that visit
+            is the only one carrying the campaign. Attribution must not go
+            dark because a pixel id is unset.
+
+            Analytics is the GA4 base tag. It is part of this build and not
+            a snippet somebody pastes in later, because every GA4 call in
+            lib/ga4.ts checks for window.gtag and returns quietly when it is
+            absent: without a base tag the whole browser funnel silently
+            does nothing while the webhook keeps reporting purchases through
+            the Measurement Protocol, and GA4 then shows revenue with no
+            funnel above it. That is harder to spot than an empty property,
+            not easier. ────────────────────────────────────────────────── */}
+        <MetaPixel />
+        <Analytics />
+      </body>
     </html>
   );
 }

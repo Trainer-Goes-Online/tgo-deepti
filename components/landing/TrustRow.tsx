@@ -22,8 +22,23 @@ import { asset } from '@/components/shared/asset-version';
  * immediately.
  */
 
-/** Reviewer portraits, in order. Empty string = still pending. */
-const AVATARS: string[] = ['', '', '', '', ''];
+/** Reviewer portraits, in order.
+ *
+ * Real clients, cropped from the before/after photographs already published
+ * in the proof beat, so this introduces no new faces and no stock people.
+ * Two candidates were rejected outright because the client had masked the
+ * eyes out of their own photo: those two asked not to be identifiable, and a
+ * trust row is the last place to overrule that.
+ *
+ * Each file is a 128px square already centred on the face, which is why
+ * PART 3h drops the 140% zoom PART 2 applies to raw portraits. */
+const AVATARS: string[] = [
+  '/faces/reviewer-1.webp',
+  '/faces/reviewer-2.webp',
+  '/faces/reviewer-3.webp',
+  '/faces/reviewer-4.webp',
+  '/faces/reviewer-5.webp',
+];
 
 /* Every /public path goes through asset() — the path is the cache key,
    so a re-crop under the same filename never reaches a returning

@@ -1,0 +1,394 @@
+/* ════════════════════════════════════════════════════════════════
+   DEEPTI · checkout.css  ·  scope: .dp-pay
+
+   The fourth surface. Loaded ONLY by /checkout, and scoped so nothing
+   here can reach the landing page or the policy pages.
+
+   TOKEN-ONLY, like every other stylesheet on this build. Not one brand
+   hex appears below: the whole file re-themes from the :root block in
+   globals.css, which is the property that let this project change theme
+   three times without touching a component.
+
+   THE ONE DISCIPLINE THIS PALETTE NEEDS, restated because a checkout is
+   where it is most tempting to break: gold is a FILL and never sets type
+   on a light surface (2.00:1 on cream). It appears on this page as the
+   pay button, the total's tinted band, and small icon fills. The total
+   FIGURE is garnet, not gold, for exactly that reason.
+================================================================ */
+
+.dp-pay,
+.dp-pay *,
+.dp-pay *::before,
+.dp-pay *::after { box-sizing: border-box; }
+
+.dp-pay {
+  background: var(--bg-alt);
+  color: var(--ink);
+  font-family: var(--fb);
+  min-height: 100vh;
+}
+.dp-pay .wrap { max-width: 1120px; margin: 0 auto; padding: 0 22px; }
+
+/* ── HEADER. The wordmark and a way back, and nothing else: every other
+   link on a checkout is a way to not pay. Garnet, so the buyer can see
+   they are still on the same site at the one moment they are asked to
+   type a card number. ─────────────────────────────────────────────── */
+/* The top bar was removed 2026-09-09 (Atul): there is no logo, so a bar
+   carrying only a wordmark placeholder was carrying nothing. Its rules
+   (.pay-head, .pay-mark, .pay-back) went with it rather than being left
+   as styles for markup that no longer exists.
+
+   NOTE: the "Back" link lived in that bar, so /checkout now has no route
+   back to the funnel except the browser's own back button. */
+
+/* ── MASTHEAD ─────────────────────────────────────────────────────── */
+.dp-pay .pay-body { padding: 42px 0 72px; }
+.dp-pay .pay-mast { text-align: center; margin-bottom: 40px; }
+.dp-pay .pay-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 15px; border-radius: 999px;
+  background: var(--brand-fill); border: 1px solid var(--brand-ring);
+  font-family: var(--fm); font-size: 10.5px; font-weight: 600;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--brand-deep);
+}
+.dp-pay .pay-pill svg { width: 13px; height: 13px; }
+.dp-pay .pay-mast h1 {
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: clamp(26px, 4.4vw, 38px); line-height: 1.14;
+  letter-spacing: -.015em;
+  color: var(--brand-deep);
+  margin: 16px auto 0; max-width: 18ch;
+  text-wrap: balance;
+}
+.dp-pay .pay-mast h1 em { font-style: normal; color: var(--brand); }
+.dp-pay .pay-mast .pay-deck {
+  margin: 12px auto 0; max-width: 54ch;
+  font-size: 15px; line-height: 1.7; color: var(--ink-soft);
+}
+
+/* ── THE GRID. Form left, summary right and sticky, so the price stays
+   in view while the fields are filled. Single column below 1000px with
+   the summary ABOVE the form: on a phone the price is the thing that
+   has to be seen before anyone starts typing. ─────────────────────── */
+.dp-pay .pay-grid {
+  display: grid; gap: 26px;
+  grid-template-columns: 1fr;
+}
+.dp-pay .pay-sum-col { order: -1; }
+@media (min-width: 1000px) {
+  .dp-pay .pay-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 372px);
+    align-items: start; gap: 32px;
+  }
+  .dp-pay .pay-sum-col { order: 0; position: sticky; top: 26px; }
+}
+
+/* ── CARDS ────────────────────────────────────────────────────────── */
+.dp-pay .pay-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+  padding: 26px 24px 28px;
+}
+@media (min-width: 640px) { .dp-pay .pay-card { padding: 32px 30px 34px; } }
+
+.dp-pay .pay-eyebrow {
+  font-family: var(--fm); font-size: 10.5px; font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--brand-text);
+  display: flex; align-items: center; gap: 10px;
+}
+.dp-pay .pay-eyebrow::before {
+  content: ""; width: 22px; height: 2px; flex: 0 0 22px; background: var(--brand);
+}
+.dp-pay .pay-card h2 {
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: 21px; line-height: 1.25; color: var(--brand-deep);
+  margin: 12px 0 0;
+}
+.dp-pay .pay-card .pay-hint {
+  margin: 8px 0 0; font-size: 13.5px; line-height: 1.65; color: var(--ink-soft);
+}
+
+/* ── FIELDS ───────────────────────────────────────────────────────── */
+.dp-pay .pay-fields { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
+.dp-pay .pay-two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 420px) { .dp-pay .pay-two { grid-template-columns: 1fr; } }
+
+.dp-pay label { display: block; }
+.dp-pay .f-label {
+  display: block; margin-bottom: 7px;
+  font-family: var(--fm); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .13em; text-transform: uppercase;
+  color: var(--muted);
+}
+.dp-pay .f-note {
+  display: block; margin-top: 7px;
+  font-size: 12px; line-height: 1.5; color: var(--muted);
+}
+.dp-pay input,
+.dp-pay select {
+  width: 100%;
+  font-family: var(--fb); font-size: 15.5px; line-height: 1.4;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r);
+  padding: 13px 14px;
+  outline: none;
+  transition: border-color .18s, box-shadow .18s;
+  -webkit-appearance: none; appearance: none;
+}
+.dp-pay select {
+  /* the chevron, drawn in CSS so no icon font or asset is needed */
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+                    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: right 18px center, right 13px center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 34px;
+}
+.dp-pay input::placeholder { color: var(--muted); opacity: .7; }
+.dp-pay input:focus,
+.dp-pay select:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+.dp-pay input[aria-invalid="true"],
+.dp-pay select[aria-invalid="true"] { border-color: var(--brand); background: var(--brand-fill); }
+.dp-pay .f-dim { color: var(--muted); }
+
+.dp-pay .pay-phone { display: flex; gap: 10px; }
+.dp-pay .pay-phone select { width: 132px; flex: 0 0 132px; }
+.dp-pay .pay-phone input { flex: 1 1 auto; min-width: 0; }
+
+.dp-pay .pay-error {
+  margin-top: 16px; padding: 11px 14px;
+  border: 1px solid var(--brand-ring);
+  border-left: 3px solid var(--brand);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  background: var(--brand-fill);
+  font-size: 13.5px; line-height: 1.55; color: var(--brand-deep);
+}
+
+/* ── THE PAY BUTTON. Same object as the landing page's .sdp-cta, redrawn
+   here because landing.css is not loaded on this route and a shared
+   component that depends on another route's stylesheet is not shared. ── */
+.dp-pay .pay-cta {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  width: 100%; margin-top: 26px;
+  min-height: 60px; padding: 17px 26px 15px;
+  background: var(--grad-cta);
+  color: var(--cta-ink);
+  border: 0; border-radius: var(--r);
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: 17px; letter-spacing: .04em; line-height: 1.2;
+  box-shadow: var(--glow-cta), inset 0 -2px 0 var(--action-edge);
+  transition: transform .2s, background .2s, box-shadow .2s;
+}
+.dp-pay .pay-cta:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: var(--action-hover);
+  box-shadow: var(--glow-cta-hover), inset 0 1px 0 rgba(255,255,255,.3);
+}
+.dp-pay .pay-cta:focus-visible { outline: 2px solid var(--brand-deep); outline-offset: 3px; }
+.dp-pay .pay-cta:disabled { opacity: .62; cursor: progress; transform: none; }
+.dp-pay .pay-cta .arrow {
+  flex: 0 0 24px; width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(255,255,255,.24);
+  display: grid; place-items: center;
+}
+.dp-pay .pay-cta .arrow svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.4; }
+
+/* ── THE THREE POINTERS. House standard under every checkout CTA we
+   ship: Razorpay Secured, SSL Encrypted, and the refund note. Each is
+   nowrap so a narrow phone breaks BETWEEN them, never mid-phrase. ──── */
+.dp-pay .pay-points {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: 5px 11px; margin-top: 16px;
+  font-family: var(--fb); font-size: 11.5px; color: var(--ink-soft);
+}
+.dp-pay .pay-points span { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.dp-pay .pay-points svg { width: 13px; height: 13px; color: var(--brand); }
+.dp-pay .pay-points .sep { color: var(--border-strong); }
+.dp-pay .pay-points a { color: var(--brand-text); border-bottom: 1px solid var(--brand-ring); }
+.dp-pay .pay-points a:hover { border-bottom-color: var(--brand-text); }
+
+.dp-pay .pay-privacy {
+  margin-top: 20px; text-align: center;
+  font-size: 12.5px; line-height: 1.7; color: var(--muted);
+}
+.dp-pay .pay-privacy a { color: var(--brand-text); font-weight: 600; border-bottom: 1px solid var(--brand-ring); }
+.dp-pay .pay-privacy a:hover { border-bottom-color: var(--brand-text); }
+
+/* ── PAYMENT LOGO STRIP ───────────────────────────────────────────── */
+.dp-pay .pay-methods {
+  margin-top: 24px; padding: 16px 14px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--r);
+}
+.dp-pay .pay-methods-label {
+  display: block; margin-bottom: 12px; text-align: center;
+  font-family: var(--fm); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .13em; text-transform: uppercase; color: var(--muted);
+}
+
+/* self-scoped: the component owns these names, not the page ------- */
+.dp-paylogos {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: 8px;
+}
+.dp-paylogos .dp-paylogo {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 30px; padding: 0 9px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+}
+.dp-paylogos .dp-paylogo svg { height: 17px; width: auto; display: block; }
+
+/* ── ORDER SUMMARY ────────────────────────────────────────────────── */
+.dp-pay .sum {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+  padding: 22px 20px 24px;
+}
+@media (min-width: 640px) { .dp-pay .sum { padding: 26px 24px 28px; } }
+
+.dp-pay .sum-toggle {
+  display: flex; width: 100%; align-items: flex-start; justify-content: space-between;
+  gap: 14px; text-align: left;
+  background: none; border: 0; padding: 0; color: inherit;
+}
+@media (min-width: 1000px) { .dp-pay .sum-toggle { pointer-events: none; } }
+.dp-pay .sum-toggle:focus-visible { outline: 2px solid var(--brand); outline-offset: 4px; border-radius: var(--r-sm); }
+.dp-pay .sum-kicker {
+  display: block;
+  font-family: var(--fm); font-size: 10.5px; font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--brand-text);
+}
+.dp-pay .sum-title {
+  display: block; margin-top: 8px;
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: 20px; line-height: 1.25; color: var(--brand-deep);
+}
+.dp-pay .sum-tap {
+  display: block; margin-top: 6px;
+  font-size: 12px; color: var(--muted);
+}
+@media (min-width: 1000px) { .dp-pay .sum-tap { display: none; } }
+.dp-pay .sum-caret {
+  flex: 0 0 16px; width: 16px; height: 16px; margin-top: 3px; color: var(--muted);
+  transition: transform .22s;
+}
+.dp-pay .sum-caret svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+.dp-pay .sum-toggle[aria-expanded="true"] .sum-caret { transform: rotate(180deg); }
+@media (min-width: 1000px) { .dp-pay .sum-caret { display: none; } }
+
+/* the lead item, always visible: it is the thing being bought */
+.dp-pay .sum-lead {
+  display: flex; align-items: flex-start; gap: 13px;
+  margin-top: 20px; padding: 13px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--r);
+}
+.dp-pay .sum-lead-chip {
+  flex: 0 0 52px; width: 52px; height: 52px; border-radius: var(--r-sm);
+  display: grid; place-items: center;
+  background: var(--grad-brand);
+  font-family: var(--fm); font-size: 9.5px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-dark);
+  text-align: center; line-height: 1.15; padding: 4px;
+}
+.dp-pay .sum-lead-body { min-width: 0; flex: 1 1 auto; }
+.dp-pay .sum-lead-body b {
+  display: block; font-family: var(--fb); font-size: 14px; font-weight: 700;
+  line-height: 1.35; color: var(--ink);
+}
+.dp-pay .sum-lead-body span {
+  display: block; margin-top: 3px; font-size: 11.5px; color: var(--muted);
+}
+.dp-pay .sum-lead-price {
+  flex: 0 0 auto;
+  font-family: var(--fm); font-size: 14px; font-weight: 600;
+  color: var(--ink); font-variant-numeric: tabular-nums;
+}
+
+.dp-pay .sum-details { display: none; }
+.dp-pay .sum-details.open { display: block; }
+@media (min-width: 1000px) { .dp-pay .sum-details { display: block; } }
+
+.dp-pay .sum-sub {
+  margin: 20px 0 10px;
+  font-family: var(--fm); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .13em; text-transform: uppercase; color: var(--muted);
+}
+.dp-pay .sum-covers { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+.dp-pay .sum-covers li {
+  display: flex; gap: 10px;
+  font-size: 13.5px; line-height: 1.6; color: var(--ink-soft);
+}
+.dp-pay .sum-covers .ck {
+  flex: 0 0 17px; width: 17px; height: 17px; margin-top: 2px;
+  border-radius: 50%; display: grid; place-items: center;
+  background: var(--brand-soft); color: var(--brand-deep);
+}
+.dp-pay .sum-covers .ck svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 3.2; }
+
+.dp-pay .sum-rule { height: 1px; background: var(--border); margin: 20px 0; }
+
+/* THE RULED TOTAL. Gold as a tinted band, garnet as the figure: gold is
+   2.00:1 on a light surface and this is the number that must be read. */
+.dp-pay .sum-total {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 14px;
+  padding: 14px 16px; border-radius: var(--r);
+  background: var(--action-fill); border: 1px solid var(--action);
+}
+.dp-pay .sum-total-label {
+  font-family: var(--fm); font-size: 12px; font-weight: 600;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--ink);
+}
+.dp-pay .sum-total-fig {
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: 30px; line-height: 1; color: var(--brand-deep);
+  font-variant-numeric: tabular-nums;
+}
+
+.dp-pay .sum-method {
+  display: flex; align-items: flex-start; gap: 11px;
+  margin-top: 18px; padding: 12px 13px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--r);
+}
+.dp-pay .sum-method svg { flex: 0 0 19px; width: 19px; height: 19px; margin-top: 1px; color: var(--brand); }
+.dp-pay .sum-method b { display: block; font-size: 13px; font-weight: 700; color: var(--ink); }
+.dp-pay .sum-method span { display: block; margin-top: 2px; font-size: 12px; color: var(--muted); }
+
+/* THE SCOPE NOTE. What the fee is, and what it is not. This is the
+   sentence that prevents the likeliest chargeback on this funnel: a
+   buyer who pays ninety-seven rupees and believes they have joined the
+   programme. Garnet-edged, not gold: it is a clarification, not an
+   alarm, and gold on this page belongs to the button. */
+.dp-pay .sum-scope {
+  margin-top: 18px; padding: 14px 15px;
+  background: var(--brand-fill);
+  border: 1px solid var(--brand-ring);
+  border-left: 3px solid var(--brand);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+}
+.dp-pay .sum-scope b {
+  display: block; margin-bottom: 6px;
+  font-family: var(--fm); font-size: 10.5px; font-weight: 600;
+  letter-spacing: .13em; text-transform: uppercase; color: var(--ink);
+}
+.dp-pay .sum-scope p { margin: 0; font-size: 13.5px; line-height: 1.65; color: var(--ink); }
+.dp-pay .sum-scope p + p { margin-top: 8px; }
+
+@media (max-width: 560px) {
+  .dp-pay .pay-body { padding: 32px 0 56px; }
+  .dp-pay .pay-mast { margin-bottom: 28px; }
+  .dp-pay .pay-card { padding: 22px 18px 24px; }
+  .dp-pay .sum { padding: 20px 17px 22px; }
+  .dp-pay .pay-cta { font-size: 15.5px; letter-spacing: .02em; }
+}

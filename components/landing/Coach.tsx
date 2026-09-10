@@ -30,14 +30,28 @@ import { asset } from '@/components/shared/asset-version';
  * Server component.
  */
 
-const PHOTO: string = '';
+/* Client-supplied 2026-09-09. Converted to WebP at 1120px wide, q82: the
+   frame is 360px on desktop and up to 560px in the single-column breakpoint,
+   so 1120 is 2x the widest it is ever drawn. 23.1MB became 81KB.
 
-/* The organisations named in Deepti's own bio, in the order she names
-   them. When a logo file lands, put its /public path in `src`. */
+   Native 2:3 is kept rather than pre-cropped to the frame's 4:5, so the frame
+   can change later without needing the source again. The centred cover crop
+   takes roughly 384px off the top and the same off the bottom, which leaves
+   her head plenty of room and trims the seat, checked against the file. */
+const PHOTO = '/deepti.webp';
+
+/* The organisations named in Deepti's own bio, in the order she names them.
+   Logos client-supplied 2026-09-09, converted to WebP (alpha preserved).
+
+   All three are DARK ink on transparent: cult.fit is black, AAFT is red and
+   navy, Habuild is navy. That is why PART 3f flips the tile to a light one.
+   A dark mark on the dark garnet tile PART 2 ships would have rendered three
+   invisible rectangles, and the fix is never to recolour someone else's
+   trademark to fit our band. */
 const CREDENTIALS: { org: string; role: string; src: string }[] = [
-  { org: 'Cult Fit', role: 'Top Nutritionist', src: '' },
-  { org: 'AAFT School of Health & Wellness', role: 'Advisory Board', src: '' },
-  { org: 'Habuild', role: 'Hormonal & Liver Detox', src: '' },
+  { org: 'Cult Fit', role: 'Top Nutritionist', src: '/logos/cult_fit_logo-freelogovectors.net_.webp' },
+  { org: 'AAFT School of Health & Wellness', role: 'Advisory Board', src: '/logos/aaftuniversitylogo.webp' },
+  { org: 'Habuild', role: 'Hormonal & Liver Detox', src: '/logos/habuild.webp' },
 ];
 
 export function Coach() {
@@ -117,6 +131,14 @@ export function Coach() {
                 ) : (
                   <MediaPlaceholder ratio="5 / 2" label={c.org} note={c.role} />
                 )}
+                {/* THE POSITION IS THE POINT. A logo says she was in the room;
+                    the position says what she was doing there, and it is the
+                    half the bio actually claims: "Top Nutritionist at Cult
+                    Fit, a place on the Advisory Board at AAFT, the
+                    opportunity to lead Hormonal & Liver Detox programmes at
+                    Habuild". It used to render only inside the placeholder,
+                    so it disappeared the moment real logos landed. */}
+                <span className="sdp-logo-role">{c.role}</span>
               </div>
             ))}
           </div>
