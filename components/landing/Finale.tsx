@@ -50,8 +50,12 @@ export function Finale() {
             <span className="sdp-h1-l3">Fatty Liver, Cholesterol or Hypothyroidism</span>
           </h2>
 
+          {/* The countdown runs here too, from 2026-09-12 (Atul): every CTA
+              on the page carries the same offer deadline the hero does. The
+              copy source omitted it from the final block; he has since said
+              it belongs at every button. */}
           <div data-sdp-reveal style={{ '--d': '.10s' } as React.CSSProperties}>
-            <CtaLockup timer={false} />
+            <CtaLockup />
           </div>
 
           <SiteFooter folded />

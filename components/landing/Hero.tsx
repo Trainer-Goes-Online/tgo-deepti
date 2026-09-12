@@ -67,15 +67,20 @@ export function Hero() {
 
         <p className="sdp-hero-sub" data-sdp-reveal style={{ '--d': '.12s' } as React.CSSProperties}>
           Through a personalised, root-cause approach that focuses on{' '}
-          <strong>healing your liver</strong>, the master organ connecting your
-          weight &amp; metabolic health, instead of treating every health
-          condition separately.
+          <strong>
+            healing your liver, the master organ connecting your weight &amp;
+            metabolic health
+          </strong>
+          , instead of treating every health condition separately.
         </p>
 
         <p className="sdp-hero-lead" data-sdp-reveal style={{ '--d': '.15s' } as React.CSSProperties}>
-          <strong>700+ clients</strong> across India, USA, Canada, UK, Australia
-          &amp; The Middle East have achieved lasting weight loss while improving
-          key metabolic health conditions &amp; markers, including:
+          <strong>
+            700+ clients across India, USA, Canada, UK, Australia &amp; The Middle
+            East
+          </strong>{' '}
+          have achieved <strong>lasting weight loss</strong> while improving key
+          metabolic health conditions &amp; markers, including:
         </p>
 
         <div

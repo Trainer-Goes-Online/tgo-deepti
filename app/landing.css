@@ -1813,7 +1813,11 @@
   will-change: transform;
   animation: sdpBaSlide 150s linear infinite;
 }
-@keyframes sdpBaSlide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+/* RIGHT to LEFT (2026-09-10, Atul): the video testimonial rail above this one
+   runs sdpWaRtl, so this one had to be its mirror. Two proof rows travelling
+   the same way read as one long belt; counter-scrolling reads as two separate
+   bodies of evidence, which is what they are. */
+@keyframes sdpBaSlide { from { transform: translateX(-50%); } to { transform: translateX(0); } }
 .sdp-ba-rail:hover .sdp-ba-track,
 .sdp-ba-rail:focus-within .sdp-ba-track { animation-play-state: paused; }
 
@@ -2158,4 +2162,149 @@
   .sdp-finale .sdp-h1-l2,
   .sdp-finale .sdp-h1-l3 { font-size: 17px; }
   .sdp-root h2.sdp-h2 { font-size: 27px; }
+}
+
+
+/* =====================================================================
+   PART 3k · THREE CORRECTIONS (2026-09-10, Atul)
+   ===================================================================== */
+
+/* 1 · THE HERO GATE, CENTRED ON DESKTOP.
+   The pill is centred as a BOX by the hero's text-align, but PART 2 sets
+   `text-align: left` inside it. The audience line is long enough to wrap to
+   two lines on a wide screen, and a ragged left-set block inside a centred
+   pill under a centred headline reads as a mistake.
+
+   Desktop only, as asked. On a phone the line wraps to four or five lines and
+   a centred rag of that depth is harder to read than a flush one, so mobile
+   keeps its left set. Say the word and it follows. */
+@media (min-width: 641px) {
+  .sdp-eyebrow-pill { text-align: center; }
+}
+
+/* 2 · THE COUNTDOWN, IN OXBLOOD.
+   The token moved in PART 1; these are the things inside the chip that were
+   coloured for a GOLD fill and are unreadable on a dark one. Measured against
+   --brand-deep #5A1526:
+     white digits        13.38   (was ink at 1.27, which is invisible)
+     ink-dark-soft caps   9.80
+   The chip's own glow moves off gold too: a gold halo around an oxblood chip
+   is the old colour leaking out from underneath the new one. */
+.sdp-urgency-timer {
+  color: var(--ink-dark);
+  box-shadow: 0 4px 14px rgba(var(--brand-rgb), .30), inset 0 1px 0 rgba(255, 255, 255, .16);
+}
+.sdp-urgency-cell b { color: var(--ink-dark); }
+.sdp-urgency-cell i { color: var(--ink-dark-soft); }
+.sdp-urgency-sep { background: rgba(255, 255, 255, .78); }
+
+/* 2b · THE CHIP NEEDS AN EDGE ON THE DARK BANDS.
+   Oxblood is #5A1526 and the dark bands are #3A0D19, #46121F and #290911.
+   Measured, the chip against them is 1.25, 1.15 and 1.38: it does not read
+   as an object at all, it reads as a hole. Gold never had this problem, so
+   the fill change created it.
+
+   Two of the seven lockups land there (proof and guarantee; the finale runs
+   `timer={false}`), so this is not a corner case.
+
+   The fix is an EDGE, not a second fill colour. Keeping one timer colour
+   across the page is the point of the change; giving it a hairline where the
+   ground is too close is how it keeps its shape without breaking that.
+   brand-bright on the darkest band measures 8.05, so a 1px line at .55 alpha
+   is plainly visible without becoming a second object.
+
+   IT HAS TO BE `outline`, NOT `box-shadow`. sdpUrgencyPulse animates
+   box-shadow on this element on a 2s loop, and an animated property beats a
+   normal declaration for as long as the animation runs: a ring drawn there
+   would be repainted away every frame. Outline is untouched by the animation
+   and, unlike a border, adds no width so the chip does not shift on the two
+   bands that get it. */
+.sdp-dark .sdp-urgency-timer,
+.sdp-dark-alt .sdp-urgency-timer,
+.sdp-deep-aqua .sdp-urgency-timer,
+.sdp-guar .sdp-urgency-timer {
+  outline: 1px solid rgba(232, 160, 174, .55);
+  outline-offset: 0;
+}
+
+/* 3 · the counter-scroll is in the sdpBaSlide keyframes above, not here: the
+   direction belongs with the animation that carries it, not in a patch. */
+
+
+/* =====================================================================
+   PART 3l · THE COUNTDOWN AT EVERY CTA (2026-09-12, Atul)
+
+   "Everywhere with the CTA there will be a timer about the offer ending,
+   just like the hero CTA." Two things followed from that:
+
+     · The finale stopped passing `timer={false}`. That is a component
+       change, not a CSS one, and it needs nothing here: the finale band is
+       `.sdp-dark`, which PART 3k already gives the chip its edge on.
+     · The sticky bar gained one. That DOES need rules, because the bar is
+       page chrome with a hand-measured height, and the page reserves that
+       height at the bottom so the bar never covers the finale.
+
+   THE CHIP IS COMPACT HERE, and only here. The lockup chip is a value
+   moment under a button with the whole page's width to breathe in. The bar
+   chip is a status line on a fixed strip, and at full size it would be the
+   loudest thing on the screen at every scroll position, which is the
+   opposite of what a persistent bar should be.
+   ===================================================================== */
+
+/* The badges and the chip share ONE row, so the bar grows by the
+   difference between them rather than by a whole new line. */
+.sdp-stuck-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 16px;
+}
+
+.sdp-stuck .sdp-urgency { margin: 0; gap: 9px; }
+.sdp-stuck .sdp-urgency-label { font-size: 10px; letter-spacing: .12em; color: var(--muted-dark); }
+.sdp-stuck .sdp-urgency-timer { padding: 4px 10px; }
+.sdp-stuck .sdp-urgency-cell { min-width: 28px; }
+.sdp-stuck .sdp-urgency-cell b { font-size: 15px; }
+.sdp-stuck .sdp-urgency-cell i { font-size: 7px; margin-top: 3px; }
+
+/* The bar is near-black glass and the chip is oxblood #5A1526, which is the
+   same "it reads as a hole" problem PART 3k solved on the dark bands. Same
+   fix, same reason it has to be `outline`: sdpUrgencyPulse animates
+   box-shadow on this element, and an animated property beats a normal
+   declaration for as long as it runs, so a ring drawn there is repainted
+   away every frame. */
+.sdp-stuck .sdp-urgency-timer {
+  outline: 1px solid rgba(232, 160, 174, .55);
+  outline-offset: 0;
+}
+
+/* ---- THE RESERVE, RE-MEASURED ----
+   The page holds bottom padding equal to the bar's height, or the bar sits
+   on the finale, and the finale is where SiteFooter carries the registered
+   name, address, phone and email that Razorpay's merchant review reads.
+
+   Desktop, from the parts: 12 top + 43 button + 8 gap + 34 chip row + 12
+   bottom = 109. Rounded to 112, with the anchor clearance 8 above it.
+   The chip row is 34 rather than the badges' 20, so the bar grew 14px. */
+.sdp-root { padding-bottom: calc(112px + env(safe-area-inset-bottom)); }
+.sdp-root { scroll-padding-bottom: calc(120px + env(safe-area-inset-bottom)); }
+
+@media (max-width: 640px) {
+  /* The badges drop out below 640, as they always have, so the chip is the
+     only thing on that row and it shrinks with the bar.
+     From the parts: PART 3i's measured 84 (11 top + a two-line 32.4 button
+     + 24 button padding + 10 bottom) + an 8px gap + a 29px chip = 121.
+     Rounded to 124, anchor clearance 132. */
+  .sdp-root {
+    padding-bottom: calc(124px + env(safe-area-inset-bottom));
+    scroll-padding-bottom: calc(132px + env(safe-area-inset-bottom));
+  }
+  .sdp-stuck-inner { gap: 8px; }
+  .sdp-stuck .sdp-urgency { gap: 7px; }
+  .sdp-stuck .sdp-urgency-label { font-size: 9px; }
+  .sdp-stuck .sdp-urgency-timer { padding: 3px 8px; }
+  .sdp-stuck .sdp-urgency-cell { min-width: 25px; }
+  .sdp-stuck .sdp-urgency-cell b { font-size: 13px; }
+  .sdp-stuck .sdp-urgency-cell i { font-size: 6.5px; margin-top: 2px; }
 }

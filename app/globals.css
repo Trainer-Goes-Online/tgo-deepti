@@ -82,7 +82,7 @@
   /* ---- FUNCTIONAL: icon-scale only, never sections ---- */
   --success: #56794E;                                  /* the trust-row check, 18px */
   --success-dark: #9CBF93;                             /* the same check on a garnet band */
-  --danger:  #B8791A;  --danger-rgb: 184,121,26;       /* the timer pulse, gold not red */
+  --danger:  #5A1526;  --danger-rgb: 90,21,38;          /* the timer pulse, oxblood not red */
   --star:    #9C7020;                                  /* deeper than the CTA gold, so a */
   --gold:    #9C7020;                                  /* rating never competes with it */
 
@@ -114,7 +114,12 @@
   --grad-brand:     linear-gradient(135deg, var(--brand-deep), var(--brand));
   --grad-announce:  var(--brand-deep);      /* top strip: flat garnet, colour from line one */
   --grad-cta:       var(--action);          /* flat gold, not glossy */
-  --grad-urgency:   var(--action);          /* the timer is gold. No red. */
+  /* THE TIMER IS OXBLOOD (Atul, 2026-09-10), not gold.
+     It also separates two things that were reading as one: the countdown and
+     the CTA were both gold fills sitting inches apart, so the timer borrowed
+     the button's urgency and the button lost some of its singularity. Gold is
+     the action colour; a clock is not an action. */
+  --grad-urgency:   var(--brand-deep);
   --grad-guarantee: var(--bg-deep-aqua);
   --hero-stage:     var(--bg-alt);          /* the hero sits on the deeper sand */
   /* A warm lift behind the video, not a coloured glow. A garnet bloom on sand

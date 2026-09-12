@@ -111,18 +111,34 @@ export function Proof() {
           delay=".06s"
         />
 
-        {/* group A · 15 video testimonials, players mounted directly */}
+        {/* group A · 15 video testimonials, players mounted directly.
+            THE TRACK IS DOUBLED, from 2026-09-12. It was a single copy
+            running an animation that translates -50%, so the rail drifted
+            left by half its own width and then SNAPPED back seven tiles.
+            Every other rail on this page (the wins wall, the before-afters,
+            the credential marquee) is doubled for exactly this reason; this
+            one was the odd one out, and the snap is what made the counter-
+            scroll against the before-after rail unreadable.
+
+            Thirty players rather than fifteen is affordable because every
+            tile is `loading="lazy"`: the second copy costs nothing until it
+            approaches the viewport. The duplicate is `inert` as well as
+            aria-hidden, which is also what PART 3's reduced-motion rule
+            looks for when it drops the spare half. */}
         <div className="sdp-proof-group sdp-proof-rail is-vt">
           <div className="sdp-proof-track">
-            {TESTIMONIALS.map((t, i) => (
-              <div
-                key={`vt-${t.vimeoId}`}
-                data-sdp-reveal
-                style={{ '--d': `${0.04 + Math.min(i, 8) * 0.06}s` } as React.CSSProperties}
-              >
-                <TestimonialTile name={t.name} vimeoId={t.vimeoId} ratio={TESTIMONIAL_RATIO} />
-              </div>
-            ))}
+            {[0, 1].map((copy) =>
+              TESTIMONIALS.map((t, i) => (
+                <div
+                  key={`vt-${copy}-${t.vimeoId}`}
+                  data-sdp-reveal
+                  style={{ '--d': `${0.04 + Math.min(i, 8) * 0.06}s` } as React.CSSProperties}
+                  {...(copy === 1 ? { inert: true, 'aria-hidden': true } : {})}
+                >
+                  <TestimonialTile name={t.name} vimeoId={t.vimeoId} ratio={TESTIMONIAL_RATIO} />
+                </div>
+              ))
+            )}
           </div>
         </div>
 

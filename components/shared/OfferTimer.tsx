@@ -14,9 +14,18 @@ import { site } from '@/lib/site';
  * Every instance on the page reads that same deadline, which is what lets
  * the lockup repeat: all the timers show the same number and stay in sync.
  *
- * At zero it stops rendering. It does NOT silently roll over into another
- * window — a countdown that resurrects itself is the same lie as one that
- * resets.
+ * WHILE THE PAGE IS OPEN it never rolls over: it counts to zero, stops
+ * rendering, and nothing hands it another five hours in front of you. A
+ * countdown that resurrects itself while you are watching is the same lie
+ * as one that resets on every load.
+ *
+ * ACROSS VISITS it does start again, from 2026-09-12. The earlier rule was
+ * absolute, and the effect was that a stale deadline in localStorage killed
+ * the countdown permanently for that browser: every CTA block on the page
+ * lost its third element and nobody who had ever loaded the page more than
+ * five hours ago saw urgency again. That is not honesty, it is a dead
+ * widget. A visit that starts after the stored deadline has passed gets a
+ * new window; a page already open past zero still shows nothing.
  *
  * Renders nothing until mounted: localStorage is client-only, and a
  * server-rendered digit would hydrate-mismatch on first paint.
@@ -36,8 +45,12 @@ export function OfferTimer() {
     const windowMs = hours * 3600_000;
 
     let deadline = Number(window.localStorage.getItem(KEY) || 0);
-    // Re-stamp only if missing or absurd (clock change / tampered value).
-    if (!deadline || deadline - Date.now() > windowMs) {
+    /* Re-stamp when the stored value is missing, already spent, or absurd
+       (a clock change or a tampered value putting it further out than the
+       window is long). "Already spent" is the one added on 2026-09-12: it
+       is what makes the countdown survive a returning visitor instead of
+       staying dead for the life of that browser profile. */
+    if (!deadline || deadline <= Date.now() || deadline - Date.now() > windowMs) {
       deadline = Date.now() + windowMs;
       try {
         window.localStorage.setItem(KEY, String(deadline));

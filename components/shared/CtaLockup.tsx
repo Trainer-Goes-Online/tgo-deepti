@@ -53,10 +53,12 @@ export function RiskBadges() {
 }
 
 /**
- * @param timer defaults true. The copy source prints the countdown in the
- * hero and the beat-2 lockup but NOT in the final-CTA block, so the finale
- * passes `timer={false}` rather than adding a line the client didn't
- * write. Flagged for Atul — it may simply be an omission in the doc.
+ * @param timer defaults true, and nothing on the page passes false any more.
+ * The copy source printed the countdown in the hero and the beat-2 lockup but
+ * not in the final-CTA block, so the finale used to opt out. Atul settled it
+ * on 2026-09-12: every CTA carries the countdown, the finale included, and
+ * the sticky bar carries it too. The parameter stays because a page that
+ * needs a silent button one day should not have to fork the component.
  */
 export function CtaLockup({ timer = true }: { timer?: boolean } = {}) {
   return (
