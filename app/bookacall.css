@@ -162,6 +162,88 @@
   display: grid; place-items: center; font-size: 10px; margin-top: 2px;
 }
 
+/* ── 4b · THE SLOT FALLBACK ────────────────────────────────────────
+   A SEPARATE panel below the calendar card, not a strip inside it. It
+   only speaks to the reader the grid could not serve, and folding it in
+   would put a "cannot find a time?" message in front of everyone who
+   just found one.
+
+   It is deliberately quieter than the card above: brand-tinted rather
+   than another raised white surface, so it reads as an aside from the
+   team and not as a second thing to do. ─────────────────────────── */
+/* A DARK BAND, not another tinted box. The calendar card above is a raised
+   light surface, and a second light panel under it reads as one more form
+   to fill. Dropping to the garnet dark band separates "the calendar" from
+   "what to do when the calendar fails", which is the whole point of it.
+   Same move the landing page makes for its guarantee beat.
+
+   Centred, because it is an address to one reader rather than a block of
+   page copy, and it is short enough that centring does not cost reading
+   speed. */
+.dp-book .bk-rescue {
+  margin-top: 20px; padding: 34px 28px 30px;
+  background: var(--bg-dark-alt);
+  border: 1px solid var(--border-dark-strong);
+  border-radius: var(--r-xl);
+  text-align: center;
+}
+
+/* The pill, built on .sdp-eyebrow-pill's geometry from the landing page so
+   the two read as the same object. --brand-bright is the garnet the token
+   file reserves for exactly this: the family colour on a dark band. */
+.dp-book .bk-rescue-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border-radius: 999px;
+  border: 1px solid rgba(var(--brand-rgb), .45);
+  background: rgba(var(--brand-rgb), .14);
+  font-family: var(--fb); font-size: 10.5px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; line-height: 1;
+  color: var(--brand-bright);
+}
+.dp-book .bk-rescue-eyebrow svg { flex: 0 0 auto; }
+
+.dp-book .bk-rescue h2 {
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: clamp(20px, 2.6vw, 26px); line-height: 1.24; letter-spacing: -.012em;
+  color: var(--ink-dark); margin: 16px 0 0; text-wrap: balance;
+}
+.dp-book .bk-rescue > p {
+  max-width: 54ch; margin: 12px auto 0;
+  font-size: 14px; line-height: 1.7; color: var(--ink-dark-soft);
+}
+.dp-book .bk-rescue strong { color: var(--ink-dark); font-weight: 600; }
+
+.dp-book .bk-rescue-acts {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 22px;
+}
+.dp-book .bk-rescue-acts a {
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  padding: 13px 22px; border-radius: 999px;
+  font-family: var(--fb); font-size: 14px; font-weight: 700;
+}
+/* WhatsApp keeps its own green. It is a destination the reader recognises
+   by colour, and a garnet button here would claim to be this page's primary
+   action, which is and stays the calendar. */
+.dp-book .bk-rescue-wa { background: #1FA855; color: #fff; }
+.dp-book .bk-rescue-wa:hover { background: #1B9349; }
+.dp-book .bk-rescue-mail {
+  background: transparent; color: var(--ink-dark);
+  border: 1px solid var(--border-dark-strong);
+}
+.dp-book .bk-rescue-mail:hover { border-color: var(--brand-bright); color: var(--brand-bright); }
+
+.dp-book .bk-rescue-direct {
+  margin: 18px 0 0; font-family: var(--fb); font-size: 12.5px; color: var(--muted-dark);
+}
+.dp-book .bk-rescue-direct a { color: var(--brand-bright); }
+.dp-book .bk-rescue-direct a:hover { border-bottom: 1px solid var(--brand-bright); }
+
+@media (max-width: 560px) {
+  .dp-book .bk-rescue { padding: 26px 18px 24px; }
+  .dp-book .bk-rescue-acts { gap: 10px; }
+  .dp-book .bk-rescue-acts a { flex: 1 1 100%; }
+}
+
 /* ── 5 · section headings shared below the card ───────────────── */
 .dp-book .bk-h2 {
   font-family: var(--fh); font-weight: var(--fh-weight);

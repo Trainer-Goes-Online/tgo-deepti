@@ -41,6 +41,7 @@ import {
 import { SiteFooter } from '@/components/shared/SiteFooter';
 import { PaymentLogos } from '@/components/shared/PaymentLogos';
 import {
+  AlertIcon,
   ArrowRightIcon,
   CaretDownIcon,
   CardIcon,
@@ -132,6 +133,16 @@ export default function CheckoutPage() {
   const [touched, setTouched] = useState(false);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState('');
+  /* The post-payment acknowledgement. Ported from the Sreshtha checkout, where
+     it exists because of a real failure mode on this exact flow: Razorpay's
+     handler only fires once the sheet has settled, and a buyer who closes the
+     tab on seeing "success" never reaches /book-a-call. They have paid and have
+     no slot, and the first anyone knows is a support message.
+
+     It is a separate piece of state from the fields because it is a different
+     kind of thing: the fields are data we collect, this is a promise we ask for
+     before taking money. */
+  const [ack, setAck] = useState(false);
 
   /* ARRIVAL at the checkout. GA4 gets begin_checkout, Meta gets AddToCart.
      Meta's InitiateCheckout deliberately does NOT fire here: it waits until the
@@ -174,7 +185,7 @@ export default function CheckoutPage() {
     e.preventDefault();
     setTouched(true);
     setFailed('');
-    if (!valid || busy) return;
+    if (!valid || !ack || busy) return;
     setBusy(true);
 
     /* Meta InitiateCheckout + GA4 add_payment_info. Fired BEFORE the sheet
@@ -277,13 +288,44 @@ export default function CheckoutPage() {
           </div>
 
           <div className="pay-grid">
-            <form className="pay-card" onSubmit={startPayment} noValidate>
+            {/* id is load-bearing: the mobile docked bar lives OUTSIDE this
+                form (it has to, to be position:fixed against the viewport
+                without the form's stacking context) and submits it by
+                `form="pay-form"`. That routes it through the same
+                startPayment, the same validation and the same busy guard, so
+                there is one payment path and not two to keep in step. */}
+            <form id="pay-form" className="pay-card" onSubmit={startPayment} noValidate>
               <p className="pay-eyebrow">YOUR DETAILS</p>
               <h2>Where should we reach you?</h2>
               <p className="pay-hint">
                 Deepti&rsquo;s team uses these to arrange your assessment and to
                 send you the receipt.
               </p>
+
+              {/* THE ONE INSTRUCTION THAT HAS TO LAND BEFORE PAYMENT, ported
+                  from the Sreshtha checkout. It sits ABOVE the fields, not
+                  beside the button: by the time someone is on the button they
+                  are committing, and this is a thing they need to know while
+                  they still have attention to spare for it.
+
+                  Razorpay's handler is what navigates to /book-a-call, so the
+                  gap between "payment succeeded" and "calendar opens" is real
+                  and a closed tab lands a paid buyer with no slot. */}
+              <div className="pay-note" role="note">
+                <span className="pay-note-chip" aria-hidden>
+                  <AlertIcon size={13} />
+                </span>
+                <p>
+                  <strong>
+                    Important: please don&rsquo;t close this page after paying.
+                  </strong>{' '}
+                  The moment your payment succeeds, please wait up to{' '}
+                  <strong>10 seconds</strong> without closing or refreshing this
+                  tab. You&rsquo;ll then be taken automatically to the calendar
+                  to pick your preferred date and time and book your assessment.
+                  Leaving early may stop your booking from being completed.
+                </p>
+              </div>
 
               <div className="pay-fields">
                 {/* First and last are SEPARATE fields, not one "Full name"
@@ -370,10 +412,35 @@ export default function CheckoutPage() {
                 </label>
               </div>
 
+              {/* The same promise as the note above, asked for rather than
+                  told, at the moment of paying. Its own line of error text and
+                  not the fields' one: "add your name and a valid number" is
+                  useless feedback to someone whose name is already filled in
+                  and whose only miss is the tick. */}
+              <label className="pay-ack">
+                <input
+                  type="checkbox"
+                  checked={ack}
+                  onChange={(e) => setAck(e.target.checked)}
+                  aria-invalid={(touched && !ack) || undefined}
+                />
+                <span>
+                  I understand that after payment, I&rsquo;ll wait up to{' '}
+                  <strong>10 seconds</strong> for the booking page to open, then
+                  pick my preferred date and time to book my assessment.
+                </span>
+              </label>
+
               {touched && !valid && (
                 <p className="pay-error">
                   Please add your name, a working email, your city and a valid
                   number.
+                </p>
+              )}
+              {touched && valid && !ack && (
+                <p className="pay-error">
+                  Please tick the box above so we know to expect you on the
+                  booking page.
                 </p>
               )}
               {failed && <p className="pay-error">{failed}</p>}
@@ -433,6 +500,38 @@ export default function CheckoutPage() {
           </div>
         </div>
       </section>
+
+      {/* ── THE MOBILE DOCKED BAR (2026-09-18, Atul) ──────────────────────
+          Below 1000px the layout is one column and the summary column stops
+          being sticky, so the price and the action both scroll away while the
+          fields are being filled. This puts them back.
+
+          It is NOT the landing page's StickyCta. That bar's job is to send
+          someone to /checkout, which is where this reader already is, so
+          reusing it would dock a button that links to the current page. This
+          one submits the form instead.
+
+          The label carries the price because it is the only place the price
+          appears once the summary has scrolled off. */}
+      <div className="pay-stuck" aria-hidden={busy ? true : undefined}>
+        <div className="pay-stuck-inner">
+          <span className="pay-stuck-fig">
+            <span className="pay-stuck-cap">Total due today</span>
+            <strong>{feeLabel}</strong>
+          </span>
+          <button
+            type="submit"
+            form="pay-form"
+            className="pay-stuck-go"
+            disabled={busy}
+          >
+            <span>{busy ? 'Taking you to payment' : 'Pay & book'}</span>
+            <span className="arrow" aria-hidden>
+              <ArrowRightIcon size={12} />
+            </span>
+          </button>
+        </div>
+      </div>
 
       <SiteFooter />
     </div>

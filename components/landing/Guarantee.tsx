@@ -11,22 +11,26 @@ import { ShieldCheckIcon } from '@/components/shared/icons';
  * Scattering a guarantee across a section is how it stops reading as one
  * thing somebody is on the hook for.
  *
- * "What We Ask In Return" IS structure — two conditions, and the reader
- * has to be able to check themselves against both — so it gets rows. They
- * are numbered rather than ticked: a ✓ marks something you receive, and
- * these are things you owe. That distinction is the whole reason this
+ * "What We Ask In Return" IS structure — three conditions, and the reader
+ * has to be able to check themselves against all of them — so it gets rows.
+ * They are numbered rather than ticked: a ✓ marks something you receive,
+ * and these are things you owe. That distinction is the whole reason this
  * block builds trust instead of reading as fine print.
  *
- * The qualifying line sits below a hairline as an authored coda — a
- * clarification of record, deliberately not shrunk into fine print. On a
- * results guarantee, hiding the condition is the thing that would make it
- * untrustworthy.
+ * THE THIRD CONDITION WAS A CODA UNTIL 2026-09-12. The qualifying line sat
+ * below a hairline as an authored clarification rather than in the list,
+ * which is a defensible way to set it and the wrong one here: set apart
+ * from the two numbered rows it read as a footnote about them, and Atul
+ * read it as a missing point rather than as a quieter one. It is point 03
+ * now, in the same weight as the other two, which is what a condition of
+ * the guarantee should carry.
  *
  * Server component.
  */
 const ASKS = [
   'You complete the full 12-week programme, consistently follow your personalised nutrition & lifestyle plan, attend scheduled check-ins and submit your progress updates on time.',
   'You actively communicate with Deepti and her nutritionists whenever work, travel, health or life gets in the way, so your plan can be adjusted accordingly.',
+  'The guarantee applies when you\u2019ve consistently followed your personalised plan and completed the programme as recommended.',
 ] as const;
 
 export function Guarantee() {
@@ -66,10 +70,6 @@ export function Guarantee() {
                 <p>{a}</p>
               </div>
             ))}
-            <p className="sdp-guarantee-coda">
-              The guarantee applies when you&apos;ve consistently followed your
-              personalised plan and completed the programme as recommended.
-            </p>
           </div>
         </div>
 

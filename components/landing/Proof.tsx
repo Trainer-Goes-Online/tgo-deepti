@@ -44,10 +44,10 @@ const TESTIMONIALS: { name: string; vimeoId: string }[] = [
   { name: 'Poornima', vimeoId: '1223587801' },
   { name: 'Firdous', vimeoId: '1223587781' },
   { name: 'Eesha', vimeoId: '1223587738' },
-  { name: 'Leena', vimeoId: '1223587736' },
+  { name: 'Leena', vimeoId: '1228050093' },
   { name: 'Firuza', vimeoId: '1223587786' },
   { name: 'Anusha', vimeoId: '1223587735' },
-  { name: 'Hemant', vimeoId: '1223587789' },
+  { name: 'Hemant', vimeoId: '1228050092' },
   { name: 'Divya', vimeoId: '1223587737' },
   { name: 'Anuja', vimeoId: '1223587883' },
 ];

@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { SiteFooter } from '@/components/shared/SiteFooter';
 import { business } from '@/lib/site';
 import { asset } from '@/components/shared/asset-version';
+import { AlertIcon, WhatsappIcon } from '@/components/shared/icons';
 import { trackPurchase } from '@/lib/track';
 
 /**
@@ -115,6 +116,25 @@ function loadCal(origin: string) {
     };
   return C.Cal as CalQueue;
 }
+
+/* ── THE SLOT-FALLBACK LINKS ───────────────────────────────────────────
+   Built from lib/site.ts rather than typed, so the number and address in
+   the block below can never drift from the ones on the legal pages and in
+   the footer, which are the ones Razorpay's merchant review checks.
+
+   wa.me wants bare digits with no plus and no spaces; phoneE164 carries the
+   plus, so it is stripped here rather than a second literal being kept. */
+const WA_DIGITS = business.phoneE164.replace(/\D/g, '');
+const PHONE_DISPLAY = `+91 ${business.phone.slice(0, 5)} ${business.phone.slice(5)}`;
+
+/* Pre-filled so the buyer sends a usable message instead of "hi". The blank
+   labels are the four things the team needs to place a slot by hand. */
+const RESCUE_WA_TEXT = encodeURIComponent(
+  "Hi Deepti, I've paid for my assessment but none of the listed slots work for me. My details: Name: | Email: | Phone: | Preferred day and time:",
+);
+const RESCUE_MAILTO = `mailto:${business.email}?subject=${encodeURIComponent(
+  'Assessment booking: preferred slot request',
+)}&body=${encodeURIComponent('Name:\nEmail:\nPhone:\nPreferred day and time:\n')}`;
 
 /* Inside the calendar card, under the embed: the three things a person
    hesitating over a time slot is actually wondering. */
@@ -333,6 +353,54 @@ function BookACall() {
                 </li>
               ))}
             </ul>
+          </div>
+
+          {/* ── THE SLOT FALLBACK (2026-09-18, Atul) ──────────────────────
+              For the buyer the calendar cannot serve. They have paid, none
+              of the open times work, and without this the page's only
+              answer is silence: the most likely next move is to close the
+              tab and hope someone gets in touch.
+
+              It sits directly under the calendar rather than at the end of
+              the page, because the moment it is needed is the moment the
+              grid comes back with nothing usable, not ten sections later.
+
+              LEADS WITH THE REASSURANCE, not the instruction. The fear here
+              is "I have paid and lost my seat", so that is answered in the
+              first clause; what to send comes after. It asks for the four
+              things Deepti's team needs to place a slot by hand, so the
+              first reply can be a time rather than a request for details. */}
+          <div className="bk-rescue">
+            <span className="bk-rescue-eyebrow">
+              <AlertIcon size={14} />
+              Preferred slot not available?
+            </span>
+            <h2>Cannot find a time that works for you?</h2>
+            <p>
+              You have already paid and your seat is reserved, so you will not
+              lose it. If none of the times above suit you, send us your{' '}
+              <strong>name, email, phone number and your preferred day and time</strong>
+              , and we will set up your slot personally.
+            </p>
+            <div className="bk-rescue-acts">
+              <a
+                className="bk-rescue-wa"
+                href={`https://wa.me/${WA_DIGITS}?text=${RESCUE_WA_TEXT}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <WhatsappIcon size={17} />
+                Message us on WhatsApp
+              </a>
+              <a className="bk-rescue-mail" href={RESCUE_MAILTO}>
+                Email us
+              </a>
+            </div>
+            <p className="bk-rescue-direct">
+              <a href={`https://wa.me/${WA_DIGITS}`}>{PHONE_DISPLAY}</a>
+              <span aria-hidden> · </span>
+              <a href={`mailto:${business.email}`}>{business.email}</a>
+            </p>
           </div>
         </div>
 
