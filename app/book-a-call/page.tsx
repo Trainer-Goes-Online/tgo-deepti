@@ -57,18 +57,26 @@ import { trackPurchase } from '@/lib/track';
  * NO-BRAINER pass.
  */
 
-/* Client-supplied embed snippet, 2026-09-09. Three things in it corrected
-   guesses made when only the share link was known:
-     · the loader is /embed-link/embed.js, not /embed/embed.js
-     · the api is NAMESPACED: Cal("init", "default", ...) then Cal.ns.default(...)
-     · the event slug is 1-on-1-health-consultation
-   All three are why the calendar would not have appeared before. */
-const CAL_ORIGIN = (process.env.NEXT_PUBLIC_CAL_ORIGIN ?? 'https://cal.id').trim();
-const CAL_LINK = (
-  process.env.NEXT_PUBLIC_CAL_LINK ?? 'deepti-sherawat/1-on-1-health-consultation'
-).trim();
-const CAL_NS = 'default';
-const CAL_URL = `${CAL_ORIGIN.replace(/\/$/, '')}/${CAL_LINK.replace(/^\//, '')}`;
+/* ── THE BOOKING LINK (cal.com, from the client's snippet 2026-09-19) ───
+   ONE line to change if the handle or event ever changes. It was briefly
+   five env vars, which was plumbing for a value that does not vary: this is
+   one client with one event, so it is a constant.
+
+   Note for any future move OFF cal.com: the loader path is not the same on
+   every Cal instance (cal.id served it at /embed-link/embed.js), so check it
+   rather than assuming the origin swap is enough. That was the whole of the
+   cal.id → cal.com breakage. */
+const CAL_LINK = 'deeptisherawat/1-on-1-health-consultation';
+
+/** The embed app. The script and `Cal('init')` both use this host. */
+const CAL_ORIGIN = 'https://app.cal.com';
+
+/** cal.com namespaces per EVENT, so the namespace IS the slug. */
+const CAL_NS = CAL_LINK.split('/')[1];
+
+/** The public booking page, for the "calendar not showing?" fallback only.
+ *  Deliberately cal.com and not the app subdomain: this one is human-facing. */
+const CAL_URL = `https://cal.com/${CAL_LINK}`;
 
 /* Cal's own loader, verbatim from the snippet apart from the url being read
    from CAL_ORIGIN. It defines window.Cal as a QUEUE straight away and appends
@@ -78,10 +86,15 @@ type CalQueue = ((...args: unknown[]) => void) & {
   loaded?: boolean;
   ns?: Record<string, (...args: unknown[]) => void>;
   q?: unknown[][];
+  config?: { forwardQueryParams?: boolean };
 };
-function loadCal(origin: string) {
+/* Takes the FULL script url, not an origin. It used to build the path itself,
+   which only worked while every Cal instance served the loader at the same
+   place: cal.id uses /embed-link/embed.js and cal.com uses /embed/embed.js, so
+   a derived path is a guess that silently 404s on the wrong host. */
+function loadCal(scriptSrc: string) {
   const C = window as unknown as { Cal?: CalQueue; document: Document };
-  const A = `${origin.replace(/\/$/, '')}/embed-link/embed.js`;
+  const A = scriptSrc;
   const L = 'init';
   const p = (a: { q?: unknown[][] }, ar: unknown[]) => {
     (a.q = a.q || []).push(ar);
@@ -249,22 +262,36 @@ function BookACall() {
     calBooted.current = true;
 
     try {
-      const Cal = loadCal(CAL_ORIGIN);
+      const Cal = loadCal(`${CAL_ORIGIN}/embed/embed.js`);
       Cal('init', CAL_NS, { origin: CAL_ORIGIN });
+
+      /* From the client's cal.com snippet. It forwards the PARENT page's query
+         string into the embed, which is what carries ?p=<payment_id> across
+         the seam. The booking-success handler below reads that id from a ref
+         on our side, so this is belt-and-braces rather than load-bearing, but
+         it is in the supplied snippet and costs nothing. */
+      Cal.config = Cal.config || {};
+      Cal.config.forwardQueryParams = true;
+
       const ns = Cal.ns![CAL_NS];
 
       ns('inline', {
         elementOrSelector: '#dp-cal',
-        config: { layout: 'month_view' },
+        /* useSlotsViewOnSmallScreen is from the client's snippet: on a narrow
+           screen Cal leads with the time list instead of the month grid, which
+           is the right first thing to show when the grid would be unreadable. */
+        config: { layout: 'month_view', useSlotsViewOnSmallScreen: 'true' },
         calLink: CAL_LINK,
       });
 
       ns('ui', {
-        /* Cal's generated snippet ships its default blue. Gold is this
-           funnel's only action colour, so it is the only thing inside the
-           embed that should look clickable either. Light is forced: the page
-           is cream, and Cal would otherwise follow the visitor's OS theme and
-           drop a dark calendar into the middle of it. */
+        /* KEPT ACROSS THE cal.com MOVE, deliberately. The client's cal.com
+           snippet carries no cssVarsPerTheme and no theme at all, so taking it
+           verbatim would hand the embed back to Cal's default blue and to the
+           visitor's OS theme. Gold is this funnel's only action colour, so it
+           is the only thing inside the embed that should look clickable
+           either; and light is forced because the page is cream and a dark
+           calendar would otherwise drop into the middle of it. */
         cssVarsPerTheme: { light: { 'cal-brand': '#E0A32E' }, dark: { 'cal-brand': '#E0A32E' } },
         theme: 'light',
         hideEventTypeDetails: false,
