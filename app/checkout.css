@@ -230,7 +230,35 @@
   flex: 0 0 18px;
   width: 18px; height: 18px; margin: 1px 0 0; padding: 0;
   border: 1px solid var(--border-strong); border-radius: var(--r-sm);
-  accent-color: var(--brand); cursor: pointer;
+  background: var(--bg);
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+
+/* THE TICK IS DRAWN HERE, and it has to be.
+   `.dp-pay input` above sets `appearance: none` for the text fields, and that
+   applies to this checkbox too: it strips the control's native rendering, so
+   there is no browser-drawn checkmark left to show. `accent-color`, which this
+   rule used to carry, only tints a control that still HAS its native
+   appearance, so it was doing nothing at all. The box filled with brand on
+   :checked and stayed empty, which reads as "did my click register?".
+
+   Painted as a background-image rather than a ::before, because pseudo-
+   elements do not render on <input> in Firefox; a background image works
+   everywhere. The glyph is a plain stroked tick, no font dependency. */
+.dp-pay .pay-ack input:checked {
+  background-color: var(--brand);
+  border-color: var(--brand);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.6 6.35 L4.9 8.6 L9.4 3.6' fill='none' stroke='%23ffffff' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px 12px;
+}
+
+/* Keyboard users need to see where they are: the box is 18px and the label
+   next to it is not the focus target. */
+.dp-pay .pay-ack input:focus-visible {
+  outline: 2px solid var(--brand); outline-offset: 2px;
 }
 .dp-pay .pay-ack input[aria-invalid="true"] {
   outline: 2px solid var(--brand); outline-offset: 2px;
