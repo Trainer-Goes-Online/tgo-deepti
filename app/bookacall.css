@@ -125,6 +125,30 @@
 }
 .dp-book .bk-cal iframe { width: 100%; border: 0; display: block; }
 
+/* ── THE DESKTOP BREAKOUT ──────────────────────────────────────────────
+   Cal lays itself out from the width it is GIVEN, not from the viewport.
+   .wrap is 860px, and after its 22px padding and the card's 22px the embed
+   was being handed about 770px, below the threshold for Cal's wide layout.
+   So it fell back to the stacked one, which on a desktop screen reads as a
+   phone view dropped into the middle of the page.
+
+   The calendar and its aside therefore break OUT of the measure while the
+   heading above them keeps it. That split is deliberate: a 1140px slab of
+   calendar is right, a 1140px line of body copy is not.
+
+   IT CANNOT OVERFLOW. min() clamps the width to the viewport less a 48px
+   gutter, and the pull-left is derived from that same value, so the block
+   stays centred on the wrap at every width instead of sliding off the right
+   edge. Gated at 1080px, which is the narrowest viewport where the full
+   1140 still clears its gutters. */
+@media (min-width: 1080px) {
+  .dp-book .bk-wide {
+    --bk-wide-w: min(1140px, calc(100vw - 48px));
+    width: var(--bk-wide-w);
+    margin-left: calc(50% - var(--bk-wide-w) / 2);
+  }
+}
+
 .dp-book .bk-cal-note {
   font-family: var(--fm); font-size: 11.5px; letter-spacing: .06em;
   color: var(--muted); text-align: center; padding: 26px 16px 0; margin: 0;

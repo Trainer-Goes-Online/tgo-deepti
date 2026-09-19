@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { SiteFooter } from '@/components/shared/SiteFooter';
 import { business } from '@/lib/site';
@@ -189,6 +189,31 @@ function BookACall() {
   const paymentId = useSearchParams().get('p') ?? '';
   const [state, setState] = useState<'loading' | 'ready' | 'failed'>('loading');
 
+  /* ── THE EMBED BOOTS ONCE, AND ONLY ONCE (2026-09-19) ────────────────
+     Cal's `inline` command MOUNTS an embed into #dp-cal. Calling it twice
+     does not refresh the first one, it puts a second instance in the same
+     container, and the two then fight over what the container shows: one
+     advances to the questions after a slot is tapped, the other re-renders
+     the month view underneath it. What the buyer sees is the form appear
+     and then snap straight back to slot selection, every time.
+
+     It was being called twice. reactStrictMode is on in next.config.ts, and
+     in development StrictMode deliberately runs every effect, cleans it up
+     and runs it AGAIN to surface exactly this class of bug. The cleanup
+     here only cleared the poll; it never tore the embed down, so the second
+     run mounted a second embed on top of the first.
+
+     The ref survives StrictMode's remount of the same component instance,
+     so the second run skips the boot. A genuine unmount and remount gets a
+     fresh component, a fresh ref, and a correct re-boot. */
+  const calBooted = useRef(false);
+
+  /* The success handler is registered once, so it must not close over a
+     stale payment id. A ref is read at fire time; the value itself still
+     comes from the URL. */
+  const payRef = useRef(paymentId);
+  payRef.current = paymentId;
+
   /* GA4 only, and only with a payment id to key it on. `once()` inside
      trackPurchase means a refresh or a back-navigation cannot double count. */
   useEffect(() => {
@@ -211,6 +236,17 @@ function BookACall() {
         window.clearInterval(poll);
       }
     }, 300);
+
+    /* See calBooted above. The poll still runs on every invocation, because
+       it only reads the DOM and drives the readiness message, but the embed
+       itself is mounted exactly once. */
+    if (calBooted.current) {
+      return () => {
+        cancelled = true;
+        window.clearInterval(poll);
+      };
+    }
+    calBooted.current = true;
 
     try {
       const Cal = loadCal(CAL_ORIGIN);
@@ -247,7 +283,8 @@ function BookACall() {
       ns('on', {
         action: 'bookingSuccessful',
         callback: () => {
-          const q = paymentId ? `?p=${encodeURIComponent(paymentId)}&booked=1` : '?booked=1';
+          const id = payRef.current;
+          const q = id ? `?p=${encodeURIComponent(id)}&booked=1` : '?booked=1';
           window.location.href = `/thank-you${q}`;
         },
       });
@@ -260,7 +297,12 @@ function BookACall() {
       cancelled = true;
       window.clearInterval(poll);
     };
-  }, [paymentId]);
+    /* Deliberately empty. The embed mounts once; the only value the effect
+       needed from outside is the payment id, and that is read through a ref
+       at fire time. Re-running this on any dependency change is what mounted
+       the second embed in the first place. */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="dp-book">
@@ -313,7 +355,7 @@ function BookACall() {
           </div>
 
           {/* 3 · THE CALENDAR CARD */}
-          <div className="bk-card" id="calendar">
+          <div className="bk-card bk-wide" id="calendar">
             <div className="bk-card-head">
               <h2>Pick a slot that works for you</h2>
               <p>All times are shown in your own time zone.</p>
@@ -370,7 +412,7 @@ function BookACall() {
               first clause; what to send comes after. It asks for the four
               things Deepti's team needs to place a slot by hand, so the
               first reply can be a time rather than a request for details. */}
-          <div className="bk-rescue">
+          <div className="bk-rescue bk-wide">
             <span className="bk-rescue-eyebrow">
               <AlertIcon size={14} />
               Preferred slot not available?
