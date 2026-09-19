@@ -698,6 +698,79 @@
 .sdp-proof-group { margin-top: 44px; }
 .sdp-proof-group:first-of-type { margin-top: 8px; }
 
+/* --- group C: written case studies (2026-09-19) --------------------
+   A RAIL, on the same doubled-track marquee as the video row, riding
+   the `is-case` variant that already existed in this file. Pausing on
+   hover/focus comes free with `.sdp-proof-rail`, which matters more
+   here than on the other two: these tiles carry a paragraph, so a
+   reader who wants to finish one has to be able to stop it.
+
+   The card sits one shade up from the section floor with a hairline
+   border, so they read as a set of records rather than paragraphs
+   floating on the dark band.
+
+   THE STAT BLOCK IS THE POINT, so it is ruled off and set in mono:
+   these are readings off a report, and someone scanning for their own
+   marker should find the figures without reading the paragraph first.
+   It is NOT uppercased, because the supplied copy is already cased the
+   way the client wants it ("3 Months DURATION") and transforming it
+   would be the page overruling them on their own numbers. */
+/* Width, marquee duration and the reduced-motion drop all come from the
+   `is-case` rules further down this file. Only the tile's own skin is
+   set here. `align-items: stretch` on the track means every tile in the
+   row takes the tallest one's height, which is what lets the stat block
+   below line up across the whole rail.
+
+   THE GROUND AND BORDER COLOUR BELOW ARE THE FALLBACK, not what renders.
+   `.sdp-dark .sdp-case-tile` and `.sdp-proof .sdp-case-tile` further down
+   re-ground this tile with the band's own tokens, and they outrank this
+   rule. That is the section's theming layer doing its job (it treats
+   `.sdp-pair` the same way), so it is left alone; the values here are what
+   the tile would wear outside a dark band. */
+.sdp-case-tile {
+  display: flex; flex-direction: column;
+  /* Top is deliberately the largest of the four: the name sits against it
+     with no eyebrow above to hold it off the edge. */
+  padding: 32px 22px 22px;
+  background: var(--bg-dark-elev);
+  border: 1px solid var(--border-dark-strong);
+  border-radius: var(--r-lg);
+}
+
+.sdp-cs-head { display: flex; align-items: baseline; gap: 10px; }
+.sdp-root .sdp-cs-name {
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: 22px; line-height: 1.15; letter-spacing: -.01em;
+  color: var(--ink-dark); margin: 0;
+}
+.sdp-cs-age { font-family: var(--fm); font-size: 12px; color: var(--muted-dark); }
+
+/* Gold, the page's rating accent, and the one place it is right: this is
+   literally a rating. It is not the garnet, which is the action colour. */
+.sdp-cs-stars { display: inline-flex; gap: 3px; margin-top: 9px; color: var(--gold); }
+
+.sdp-root .sdp-cs-body {
+  margin: 13px 0 0; font-size: 13.5px; line-height: 1.72; color: var(--ink-dark-soft);
+}
+
+.sdp-cs-stats {
+  list-style: none; margin: auto 0 0; padding: 17px 0 0;
+  /* `margin-top:auto` pins this to the card's foot, so the rules line up
+     across a row whose paragraphs are different lengths. */
+  border-top: 1px solid var(--border-dark-strong);
+  display: flex; flex-direction: column; gap: 9px;
+}
+.sdp-cs-stats li {
+  font-family: var(--fm); font-size: 11.5px; font-weight: 600;
+  letter-spacing: .03em; line-height: 1.5; color: var(--ink-dark);
+}
+.sdp-cs-arrow { font-style: normal; color: var(--brand-bright); }
+
+@media (max-width: 680px) {
+  .sdp-case-tile { padding: 26px 18px 18px; }
+  .sdp-root .sdp-cs-name { font-size: 20px; }
+}
+
 /* --- group A: video testimonial tiles (9:16, one lit play disc each) --- */
 .sdp-vt-card {
   position: relative; width: 100%;
@@ -728,22 +801,16 @@
   border: 0; box-shadow: var(--glow-cta);
 }
 
-/* --- group B: framed exhibit grid (designed case-study cards, 4:5) --- */
-.sdp-case-tile {
-  position: relative;
-  padding: 8px; border-radius: var(--r-lg);
-  background: var(--card);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-card);
-  transition: border-color .2s, transform .2s, box-shadow .2s;
-}
-.sdp-case-tile::before {
-  content: ""; position: absolute; top: 0; left: 14px; right: 14px; height: 3px;
-  background: linear-gradient(90deg, var(--brand), var(--brand-bright));
-  border-radius: 0 0 3px 3px;
-}
-.sdp-case-tile:hover { border-color: var(--brand); transform: translateY(-3px); box-shadow: var(--shadow-card-hover); }
-.sdp-case-tile .sdp-ph { border-radius: var(--r-sm); }
+/* The old `.sdp-case-tile` ruleset stood here: a LIGHT 4:5 framed card with
+   8px padding and a pink gradient bar across its top, belonging to the
+   designed case-study cards that were cut on 2026-09-09 (see the note at the
+   top of Proof.tsx). Nothing rendered it, so it sat here unnoticed.
+
+   It was deleted on 2026-09-19, when the written case studies took the same
+   class name back. Because it sat LATER in this file than the new tile's own
+   rules, it silently won every property they shared: the dark tile rendered
+   on a light ground with an 8px squeeze and a pink hairline over it. Two
+   blocks for one class is the bug; there is now one.  */
 
 /* --- group C: the paired exhibit -------------------------------
    The pairing IS the meaning: the transformation and the bloodwork
@@ -796,7 +863,6 @@
    exports re-flows the grid the placeholders were protecting. So every
    swap target is locked here, once. */
 .sdp-vt-card > img      { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; }
-.sdp-case-tile > img    { width: 100%; aspect-ratio: 4 / 5;  object-fit: cover; border-radius: var(--r-sm); }
 .sdp-wa-card > img      { width: 100%; aspect-ratio: 4 / 5;  object-fit: cover; }
 .sdp-coach-photo > img  { width: 100%; aspect-ratio: 4 / 5;  object-fit: cover; }
 .sdp-logo-tile > img    { width: 100%; aspect-ratio: 5 / 2;  object-fit: contain; padding: 8px 12px; }
@@ -1399,7 +1465,6 @@
 .sdp-proof .sdp-case-num,
 .sdp-proof .sdp-pair-num    { color: var(--action); }
 .sdp-proof p                { color: var(--ink-dark-soft); }
-.sdp-proof .sdp-case-tile::before { background: var(--brand); }
 
 /* ---- COACH, now white. Her credibility should read professional, so the
    panel behind her is soft aqua rather than a dark stage. ---- */
@@ -1482,12 +1547,15 @@
 /* On a rail a card has to carry its own width: it is no longer a grid cell. */
 .sdp-proof-track > * { flex: 0 0 auto; }
 .sdp-proof-rail.is-vt   .sdp-vt-card  { width: 232px; }
-.sdp-proof-rail.is-case .sdp-case-tile { width: 300px; }
+/* 400, not the 300 this rule carried for the old design: these tiles hold a
+   ~350-character paragraph, and at 300 it ran to a column so narrow and tall
+   that the stat block fell below the fold of the rail. */
+.sdp-proof-rail.is-case .sdp-case-tile { width: 400px; }
 .sdp-proof-rail.is-pair .sdp-pair      { width: 520px; }
 
 @media (max-width: 640px) {
   .sdp-proof-rail.is-vt   .sdp-vt-card  { width: 190px; }
-  .sdp-proof-rail.is-case .sdp-case-tile { width: 250px; }
+  .sdp-proof-rail.is-case .sdp-case-tile { width: 290px; }
   .sdp-proof-rail.is-pair .sdp-pair      { width: 300px; }
 }
 

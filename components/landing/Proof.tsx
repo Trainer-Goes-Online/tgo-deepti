@@ -2,6 +2,7 @@ import { CtaLockup } from '@/components/shared/CtaLockup';
 import { SectionMasthead } from '@/components/shared/SectionMasthead';
 import { TestimonialTile } from '@/components/landing/TestimonialTile';
 import { asset } from '@/components/shared/asset-version';
+import { StarIcon } from '@/components/shared/icons';
 
 /**
  * BEATS 3 / 4 · PROOF.
@@ -96,6 +97,69 @@ const BEFORE_AFTER: string[] = [
   'photo_2026-09-01 02.48.03.webp',
 ];
 
+/* ── WRITTEN CASE STUDIES (2026-09-19, Atul) ───────────────────────────
+ * The video rail shows faces; these show the markers. Both are the same
+ * proof beat, so they live in the same section, but a reader scanning for
+ * "did it work on someone with MY report" cannot get that from a thumbnail.
+ *
+ * COPY IS THE CLIENT'S, REPRODUCED VERBATIM. Ages, star counts, bodies and
+ * every stat line are exactly as supplied.
+ *
+ * EACH STAT IS ONE WHOLE STRING, not a value/label pair. The reference this
+ * was modelled on splits its stats into a big figure over a small caption,
+ * and most of these lines would split that way ("GRADE 3 → GRADE 1" over
+ * "FATTY LIVER"), but several would not ("FATTY LIVER → BORDERLINE",
+ * "URIC ACID → NORMAL RANGE"). Splitting the ones that fit and inventing a
+ * caption for the ones that do not is how a proof beat ends up with words
+ * the client never wrote. So the line is kept whole and the arrow carries
+ * the emphasis instead. See the note to Atul if the two-tier look is wanted.
+ */
+type CaseStudy = {
+  readonly name: string;
+  readonly age: string;
+  readonly body: string;
+  readonly stats: readonly string[];
+};
+
+const CASE_STUDIES: readonly CaseStudy[] = [
+  {
+    name: 'Jyoti',
+    age: '51',
+    body: 'In just 3 months, Jyoti saw significant improvement in her liver health and overall wellbeing. She came in with a sedentary lifestyle, low energy, poor appetite and Grade 3 fatty liver. Within 60 days, her fatty liver improved to Grade 2, and by the end of 3 months it had improved further to Grade 1, alongside better energy, appetite and sleep.',
+    stats: ['60 → 55 KG', 'GRADE 3 → GRADE 1 FATTY LIVER', '5 KG WEIGHT REDUCTION', '3 Months DURATION'],
+  },
+  {
+    name: 'Sthiti',
+    age: '40',
+    body: 'Sthiti came in with Grade 2 fatty liver, elevated uric acid, an ovarian cyst and subserosal myoma, along with bloating, heaviness and post-meal energy crashes. Over 4 months, her energy and digestion improved, her uric acid returned to the normal range, her fatty liver became borderline, the ovarian cyst reduced in size and her subserosal myoma completely reduced.',
+    stats: ['75 → 63 KG', 'FATTY LIVER → BORDERLINE', 'URIC ACID → NORMAL RANGE', '4 Months DURATION'],
+  },
+  {
+    name: 'Agrima',
+    age: '27',
+    body: 'Agrima had been dealing with irregular periods for 10 years, significant gut issues, fatty liver, elevated BP, acne and hair fall. Her menstrual cycle was around 45 days when she joined. Within just 1 month, her cycle returned to around 30 days, and by the end of 4 months her gut health, BP, skin, sleep and menstrual health had improved significantly.',
+    stats: ['45 → 30 DAYS MENSTRUAL CYCLE', '82 → 76.2 KG', 'BP → NORMAL LEVELS', '4 Months DURATION'],
+  },
+  {
+    name: 'Arshad',
+    age: '56',
+    body: 'Arshad came in with a demanding work schedule, a congenital single kidney, elevated HbA1c, deranged liver function tests, elevated BP and poor gut health. Within 4 months, he lost 10 kg, achieved visible inch loss, improved his digestion and sleep, and brought his HbA1c and liver function tests within range.',
+    stats: ['76 → 66 KG', '36.5 → 32 IN WAIST', '38 → 34 IN STOMACH', '4 Months DURATION'],
+  },
+  {
+    name: 'Subhojit',
+    age: '45',
+    body: 'Subhojit came in with Grade 2 fatty liver with fibrosis, frequent alcohol consumption, irregular eating, poor appetite and significant digestive issues. Over 4 months, his digestion, sleep and appetite improved substantially, while his liver assessment changed to Grade 1 fatty liver with no fibrosis detected and multiple blood markers improved.',
+    stats: ['GRADE 2 + FIBROSIS → GRADE 1 + NO FIBROSIS', '2803 → 81 GGT', '21.9 → 8.61 HOMOCYSTEINE', '4 Months DURATION'],
+  },
+  {
+    name: 'Kulpriya',
+    age: '33',
+    body: 'Despite working out regularly and eating healthy, Kulpriya was struggling to lose fat, especially around her belly. She was also dealing with Grade 1 fatty liver, bloating, gas, acne, pigmentation and multiple food sensitivities linked to an autoimmune condition. With a personalised nutrition approach focused on foods that suited her body, she lost around 5 kg, improved her digestion and skin health, and her Grade 1 fatty liver healed.',
+    stats: ['~5 KG FAT LOSS', 'GRADE 1 → HEALED FATTY LIVER', 'DIGESTIVE ISSUES → BETTER MANAGED', 'SKIN HEALTH → NOTICEABLY IMPROVED'],
+  },
+];
+
 export function Proof() {
   return (
     <section id="proof" className="sdp-proof sdp-dark">
@@ -156,6 +220,65 @@ export function Proof() {
                     decoding="async"
                   />
                 </figure>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* group C · the written case studies, after both rails.
+            Same doubled-track marquee as group A, and for the same reason:
+            a single copy animating to -50% drifts left by half its own width
+            and then snaps. The duplicate is `inert` as well as aria-hidden,
+            which is what PART 3's reduced-motion rule keys on when it drops
+            the spare half.
+
+            It rides the EXISTING `is-case` rail variant, which was already in
+            landing.css (duration, tile width, mobile width, reduced-motion)
+            from an earlier design and had no markup using it. Reusing it
+            rather than adding a parallel set of rules is why this needed
+            almost no new CSS. */}
+        <div className="sdp-proof-group sdp-proof-rail is-case" data-sdp-reveal>
+          <div className="sdp-proof-track">
+            {[0, 1].map((copy) =>
+              CASE_STUDIES.map((c) => (
+                <article
+                  className="sdp-case-tile"
+                  key={`cs-${copy}-${c.name}`}
+                  {...(copy === 1 ? { inert: true, 'aria-hidden': true } : {})}
+                >
+                  <div className="sdp-cs-head">
+                    <h3 className="sdp-cs-name">{c.name}</h3>
+                    <span className="sdp-cs-age">{c.age}</span>
+                  </div>
+
+                  <span className="sdp-cs-stars" aria-label="Rated 5 out of 5">
+                    {[0, 1, 2, 3, 4].map((s) => (
+                      <StarIcon key={s} size={13} />
+                    ))}
+                  </span>
+
+                  <p className="sdp-cs-body">{c.body}</p>
+
+                  {/* The arrow is tinted by SPLITTING ON IT, never by rewriting
+                      the line: the words stay exactly as supplied and only the
+                      glyph between them is coloured. */}
+                  <ul className="sdp-cs-stats">
+                    {c.stats.map((s) => (
+                      <li key={s}>
+                        {s.split('→').map((part, idx) => (
+                          <span key={idx}>
+                            {idx > 0 ? (
+                              <i className="sdp-cs-arrow" aria-hidden>
+                                →
+                              </i>
+                            ) : null}
+                            {part}
+                          </span>
+                        ))}
+                      </li>
+                    ))}
+                  </ul>
+                </article>
               ))
             )}
           </div>
