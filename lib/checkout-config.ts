@@ -44,6 +44,17 @@ export const CHECKOUT_CONFIG = {
   contentName: 'Personalised Health Assessment',
   /** GA4 item_id. Opaque, stable, no condition word. */
   itemId: 'deepti-assessment',
+  /* THIS FUNNEL'S MARK, written onto every order it creates and checked by the
+     webhook before it reports anything. One constant, referenced from both
+     ends, because the gate is worthless the day the two sides disagree about
+     the spelling.
+
+     Razorpay registers webhooks per URL on an ACCOUNT and sends every
+     subscribed event to every registered URL, so without this check the
+     webhook reports a payment link, an invoice, a renewal or a second funnel's
+     sale as a sale of this one: a Purchase to Meta, a purchase to GA4 and a
+     buyer row to Pabbly, for someone who never bought this. */
+  orderKind: 'deepti_assessment',
   fallbackEventSourceUrl: SITE_URL,
   meta: {
     pixelId: process.env.META_PIXEL_ID ?? '',

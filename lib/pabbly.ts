@@ -38,6 +38,8 @@ export type PabblyPurchase = {
   email: string;
   phone: string;
   city: string;
+  /** "+91", kept apart from `phone`, which arrives as full E.164. */
+  dialCode: string;
   countryCode: string;
   fbc: string;
   fbp: string;
@@ -70,6 +72,10 @@ export type PabblyPurchase = {
    empty one. */
 const s = (v: unknown) => (v == null ? '' : String(v));
 
+/* One constant behind both `type` and `event`, so a workflow branching on
+   either takes the same path. */
+const RECORD_TYPE = 'purchase';
+
 export async function sendPabblyPurchase(
   p: PabblyPurchase,
 ): Promise<{ ok: boolean; status: number }> {
@@ -90,7 +96,16 @@ export async function sendPabblyPurchase(
         email: s(p.email),
         phone: s(p.phone),
         city: s(p.city),
+        /* Separate from `phone`, which Razorpay returns as full E.164. Kept
+           apart so a workflow can route or format on the country without
+           parsing a number, and so the two cannot disagree. */
+        dial_code: s(p.dialCode),
         country_code: s(p.countryCode),
+        /* The record type, carrying the SAME value as `event` below, from one
+           constant, so the two can never disagree. This funnel hands off
+           exactly one kind of record, a completed purchase, because the
+           webhook is its only caller and it only fires on payment.captured. */
+        type: RECORD_TYPE,
         fbc: s(p.fbc),
         fbp: s(p.fbp),
         client_ip_address: s(p.clientIp),
@@ -112,7 +127,7 @@ export async function sendPabblyPurchase(
         referrer: s(p.referrer),
         landing_url: s(p.landingUrl),
 
-        event: 'purchase',
+        event: RECORD_TYPE,
         payment_id: s(p.paymentId),
         order_id: s(p.orderId),
         name: `${s(p.firstName)} ${s(p.lastName)}`.trim(),

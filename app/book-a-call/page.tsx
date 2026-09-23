@@ -6,7 +6,7 @@ import { SiteFooter } from '@/components/shared/SiteFooter';
 import { business } from '@/lib/site';
 import { asset } from '@/components/shared/asset-version';
 import { AlertIcon, WhatsappIcon } from '@/components/shared/icons';
-import { trackPurchase } from '@/lib/track';
+import { trackPurchase, trackSchedule } from '@/lib/track';
 
 /**
  * THE SIXTH SURFACE · /book-a-call
@@ -311,6 +311,16 @@ function BookACall() {
         action: 'bookingSuccessful',
         callback: () => {
           const id = payRef.current;
+          /* Report the booking BEFORE navigating. `capi()` sends with
+             `keepalive`, so the request survives the navigation this line
+             causes, and `trackSchedule` is keyed on the payment id so a
+             back-navigation into Cal's success state cannot count one booking
+             twice.
+
+             This is the step the funnel exists to produce. Until it was added
+             the ad account could optimise towards someone paying and not
+             towards someone who took a slot, and those are different people. */
+          trackSchedule(id ?? '');
           const q = id ? `?p=${encodeURIComponent(id)}&booked=1` : '?booked=1';
           window.location.href = `/thank-you${q}`;
         },

@@ -6,6 +6,7 @@ import {
   ga4AddPaymentInfo,
   ga4AddToCart,
   ga4BeginCheckout,
+  ga4GenerateLead,
   ga4Purchase,
   ga4ViewItem,
   once,
@@ -123,5 +124,29 @@ export function trackPurchase(transactionId: string) {
      but a genuine second purchase later must still count. */
   once(`purchase_${transactionId}`, () => {
     ga4Purchase({ transactionId, ...money });
+  });
+}
+
+/**
+ * The call was actually booked. Fired from Cal's `bookingSuccessful` callback
+ * and nowhere else.
+ *
+ * WHY THIS EXISTS: the payment is not the outcome of this funnel, the booked
+ * call is. Until this was added the ad account could optimise towards someone
+ * paying ninety-seven rupees and not towards someone who then took a slot, and
+ * those are different people. A buyer who pays and never books is the exact
+ * waste this event makes visible.
+ *
+ * NO VALUE. The assessment fee was already counted on Purchase, and sending it
+ * again here would double the revenue GA4 and Meta attribute to one sale.
+ *
+ * Keyed on the payment id like Purchase is, so a refresh of the confirmation
+ * page or a back-navigation into Cal's success state cannot count one booking
+ * twice.
+ */
+export function trackSchedule(paymentId: string) {
+  once(`schedule_${paymentId || 'anon'}`, () => {
+    capi('Schedule', {});
+    ga4GenerateLead({ value: 0, currency: 'INR' });
   });
 }

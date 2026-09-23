@@ -61,6 +61,10 @@ export const ga4BeginCheckout = (m: Money) => send('begin_checkout', money(m));
 export const ga4AddPaymentInfo = (m: Money) => send('add_payment_info', money(m));
 export const ga4Purchase = (m: Money & { transactionId: string }) =>
   send('purchase', { transaction_id: m.transactionId, ...money(m) });
+/* The booked call. GA4's recommended name for it is `generate_lead`, which is
+   the closest standard name to Meta's `Schedule`: the two vocabularies differ
+   here as they do everywhere else, and the mapping lives in lib/track.ts. */
+export const ga4GenerateLead = (m: Money) => send('generate_lead', money(m));
 
 /* Some events should fire once rather than on every call. The flag is stamped
    BEFORE the call so a rapid double-click or a tab closed mid-navigation still

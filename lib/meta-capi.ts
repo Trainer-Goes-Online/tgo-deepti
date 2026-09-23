@@ -70,7 +70,18 @@ export type StandardEvent =
   | 'ViewContent'
   | 'AddToCart'
   | 'InitiateCheckout'
-  | 'Purchase';
+  | 'Purchase'
+  /* Added 2026-09-23. A VSL funnel does not end at the payment: the payment
+     buys a CALL, and the call is the thing the funnel exists to produce. It
+     was invisible to Meta until now, so the ad account could optimise towards
+     someone paying and not towards someone who actually took a slot, which is
+     the step that decides whether the money was well spent.
+
+     `Schedule` is a Meta STANDARD event, so it stays inside the closed union,
+     can be an AEM priority event, and populates the standard funnel report.
+     It must also be added to the pixel's event allow-list in the dashboard or
+     it is dropped without an error. */
+  | 'Schedule';
 
 /**
  * Custom events, kept to a closed union for the same reason the standard ones

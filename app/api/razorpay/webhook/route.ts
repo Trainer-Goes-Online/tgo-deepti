@@ -10,7 +10,7 @@ import {
 } from '@/lib/checkout-config';
 import { ga4ServerReady, sendGa4Purchase } from '@/lib/ga4-server';
 import { sendCapiEvent, type Occupation } from '@/lib/meta-capi';
-import { unpackContext } from '@/lib/order-notes';
+import { readOrderContext } from '@/lib/order-notes';
 import { pabblyReady, sendPabblyPurchase } from '@/lib/pabbly';
 
 /**
@@ -55,9 +55,53 @@ export async function POST(req: Request) {
 
   const payment = parsed.payload?.payment?.entity ?? {};
   const notes = payment.notes ?? {};
+
+  /* ── IS THIS SALE EVEN OURS? (2026-09-23) ──────────────────────────────
+     A signature check proves the call came from Razorpay. It does NOT prove
+     the payment came from THIS checkout.
+
+     Razorpay registers webhooks per URL on an ACCOUNT and sends every
+     subscribed event to every registered URL. So this endpoint receives every
+     captured payment on the account: a second funnel sharing it, a payment
+     link created by hand in the dashboard, an invoice, a renewal. Every one
+     of those was being reported as a sale of this assessment, with a Purchase
+     to Meta, a purchase to GA4 and a buyer row to the fulfilment hand-off.
+
+     `notes.kind` is this funnel's mark, written on the order at create time.
+     No mark, or someone else's mark, means the payment is not ours.
+
+     200, NOT an error. A non-200 makes Razorpay retry the same foreign
+     payment on a schedule for hours. This is a correct, final "not mine". */
+  const kind = String(notes.kind ?? '');
+  if (kind !== CHECKOUT_CONFIG.orderKind) {
+    console.warn(
+      `[rzp-webhook] ignored payment ${String(payment.id ?? '')}: kind="${kind || 'none'}", expected "${CHECKOUT_CONFIG.orderKind}"`,
+    );
+    return NextResponse.json({ ok: true, ignored: 'not-this-funnel' });
+  }
+
   const paymentId = String(payment.id ?? '');
   const orderId = String(payment.order_id ?? '');
   const amountRupees = Number(payment.amount ?? 0) / 100;
+
+  /* ── THE TIMESTAMP IS RAZORPAY'S (2026-09-23) ──────────────────────────
+     `payment.created_at` is the moment the money was captured, in Unix
+     seconds, and it arrives on this payload. Nothing has to carry it.
+
+     It replaces a timestamp minted at create-order and ferried through the
+     order notes. That one meant "when the buyer submitted the form", which
+     for a UPI payer can be minutes earlier, so the two are not the same
+     instant. The capture time is the one the record should carry, and the
+     practical gain is that it can no longer be lost: a note that fails to
+     pack cannot take the sale's date with it.
+
+     Fallback to now() only if Razorpay ever omits it, so the field is never
+     empty on a row that definitely represents a real payment. */
+  const capturedAt = Number(payment.created_at ?? 0);
+  const createdAt =
+    Number.isFinite(capturedAt) && capturedAt > 0
+      ? new Date(capturedAt * 1000).toISOString()
+      : new Date().toISOString();
 
   const valueRupees = amountRupees || CHECKOUT_CONFIG.amountRupees;
 
@@ -65,7 +109,7 @@ export async function POST(req: Request) {
      unpacked here. This is the ONLY route back to the buyer's own IP, user
      agent, campaign and landing page: this request came from Razorpay, so its
      own headers describe Razorpay. */
-  const ctx = unpackContext(notes);
+  const ctx = readOrderContext(notes);
 
   const country = ctx.country || 'in';
 
@@ -120,12 +164,13 @@ export async function POST(req: Request) {
   const pabbly = pabblyReady()
     ? await sendPabblyPurchase({
         leadId: String(notes.lead_id ?? ''),
-        createdAt: ctx.createdAt,
+        createdAt,
         firstName: ctx.firstName,
         lastName: ctx.lastName,
         email,
         phone,
         city: ctx.city,
+        dialCode: ctx.dialCode,
         countryCode: country,
         fbc: ctx.fbc,
         fbp: ctx.fbp,

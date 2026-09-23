@@ -27,6 +27,19 @@ const ALLOWED: SendableEvent[] = [
   'AddToCart',
   'InitiateCheckout',
   'QualifiedLead',
+  /* Added 2026-09-23. Unlike Purchase, a booking is NOT proven server-side:
+     Cal confirms it in the browser and we have no webhook from Cal, so this
+     is the only place it can be reported from.
+
+     That is an accepted, bounded risk rather than an oversight. A forged
+     Schedule inflates a mid-funnel count; a forged Purchase would inflate
+     revenue and teach the ad account to buy the wrong people, which is why
+     Purchase stays off this list and this does not. It also carries no value,
+     so it cannot move a revenue number at all.
+
+     If Cal booking webhooks are ever wired up, move this to a server route and
+     take it back off the list. */
+  'Schedule',
 ];
 
 /* The reserved segment answers, validated against this list rather than passed

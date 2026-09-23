@@ -214,6 +214,11 @@ export default function CheckoutPage() {
           phone: e164,
           city: f.city.trim(),
           country: f.country,
+          /* Sent SEPARATELY from the phone, which goes up as full E.164.
+             Pabbly gets its own `dial_code` column, so a workflow can route or
+             format on the country without having to parse a number back
+             apart. */
+          dialCode: dial,
           ...collectSignals(),
         }),
       });
