@@ -6,7 +6,7 @@ import {
   ATTR_COOKIE,
   packJsonNote,
   readAttrCookie,
-} from '@/lib/attribution';
+} from '@/lib/attribution-edge';
 import { CHECKOUT_CONFIG, isTestMode } from '@/lib/checkout-config';
 import {
   readClientIp,

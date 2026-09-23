@@ -51,6 +51,8 @@ export function readClientIp(req: Request): string {
 export function readClientUserAgent(req: Request): string {
   return (req.headers.get('user-agent') ?? '').trim();
 }
+
+/**
  * /api/razorpay/create-order is a SAME-ORIGIN request from the buyer's own
  * browser, so every cookie that browser holds is already sitting on it. Until
  * this was added the route ignored them and trusted whatever the client chose

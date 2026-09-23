@@ -211,7 +211,6 @@ export function unpackContext(notes: Record<string, unknown>): OrderContext {
     return { ...EMPTY_CONTEXT };
   }
 }
-}
 
 /* ══════════════════════════════════════════════════════════════════════
    READING AN ORDER BACK, IN EITHER SHAPE (2026-09-22)
