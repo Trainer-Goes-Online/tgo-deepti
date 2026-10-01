@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { SiteFooter } from '@/components/shared/SiteFooter';
 import { business } from '@/lib/site';
-import { SealCheckIcon, CheckIcon } from '@/components/shared/icons';
+import { ConfirmationStep } from '@/components/thank-you/ConfirmationStep';
 
 /**
  * THE CONFIRMATION · /thank-you
@@ -30,10 +30,12 @@ import { SealCheckIcon, CheckIcon } from '@/components/shared/icons';
  *   · sections are 80px tall and alternate band tone the way the funnel does
  *   · big display ordinals with a short gold rule under them, exactly the
  *     `.sdp-pillar-num` treatment from the programme beat
- *   · the confirmation seal is built like the guarantee card's icon tile:
- *     a dark garnet tile with a gold mark on it
  *
- * BAND RHYTHM: dark (confirmation) · light (what the call is) · blush
+ * HERO REPLACED 2026-10-01: the "locked in" seal became ConfirmationStep,
+ * a WhatsApp bridge. Booking alone does not confirm the call; the buyer
+ * messages the team for the next step, so the hero's one job is that tap.
+ *
+ * BAND RHYTHM: dark (bridge) · light (what the call is) · blush
  * (prep) · dark (close). The page opens AND closes on the deepest surface,
  * which is the funnel's own way of marking a beat that matters.
  *
@@ -89,38 +91,10 @@ function ThankYou() {
 
   return (
     <div className="dp-ty">
-      {/* ── 1 · CONFIRMATION. Dark band, the page's first peak. ─────── */}
-      <section className="ty-sec ty-dark ty-hero">
-        <div className="ty-wrap">
-          <span className="ty-seal" aria-hidden>
-            <SealCheckIcon />
-          </span>
-          <span className="ty-badge">Booking confirmed</span>
-          <h1 className="ty-h1">
-            Your assessment is <em>locked in.</em>
-          </h1>
-          <p className="ty-sub">
-            Your slot is confirmed and the details are on their way to the email
-            address you booked with. Put it in your calendar now, while it is in
-            front of you.
-          </p>
-
-          <ul className="ty-chips">
-            <li>
-              <span className="ty-tick" aria-hidden>
-                <CheckIcon />
-              </span>
-              Confirmation by email, with your joining link
-            </li>
-            <li>
-              <span className="ty-tick" aria-hidden>
-                <CheckIcon />
-              </span>
-              A reminder before the call
-            </li>
-          </ul>
-        </div>
-      </section>
+      {/* ── 1 · THE BRIDGE. Dark band, the page's first peak. Replaced
+          the "locked in" confirmation 2026-10-01: the call is not confirmed
+          until the buyer messages the team, so the hero sends them there. */}
+      <ConfirmationStep />
 
       {/* ── 2 · WHAT THE CALL IS. Light band, display ordinals. ─────── */}
       <section className="ty-sec ty-light">

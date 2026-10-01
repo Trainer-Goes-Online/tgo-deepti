@@ -12,7 +12,9 @@ import '../thankyou.css';
  * strangers their assessment is confirmed.
  */
 export const metadata: Metadata = {
-  title: 'Your assessment is confirmed',
+  /* Matches the hero since 2026-10-01: the assessment is not confirmed until
+     the buyer messages the team, so the tab must not say it is. */
+  title: 'One more step to confirm your assessment',
   description: 'Payment received.',
   robots: { index: false, follow: false },
 };

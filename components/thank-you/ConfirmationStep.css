@@ -1,0 +1,167 @@
+/* ════════════════════════════════════════════════════════════════
+   ConfirmationStep.css  ·  scope: .cs-step
+
+   The /thank-you hero. Mobile-first: base rules are the phone, the
+   media queries add room. TOKEN-ONLY, apart from the two WhatsApp
+   greens, which are the same documented pair /book-a-call uses.
+
+   Dark band, because the thank-you opens on the funnel's deepest
+   surface. On garnet-black the reference's red "WAIT!" has no
+   contrast, so the alert word takes --action, the funnel's own
+   attention colour (gold on this dark is about 6.7:1).
+================================================================ */
+
+.cs-step {
+  --cs-wa: #1FA855;        /* WhatsApp green, darkened for white text */
+  --cs-wa-hover: #1B9349;
+
+  background: var(--bg-dark);
+  color: var(--ink-dark);
+  font-family: var(--fb);
+  text-align: center;
+  padding: 56px 0 60px;
+}
+.cs-step *,
+.cs-step *::before,
+.cs-step *::after { box-sizing: border-box; }
+
+.cs-wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+
+/* Same face, weight and tracking as the funnel's hero headings. */
+.cs-title {
+  margin: 0;
+  font-family: var(--fh); font-weight: var(--fh-weight);
+  font-size: clamp(28px, 7.4vw, 50px); line-height: 1.14; letter-spacing: -.012em;
+  color: var(--ink-dark); text-wrap: balance;
+}
+.cs-alert { color: var(--action); }
+
+/* The portrait in a brand ring: a hairline of --brand-bright, then a
+   soft garnet halo, the same family the section eyebrows use on dark. */
+.cs-avatar {
+  display: block;
+  width: 176px; aspect-ratio: 1; margin: 28px auto 0;
+  border-radius: 50%; overflow: hidden;
+  background: linear-gradient(145deg, var(--brand), var(--brand-deep));
+  border: 2px solid var(--brand-bright);
+  box-shadow: 0 0 0 7px rgba(var(--brand-rgb), .35), 0 18px 40px rgba(0, 0, 0, .35);
+}
+/* Source is 2:3 with her face in the upper fifth; anchoring the crop
+   near the top keeps head and crossed arms inside the circle. */
+.cs-avatar img {
+  display: block; width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 12%;
+}
+
+.cs-copy { margin-top: 28px; }
+.cs-copy p {
+  margin: 0 auto; max-width: 52ch;
+  font-size: 15.5px; line-height: 1.65; color: var(--ink-dark-soft);
+}
+.cs-copy p + p { margin-top: 12px; }
+.cs-copy strong { color: var(--ink-dark); font-weight: 700; }
+
+/* Full-width on a phone and 60px tall: a thumb target, not a link. */
+.cs-cta {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  width: 100%; min-height: 60px; margin-top: 30px; padding: 16px 32px;
+  border-radius: 999px;
+  background: var(--cs-wa); color: #fff;
+  font-family: var(--fb); font-size: 19px; font-weight: 700; line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, .55);
+  transition: background .2s, transform .2s, box-shadow .2s;
+}
+.cs-cta:hover {
+  background: var(--cs-wa-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px -12px rgba(0, 0, 0, .6);
+}
+.cs-cta:focus-visible { outline: 3px solid var(--action); outline-offset: 3px; }
+.cs-cta svg { flex: 0 0 auto; }
+
+/* ── the phone sticky bar ─────────────────────────────────────────
+   Landing's .sdp-stuck, measured: --card fill, --border-strong top
+   hairline, soft upward shadow, safe-area aware. Deliberately no
+   transform and no transition, so it is there on first paint. The
+   page's bottom reserve for it lives in thankyou.css. */
+.cs-stuck {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  background: var(--card);
+  border-top: 1px solid var(--border-strong);
+  box-shadow: 0 -8px 28px rgba(var(--ink-rgb), .10);
+}
+.cs-stuck-go {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; min-height: 54px; padding: 12px 18px;
+  border-radius: 999px;
+  background: var(--cs-wa); color: #fff;
+  font-family: var(--fb); font-size: 15.5px; font-weight: 700; line-height: 1.2;
+  text-align: center; text-decoration: none; white-space: nowrap;
+}
+.cs-stuck-go:active { background: var(--cs-wa-hover); }
+.cs-stuck-go:focus-visible { outline: 3px solid var(--action); outline-offset: 3px; }
+.cs-stuck-go svg { flex: 0 0 auto; }
+
+@media (min-width: 641px) {
+  .cs-step { padding: 80px 0; }
+  .cs-avatar { width: 220px; margin-top: 36px; }
+  .cs-copy { margin-top: 32px; }
+  .cs-copy p { font-size: 17px; }
+  .cs-cta {
+    display: inline-flex; width: auto; min-width: 280px; min-height: 64px;
+    margin-top: 34px; padding: 18px 44px; font-size: 20px;
+  }
+  /* desktop has room for the hero button to stay in reach */
+  .cs-stuck { display: none; }
+}
+
+/* ── THE EYE-CATCH (2026-10-01, Atul) ─────────────────────────────
+   Two of the landing's own moves, put on a loop because this button is
+   the page's only job and phones have no hover:
+   · the SHINE is .sdp-cta::after's glint (same 120deg white band, same
+     -20deg skew), which the landing only plays on hover; here it sweeps
+     every 3.2s on its own.
+   · the RING is the landing's sdpPulse (announce dot): a box-shadow that
+     grows out and fades, drawn in WhatsApp green.
+   Both are transform/opacity/box-shadow only, so nothing reflows. The
+   sticky bar's button carries the same pair: on a phone it is the copy
+   of this button that is actually on screen. */
+.cs-cta,
+.cs-stuck-go {
+  position: relative; overflow: hidden; isolation: isolate;
+  animation: csRing 2s ease-out infinite;
+}
+.cs-cta::after,
+.cs-stuck-go::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, .45), transparent);
+  transform: skewX(-20deg); pointer-events: none;
+  animation: csShine 3.2s ease-in-out infinite;
+}
+@keyframes csShine {
+  0%       { left: -60%; }
+  45%, 100% { left: 130%; }
+}
+@keyframes csRing {
+  0%   { box-shadow: 0 0 0 0 rgba(31, 168, 85, .55), 0 10px 24px -10px rgba(0, 0, 0, .55); }
+  70%  { box-shadow: 0 0 0 12px rgba(31, 168, 85, 0), 0 10px 24px -10px rgba(0, 0, 0, .55); }
+  100% { box-shadow: 0 0 0 0 rgba(31, 168, 85, 0), 0 10px 24px -10px rgba(0, 0, 0, .55); }
+}
+/* The bar has 10px of padding, so its ring stays smaller to stay inside. */
+.cs-stuck-go { animation-name: csRingTight; }
+@keyframes csRingTight {
+  0%   { box-shadow: 0 0 0 0 rgba(31, 168, 85, .5); }
+  70%  { box-shadow: 0 0 0 7px rgba(31, 168, 85, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(31, 168, 85, 0); }
+}
+/* Hover keeps the lift; the ring pauses so the two don't fight. */
+.cs-cta:hover { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-cta { transition: background .2s; }
+  .cs-cta:hover { transform: none; }
+  .cs-cta, .cs-stuck-go,
+  .cs-cta::after, .cs-stuck-go::after { animation: none; }
+}
