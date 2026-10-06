@@ -205,7 +205,12 @@ export default function BookACallPage() {
 }
 
 function BookACall() {
-  const paymentId = useSearchParams().get('p') ?? '';
+  const params = useSearchParams();
+  const paymentId = params.get('p') ?? '';
+  /* Set by the checkout when the order bump was in the paid order, so the
+     GA4 purchase below reports the real total. Revenue only: the webhook's
+     server-side purchase is the authority, and it reads the order itself. */
+  const withBump = params.get('b') === '1';
   const [state, setState] = useState<'loading' | 'ready' | 'failed'>('loading');
 
   /* ── THE EMBED BOOTS ONCE, AND ONLY ONCE (2026-09-19) ────────────────
@@ -236,8 +241,8 @@ function BookACall() {
   /* GA4 only, and only with a payment id to key it on. `once()` inside
      trackPurchase means a refresh or a back-navigation cannot double count. */
   useEffect(() => {
-    if (paymentId) trackPurchase(paymentId);
-  }, [paymentId]);
+    if (paymentId) trackPurchase(paymentId, withBump);
+  }, [paymentId, withBump]);
 
   useEffect(() => {
     let cancelled = false;

@@ -31,7 +31,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { business, feeLabel } from '@/lib/site';
+import { bumpEnabled, bumpLabel, business, totalLabel } from '@/lib/site';
 import { collectSignals } from '@/lib/client-signals';
 import {
   trackAddToCart,
@@ -39,6 +39,7 @@ import {
   trackInitiateCheckout,
 } from '@/lib/track';
 import { SiteFooter } from '@/components/shared/SiteFooter';
+import { asset } from '@/components/shared/asset-version';
 import { PaymentLogos } from '@/components/shared/PaymentLogos';
 import {
   AlertIcon,
@@ -48,6 +49,7 @@ import {
   CheckIcon,
   LockIcon,
   ShieldCheckIcon,
+  StarIcon,
 } from '@/components/shared/icons';
 
 import {
@@ -55,8 +57,14 @@ import {
   ASSESSMENT_PRICE_LABEL,
   ASSESSMENT_PROMISE,
   ASSESSMENT_TITLE,
+  BUMP_FLAG,
+  BUMP_ITEMS,
+  BUMP_KICKER,
+  BUMP_LEDE,
+  BUMP_TITLE,
   NOT_A_SALES_CALL,
   SCOPE_NOTE,
+  SCOPE_NOTE_WITH_BUMP,
 } from './included';
 
 declare global {
@@ -143,6 +151,11 @@ export default function CheckoutPage() {
      kind of thing: the fields are data we collect, this is a promise we ask for
      before taking money. */
   const [ack, setAck] = useState(false);
+  /* The order bump. Off by default: an add-on the buyer did not choose is a
+     chargeback waiting to happen. Only this flag travels to the server, which
+     prices the order itself. */
+  const [bump, setBump] = useState(false);
+  const total = totalLabel(bump);
 
   /* ARRIVAL at the checkout. GA4 gets begin_checkout, Meta gets AddToCart.
      Meta's InitiateCheckout deliberately does NOT fire here: it waits until the
@@ -191,14 +204,17 @@ export default function CheckoutPage() {
     /* Meta InitiateCheckout + GA4 add_payment_info. Fired BEFORE the sheet
        opens rather than after payment, because this is the moment intent is
        real: the details are valid and the buyer is committing. */
-    trackInitiateCheckout({
-      email: f.email.trim(),
-      phone: e164,
-      firstName: f.firstName.trim(),
-      lastName: f.lastName.trim(),
-      city: f.city.trim(),
-      country: f.country,
-    });
+    trackInitiateCheckout(
+      {
+        email: f.email.trim(),
+        phone: e164,
+        firstName: f.firstName.trim(),
+        lastName: f.lastName.trim(),
+        city: f.city.trim(),
+        country: f.country,
+      },
+      bump,
+    );
 
     try {
       const sdk = await loadRazorpay();
@@ -219,6 +235,8 @@ export default function CheckoutPage() {
              format on the country without having to parse a number back
              apart. */
           dialCode: dial,
+          /* A flag, never a price: create-order works out the amount. */
+          bump,
           ...collectSignals(),
         }),
       });
@@ -266,8 +284,12 @@ export default function CheckoutPage() {
         /* Purchase is NOT fired here. The webhook owns it, so a UPI payer who
            finishes in their bank app and never returns is still counted. This
            handler only moves the buyer on. */
+        /* `b=1` rides along so the browser-side GA4 purchase on /book-a-call
+           reports the bumped total rather than the bare fee. */
         handler: (r: { razorpay_payment_id: string }) => {
-          window.location.href = `/book-a-call?p=${encodeURIComponent(r.razorpay_payment_id)}`;
+          window.location.href = `/book-a-call?p=${encodeURIComponent(r.razorpay_payment_id)}${
+            bump ? '&b=1' : ''
+          }`;
         },
       });
       rzp.open();
@@ -417,6 +439,12 @@ export default function CheckoutPage() {
                 </label>
               </div>
 
+              {/* THE ORDER BUMP sits after the last field and before the
+                  acknowledgement: the details are done, the buyer has not yet
+                  committed, and it is the last thing read before paying. */}
+              {/* Not rendered at all when NEXT_PUBLIC_BUMP_FEE is unset. */}
+              {bumpEnabled && <OrderBump on={bump} onChange={setBump} />}
+
               {/* The same promise as the note above, asked for rather than
                   told, at the moment of paying. Its own line of error text and
                   not the fields' one: "add your name and a valid number" is
@@ -454,7 +482,7 @@ export default function CheckoutPage() {
                 <span>
                   {busy
                     ? 'Taking you to payment'
-                    : `Pay ${feeLabel} & Get My Assessment`}
+                    : `Pay ${total} & Get My Assessment`}
                 </span>
                 <span className="arrow" aria-hidden>
                   <ArrowRightIcon size={13} />
@@ -500,7 +528,7 @@ export default function CheckoutPage() {
             </form>
 
             <div className="pay-sum-col">
-              <OrderSummary />
+              <OrderSummary bump={bump} onRemoveBump={() => setBump(false)} />
             </div>
           </div>
         </div>
@@ -519,10 +547,36 @@ export default function CheckoutPage() {
           The label carries the price because it is the only place the price
           appears once the summary has scrolled off. */}
       <div className="pay-stuck" aria-hidden={busy ? true : undefined}>
+        {/* THE BUMP, IN THE BAR (2026-10-06, Atul). On a phone the bump card
+            is one screen among many in the form, and this bar is the one
+            thing always in view, so the choice lives here too. Same state as
+            the card, so ticking either ticks both; the total beside the
+            button moves with it. */}
+        {bumpEnabled && (
+          <label className={bump ? 'pay-stuck-bump on' : 'pay-stuck-bump'}>
+            <input
+              type="checkbox"
+              checked={bump}
+              onChange={(e) => setBump(e.target.checked)}
+              disabled={busy}
+            />
+            <span className="pay-stuck-bump-text">
+              {bump ? (
+                <>
+                  <b>{BUMP_TITLE} added</b> &middot; +{bumpLabel}
+                </>
+              ) : (
+                <>
+                  <b>Add {BUMP_TITLE}</b> &middot; +{bumpLabel}
+                </>
+              )}
+            </span>
+          </label>
+        )}
         <div className="pay-stuck-inner">
           <span className="pay-stuck-fig">
             <span className="pay-stuck-cap">Total due today</span>
-            <strong>{feeLabel}</strong>
+            <strong>{total}</strong>
           </span>
           <button
             type="submit"
@@ -574,7 +628,13 @@ function readToken(name: string, fallback: string): string {
  * a control that does nothing (hence pointer-events: none on the desktop rule
  * and the details being unconditionally visible there).
  */
-function OrderSummary() {
+/* Product thumbnails for the summary lines, client-supplied 2026-10-06 as
+   basic.png and bump.png (2048px, ~6.5MB each). Converted to 320px WebP,
+   2x+ the widest the frame is drawn, which is about 20KB each. */
+const THUMB_ASSESSMENT = '/checkout/basic.webp';
+const THUMB_BUMP = '/checkout/bump.webp';
+
+function OrderSummary({ bump, onRemoveBump }: { bump: boolean; onRemoveBump: () => void }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -599,17 +659,49 @@ function OrderSummary() {
       </button>
 
       {/* The lead item, always visible on every viewport: it is the thing
-          being bought, and it is the only line on the order. */}
+          being bought. */}
       <div className="sum-lead">
-        <span className="sum-lead-chip" aria-hidden>
-          1 of 1
-        </span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          className="sum-lead-thumb"
+          src={asset(THUMB_ASSESSMENT)}
+          alt=""
+          width={320}
+          height={320}
+          decoding="async"
+        />
         <span className="sum-lead-body">
           <b>{ASSESSMENT_TITLE}</b>
           <span>With Deepti and her team of qualified nutritionists</span>
         </span>
         <span className="sum-lead-price">{ASSESSMENT_PRICE_LABEL}</span>
       </div>
+
+      {/* The bump's own line, only while it is on, with a way to take it back
+          off from here: on a phone the bump card may be far above by now. */}
+      {bump && (
+        <div className="sum-lead sum-bump">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className="sum-lead-thumb"
+            src={asset(THUMB_BUMP)}
+            alt=""
+            width={320}
+            height={320}
+            decoding="async"
+          />
+          <span className="sum-lead-body">
+            <b>{BUMP_TITLE}</b>
+            <span>
+              {BUMP_KICKER} &middot;{' '}
+              <button type="button" className="sum-bump-remove" onClick={onRemoveBump}>
+                Remove
+              </button>
+            </span>
+          </span>
+          <span className="sum-lead-price">{bumpLabel}</span>
+        </div>
+      )}
 
       <div id="sum-details" className={open ? 'sum-details open' : 'sum-details'}>
         <p className="sum-sub">WHAT IS REVIEWED IN IT</p>
@@ -629,7 +721,7 @@ function OrderSummary() {
 
       <div className="sum-total">
         <span className="sum-total-label">Total</span>
-        <span className="sum-total-fig">{ASSESSMENT_PRICE_LABEL}</span>
+        <span className="sum-total-fig">{totalLabel(bump)}</span>
       </div>
 
       <div className="sum-method">
@@ -642,9 +734,69 @@ function OrderSummary() {
 
       <div className="sum-scope">
         <b>WHAT THIS FEE COVERS</b>
-        <p>{SCOPE_NOTE}</p>
+        <p>{bump ? SCOPE_NOTE_WITH_BUMP : SCOPE_NOTE}</p>
       </div>
     </div>
+  );
+}
+
+/**
+ * THE ORDER BUMP CARD.
+ *
+ * One <label> around one real checkbox, so the whole card is the tap target
+ * and keyboard, screen readers and form semantics all come for free. Every
+ * child is a <span> because a label may only hold phrasing content; the list
+ * is styled as one, and announced through role="list".
+ *
+ * The bottom strip is the visible "button". It restates the price in its
+ * label and flips to an "added" state, so the buyer always sees which way the
+ * order currently stands without reading the summary.
+ */
+function OrderBump({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <label className={on ? 'pay-bump on' : 'pay-bump'}>
+      <input
+        type="checkbox"
+        className="bump-input"
+        checked={on}
+        onChange={(e) => onChange(e.target.checked)}
+        aria-describedby="bump-lede"
+      />
+
+      <span className="bump-flag">
+        <StarIcon size={11} />
+        {BUMP_FLAG}
+      </span>
+
+      <span className="bump-head">
+        <span className="bump-kicker">{BUMP_KICKER}</span>
+        <span className="bump-price">+ {bumpLabel}</span>
+      </span>
+      <span id="bump-lede" className="bump-lede">
+        {BUMP_LEDE}
+      </span>
+
+      <span className="bump-list" role="list">
+        {BUMP_ITEMS.map((it) => (
+          <span className="bump-item" role="listitem" key={it.title}>
+            <span className="ck" aria-hidden>
+              <CheckIcon size={10} />
+            </span>
+            <span>
+              <b>{it.title}</b>
+              <span>{it.sub}</span>
+            </span>
+          </span>
+        ))}
+      </span>
+
+      <span className="bump-go" aria-hidden>
+        <span className="bump-box" />
+        <span className="bump-go-label">
+          {on ? `Added to your order · ${bumpLabel}` : `Tap to add for ${bumpLabel} more`}
+        </span>
+      </span>
+    </label>
   );
 }
 

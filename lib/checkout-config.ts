@@ -1,4 +1,5 @@
-import { site, feePaise } from '@/lib/site';
+import { site, feePaise, bumpPaise } from '@/lib/site';
+import { BUMP_TITLE } from '@/app/checkout/included';
 
 /**
  * Every server-side constant the payment and tracking routes need, in one
@@ -26,6 +27,12 @@ export const siteUrlReady = () => Boolean(SITE_URL);
 export const CHECKOUT_CONFIG = {
   amountRupees: site.feeInr,
   amountPaise: feePaise,
+  /** The optional order bump, priced from `site.bumpInr`. */
+  bumpRupees: site.bumpInr,
+  bumpPaise,
+  /** The page's own summary label, so the record and the page agree. */
+  bumpName: BUMP_TITLE,
+  bumpItemId: 'deepti-guides-bump',
   currency: 'INR',
   /**
    * The product label. Used for Razorpay's payment sheet, the GA4 item name

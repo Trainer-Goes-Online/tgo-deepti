@@ -70,3 +70,28 @@ export const NOT_A_SALES_CALL = 'This is not a sales call.';
  */
 export const SCOPE_NOTE =
   'This payment is for the assessment only. It does not enrol you in the 12-week programme, and it is not a deposit against it. If the programme turns out to be right for you, joining it is a separate decision you make afterwards.';
+
+/**
+ * The scope line when the bump is on. Same promise, with the one honest
+ * change: the payment is no longer for the assessment alone.
+ */
+export const SCOPE_NOTE_WITH_BUMP =
+  'This payment is for the assessment and the four guides you added. It does not enrol you in the 12-week programme, and it is not a deposit against it. If the programme turns out to be right for you, joining it is a separate decision you make afterwards.';
+
+/**
+ * ── THE ORDER BUMP (2026-10-06, client-supplied) ─────────────────────
+ * A one-time add-on offered on the checkout itself. Every string is the
+ * client's own, verbatim; the price is NOT here, it renders from
+ * `site.bumpInr` so the label and the charge come from one number.
+ */
+export const BUMP_FLAG = 'Recommended';
+export const BUMP_KICKER = 'One-time add-on';
+export const BUMP_LEDE = '4 ready-to-use guides for your weight, gut & liver health.';
+/** Short name for the order summary line and the fulfilment record. */
+export const BUMP_TITLE = '4 Health Guides';
+export const BUMP_ITEMS: { title: string; sub: string }[] = [
+  { title: 'Belly Fat Foods & Habits Guide', sub: 'Foods, habits & smarter swaps to know' },
+  { title: 'Belly Fat Burn Tea Recipe Guide', sub: '5 easy teas with everyday ingredients' },
+  { title: 'Liver Fat-Flush Recipe Guide', sub: 'Simple Indian recipes for liver health' },
+  { title: 'Recipes for Radiant Skin', sub: 'For healthier-looking skin & a natural glow' },
+];

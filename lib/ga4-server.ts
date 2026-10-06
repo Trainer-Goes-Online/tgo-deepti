@@ -23,8 +23,7 @@ export async function sendGa4Purchase(params: {
   transactionId: string;
   valueRupees: number;
   currency: string;
-  itemId: string;
-  itemName: string;
+  items: { itemId: string; itemName: string; price: number }[];
 }): Promise<{ ok: boolean; status: number }> {
   const measurementId = process.env.NEXT_PUBLIC_GA4_ID ?? '';
   const apiSecret = process.env.GA4_API_SECRET ?? '';
@@ -43,14 +42,12 @@ export async function sendGa4Purchase(params: {
           transaction_id: params.transactionId,
           value: params.valueRupees,
           currency: params.currency,
-          items: [
-            {
-              item_id: params.itemId,
-              item_name: params.itemName,
-              price: params.valueRupees,
-              quantity: 1,
-            },
-          ],
+          items: params.items.map((it) => ({
+            item_id: it.itemId,
+            item_name: it.itemName,
+            price: it.price,
+            quantity: 1,
+          })),
         },
       },
     ],

@@ -103,7 +103,14 @@ export async function POST(req: Request) {
       ? new Date(capturedAt * 1000).toISOString()
       : new Date().toISOString();
 
-  const valueRupees = amountRupees || CHECKOUT_CONFIG.amountRupees;
+  /* Whether this buyer also took the order bump, written on the order by
+     create-order. It decides whether they are owed the four guides, so it
+     travels to Pabbly as its own field. */
+  const bump = String(notes.bump ?? '') === 'yes';
+
+  const valueRupees =
+    amountRupees ||
+    CHECKOUT_CONFIG.amountRupees + (bump ? CHECKOUT_CONFIG.bumpRupees : 0);
 
   /* Everything the browser knew, written into the order at create time and
      unpacked here. This is the ONLY route back to the buyer's own IP, user
@@ -148,8 +155,24 @@ export async function POST(req: Request) {
         transactionId: paymentId,
         valueRupees,
         currency: CHECKOUT_CONFIG.currency,
-        itemId: CHECKOUT_CONFIG.itemId,
-        itemName: CHECKOUT_CONFIG.contentName,
+        /* Two line items when the bump was taken, so GA4 can report the
+           bump's take-rate rather than one blended price. */
+        items: [
+          {
+            itemId: CHECKOUT_CONFIG.itemId,
+            itemName: CHECKOUT_CONFIG.contentName,
+            price: bump ? valueRupees - CHECKOUT_CONFIG.bumpRupees : valueRupees,
+          },
+          ...(bump
+            ? [
+                {
+                  itemId: CHECKOUT_CONFIG.bumpItemId,
+                  itemName: CHECKOUT_CONFIG.bumpName,
+                  price: CHECKOUT_CONFIG.bumpRupees,
+                },
+              ]
+            : []),
+        ],
       })
     : { ok: false, status: 0 };
 
@@ -197,6 +220,8 @@ export async function POST(req: Request) {
         currency: CHECKOUT_CONFIG.currency,
         product: CHECKOUT_CONFIG.contentName,
         occupation: ctx.occupation,
+        orderBump: bump,
+        orderBumpProduct: bump ? CHECKOUT_CONFIG.bumpName : '',
       })
     : { ok: false, status: 0 };
 
