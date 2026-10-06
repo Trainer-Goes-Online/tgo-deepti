@@ -63,6 +63,10 @@ export type PabblyPurchase = {
   currency: string;
   product: string;
   occupation: string;
+  /** True when the buyer also took the checkout's order bump. */
+  orderBump: boolean;
+  /** The bump's name when taken, empty otherwise. */
+  orderBumpProduct: string;
 };
 
 /* Every key is emitted on every call, empty string where unknown. Pabbly
@@ -134,6 +138,11 @@ export async function sendPabblyPurchase(
         currency: s(p.currency),
         product: s(p.product),
         occupation: s(p.occupation),
+        /* THE ORDER BUMP. A real boolean for the same reason as is_test: a
+           router condition must branch on it safely. When true, this buyer is
+           owed the four guides, and `amount` already includes the bump. */
+        order_bump: Boolean(p.orderBump),
+        order_bump_product: s(p.orderBumpProduct),
       }),
     });
     return { ok: res.ok, status: res.status };

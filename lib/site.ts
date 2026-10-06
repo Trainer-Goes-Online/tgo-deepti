@@ -3,6 +3,14 @@ export const site = {
   /** LAUNCH's half of the funnel, not built yet; the LP links here. */
   checkoutUrl: '/checkout',
   feeInr: Number(process.env.NEXT_PUBLIC_ASSESSMENT_FEE ?? '97') || 97,
+  /** The checkout's optional order bump (four guides), in rupees.
+   *
+   *  SET IN THE ENVIRONMENT ONLY, deliberately with no number in the code
+   *  (2026-10-06, Atul): the manager or client changes the price in the
+   *  host's env settings, never in a commit. Unset, blank or not a positive
+   *  number means 0, and 0 SWITCHES THE BUMP OFF: the card does not render
+   *  and create-order refuses it. A missing price is never guessed. */
+  bumpInr: Math.max(0, Math.round(Number(process.env.NEXT_PUBLIC_BUMP_FEE) || 0)),
   /** Countdown window for the offer urgency, per the copy: 5 hours. */
   offerHours: 5,
 };
@@ -69,3 +77,20 @@ export const CTA_LABEL =
  */
 export const feePaise = site.feeInr * 100;
 export const feeLabel = `₹${site.feeInr.toLocaleString('en-IN')}`;
+
+const rupees = (n: number) => `₹${n.toLocaleString('en-IN')}`;
+
+/* The bump follows the same law: `site.bumpInr` is its only declaration, and
+   the server prices the order from it. The browser only ever says WHETHER the
+   bump was ticked, never what it costs. */
+/** Whether the bump is on offer at all. Off when NEXT_PUBLIC_BUMP_FEE is
+ *  unset, so a deploy without the variable is a clean ₹97-only checkout. */
+export const bumpEnabled = site.bumpInr > 0;
+export const bumpPaise = site.bumpInr * 100;
+export const bumpLabel = rupees(site.bumpInr);
+
+/** What the order comes to, with or without the bump. One formula, used by
+ *  the page, the order route and the analytics, so they cannot disagree. */
+export const totalInr = (withBump: boolean) =>
+  site.feeInr + (withBump && bumpEnabled ? site.bumpInr : 0);
+export const totalLabel = (withBump: boolean) => rupees(totalInr(withBump));

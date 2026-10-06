@@ -8,6 +8,7 @@ import {
   readAttrCookie,
 } from '@/lib/attribution-edge';
 import { CHECKOUT_CONFIG, isTestMode } from '@/lib/checkout-config';
+import { bumpEnabled } from '@/lib/site';
 import {
   readClientIp,
   readClientUserAgent,
@@ -88,6 +89,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, reason: 'missing-fields' }, { status: 400 });
   }
 
+  /* THE ORDER BUMP. The browser sends only whether it was ticked; the amount
+     is priced HERE from lib/site.ts. A strict `=== true`, so a forged string
+     or a missing key is a plain assessment order, never a guess. */
+  const bump = body.bump === true && bumpEnabled;
+  const amountPaise = CHECKOUT_CONFIG.amountPaise + (bump ? CHECKOUT_CONFIG.bumpPaise : 0);
+
   const utm = (body.utm ?? {}) as Record<string, string | undefined>;
 
   /* Identity and timestamp for the fulfilment record. Generated HERE, not in
@@ -130,7 +137,10 @@ export async function POST(req: Request) {
   const utmOf = (bodyVal: unknown, edgeVal: unknown, max: number) =>
     truncate(bodyVal, max) || truncate(edgeVal, max);
 
-  /* FOURTEEN KEYS OF THE FIFTEEN ALLOWED. One spare, deliberately.
+  /* FIFTEEN KEYS OF THE FIFTEEN ALLOWED. The spare went to `bump` on
+     2026-10-06: it decides whether the buyer is owed four guides, so it is
+     fulfilment, and fulfilment gets its own key rather than a bundle slot.
+     The NEXT note must displace or merge an existing key, not add one.
      NO `phone` KEY: Razorpay returns the buyer's contact on the webhook
      payload, and it holds what they actually paid with rather than what they
      typed. A field that never travels cannot be lost, and this one bought
@@ -138,6 +148,9 @@ export async function POST(req: Request) {
   const notes: Record<string, string> = {
     kind: CHECKOUT_CONFIG.orderKind,
     lead_id: leadId,
+    /* "yes"/"no" rather than 1/0: it is read by people in the Razorpay
+       dashboard as well as by the webhook. */
+    bump: bump ? 'yes' : 'no',
     /* Human-readable, for the Razorpay dashboard: whoever opens a payment
        there should see who it was without decoding anything. */
     name: truncate(`${firstName} ${lastName}`.trim()),
@@ -220,7 +233,7 @@ export async function POST(req: Request) {
         authorization: `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString('base64')}`,
       },
       body: JSON.stringify({
-        amount: CHECKOUT_CONFIG.amountPaise,
+        amount: amountPaise,
         currency: CHECKOUT_CONFIG.currency,
         receipt: `dp_${Date.now()}`,
         notes,

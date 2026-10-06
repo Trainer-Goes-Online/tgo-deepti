@@ -138,7 +138,11 @@ export async function POST(req: Request) {
         req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || undefined,
       clientUserAgent: req.headers.get('user-agent') ?? undefined,
     },
-    valueRupees: CHECKOUT_CONFIG.amountRupees,
+    /* The cart's value. `bump` is only a flag from the browser; the price is
+       added here from config, and only on the event that carries a cart. */
+    valueRupees:
+      CHECKOUT_CONFIG.amountRupees +
+      (eventName === 'InitiateCheckout' && body.bump === true ? CHECKOUT_CONFIG.bumpRupees : 0),
     currency: CHECKOUT_CONFIG.currency,
     /* Reserved, and undefined on every event this build sends. */
     occupation,

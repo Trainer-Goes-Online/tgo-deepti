@@ -1,6 +1,6 @@
 'use client';
 
-import { site } from '@/lib/site';
+import { site, totalInr } from '@/lib/site';
 import { collectSignals } from '@/lib/client-signals';
 import {
   ga4AddPaymentInfo,
@@ -40,6 +40,20 @@ const ITEM: Ga4Item = {
 };
 const money = { value: VALUE, currency: 'INR', items: [ITEM] };
 
+/* The order bump as its own GA4 line item, so the bump's take-rate can be
+   read in GA4 rather than buried in a blended price. */
+const BUMP_ITEM: Ga4Item = {
+  item_id: 'deepti-guides-bump',
+  item_name: '4 Health Guides',
+  price: site.bumpInr,
+  quantity: 1,
+};
+/** The cart as it actually stands: the fee, plus the bump if it was ticked. */
+const moneyFor = (withBump: boolean) =>
+  withBump
+    ? { value: totalInr(true), currency: 'INR', items: [ITEM, BUMP_ITEM] }
+    : money;
+
 type Person = {
   email?: string;
   phone?: string;
@@ -53,13 +67,14 @@ type Person = {
 };
 
 /** Fire-and-forget: analytics must never block or fail a click. */
-function capi(eventName: string, person: Person = {}) {
+function capi(eventName: string, person: Person = {}, bump = false) {
   const s = collectSignals();
   try {
     void fetch('/api/meta/event', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ eventName, ...s, ...person }),
+      /* `bump` is a flag; the route prices the value server-side. */
+      body: JSON.stringify({ eventName, ...s, ...person, bump }),
       keepalive: true, // survives the navigation a CTA click causes
     });
   } catch {
@@ -104,26 +119,27 @@ export function trackBeginCheckout() {
  * broken optimisation signal, because Meta then buys people who land rather
  * than people who try to pay.
  */
-export function trackInitiateCheckout(person: Person) {
-  capi('InitiateCheckout', person);
+export function trackInitiateCheckout(person: Person, withBump = false) {
+  /* Valued at the cart as it stands at the pay tap, bump included. */
+  capi('InitiateCheckout', person, withBump);
 
   /* QualifiedLead would fire here, as its own capi() call, for the qualifying
      segment only. It is not wired on this build because no qualifying segment
      has been specified for this offer. See lib/meta-capi.ts. */
 
-  ga4AddPaymentInfo({ value: VALUE, currency: 'INR' });
+  ga4AddPaymentInfo({ value: totalInr(withBump), currency: 'INR' });
 }
 
 /**
  * GA4 only. Meta's Purchase comes from the Razorpay webhook, where the payment
  * is proven. Firing it here as well would double-count every sale.
  */
-export function trackPurchase(transactionId: string) {
+export function trackPurchase(transactionId: string, withBump = false) {
   /* Keyed on the payment id, not a fixed string: a refresh, a back-forward, or
      the buyer reopening the confirmation link must not count the sale twice,
      but a genuine second purchase later must still count. */
   once(`purchase_${transactionId}`, () => {
-    ga4Purchase({ transactionId, ...money });
+    ga4Purchase({ transactionId, ...moneyFor(withBump) });
   });
 }
 
