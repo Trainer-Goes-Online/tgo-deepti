@@ -90,7 +90,7 @@ export const BUMP_LEDE = '4 ready-to-use guides for your weight, gut & liver hea
 /** Short name for the order summary line and the fulfilment record. */
 export const BUMP_TITLE = '4 Health Guides';
 export const BUMP_ITEMS: { title: string; sub: string }[] = [
-  { title: 'Belly Fat Foods & Habits Guide', sub: 'Foods, habits & smarter swaps to know' },
+  { title: 'Belly Fat Reducing Foods & Habits Guide', sub: 'Foods, habits & smarter swaps to know' },
   { title: 'Belly Fat Burn Tea Recipe Guide', sub: '5 easy teas with everyday ingredients' },
   { title: 'Liver Fat-Flush Recipe Guide', sub: 'Simple Indian recipes for liver health' },
   { title: 'Recipes for Radiant Skin', sub: 'For healthier-looking skin & a natural glow' },
