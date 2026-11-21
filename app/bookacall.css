@@ -925,3 +925,50 @@
   .dp-book .bk-sticky { transition: none; }
   .dp-book .bk-sticky-dot { animation: none; }
 }
+
+/* ── INVESTMENT: the "Rs. __" amount box inside the budget option (2026-11-21)
+   Sits inline in the option sentence. "Rs." and the box never wrap apart.
+   Width is set inline from the digit count (4 digits by default, growing a
+   digit at a time), so these rules only style it. The selectors are long on
+   purpose: they must outrank both the "hide inputs inside an option" rule
+   and the full-width text-field rule earlier in this file. */
+.dp-book .bk-budget {
+  display: inline-flex; align-items: center; gap: 5px;
+  white-space: nowrap; margin: 2px 4px; vertical-align: middle;
+  font-weight: 700;
+}
+.dp-book .bk-form .bk-opt input.bk-budget-input[type="text"] {
+  position: static; opacity: 1; pointer-events: auto;
+  height: 34px; min-height: 0; margin: 0; padding: 4px 10px;
+  max-width: 100%;
+  font-family: var(--fb); font-size: 15px; font-weight: 700; line-height: 1;
+  font-variant-numeric: tabular-nums; text-align: center;
+  color: var(--ink); background: var(--card);
+  border: 1.5px solid var(--border-strong); border-radius: 8px;
+  transition: width .12s ease-out, border-color .15s, box-shadow .15s;
+}
+.dp-book .bk-form .bk-opt input.bk-budget-input[type="text"]::placeholder { color: var(--muted); opacity: .45; font-weight: 600; }
+.dp-book .bk-form .bk-opt input.bk-budget-input[type="text"]:focus {
+  border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft);
+}
+.dp-book .bk-form .bk-opt input.bk-budget-input[type="text"][aria-invalid="true"] {
+  border-color: var(--brand); background: var(--brand-fill);
+}
+@media (max-width: 420px) {
+  .dp-book .bk-form .bk-opt input.bk-budget-input[type="text"] { height: 32px; font-size: 14.5px; padding: 3px 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dp-book .bk-form .bk-opt input.bk-budget-input[type="text"] { transition: none; }
+}
+
+/* Budget option alignment (2026-11-21). The amount box is taller than a line
+   of text, so this row used to have one tall line and the radio (aligned to
+   the row's top) sat high. Every line of this option is now a fixed 32px,
+   which the 30px box fits inside, and the radio is nudged to the middle of
+   the FIRST line. That holds on one line (desktop) and when the sentence
+   wraps (phone), wherever the box lands. */
+.dp-book .bk-opt-budget .bk-opt-text { line-height: 32px; }
+.dp-book .bk-opt-budget .bk-opt-mark { margin-top: 6px; }
+.dp-book .bk-opt-budget { padding-top: 8px; padding-bottom: 8px; }
+.dp-book .bk-opt-budget .bk-budget { margin: 0 4px; }
+.dp-book .bk-form .bk-opt-budget input.bk-budget-input[type="text"] { height: 30px; padding-top: 2px; padding-bottom: 2px; }

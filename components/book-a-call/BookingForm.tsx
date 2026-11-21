@@ -8,7 +8,11 @@ import {
   usablePrefill,
   CONCERNS,
   DECISION,
+  BUDGET_BLANK,
   INVESTMENT,
+  INVESTMENT_BUDGET,
+  cleanBudgetAmount,
+  isBudgetAmount,
   LANGUAGE,
   OTHER,
   SHOW_UP,
@@ -71,6 +75,7 @@ const EMPTY: BookingAnswers = {
   tried: [],
   whyNow: '',
   investment: '',
+  investmentAmount: '',
   commitment: '',
   profession: '',
   decision: '',
@@ -477,13 +482,14 @@ export function BookingForm({
 
         {step === 2 && (
           <>
-            <Choice
-              name="investment"
+            <InvestmentChoice
               question="If we identify the right approach for you during your consultation and you feel confident moving forward, what level of investment would you be comfortable making in your health?"
-              options={INVESTMENT}
               value={a.investment}
+              amount={a.investmentAmount}
               onChange={(x) => set('investment', x)}
-              bad={bad('investment')} error={err('investment')}
+              onAmount={(x) => set('investmentAmount', cleanBudgetAmount(x))}
+              bad={bad('investment')}
+              error={err('investment')}
             />
 
             <div className="bk-q" data-bad={bad('commitment') || undefined}>
@@ -499,14 +505,13 @@ export function BookingForm({
             </div>
 
             <Text
-              label="What is your current profession?"
+              label="What is your current profession? (Please mention your designation and company. For example: Associate VP @ IBM.)"
               value={a.profession}
               onChange={(x) => set('profession', x)}
               bad={bad('profession')} error={err('profession')}
               autoComplete="organization-title"
               placeholder="e.g. Associate VP @ IBM"
               maxLength={120}
-              note="Please mention your designation and company."
               plain
             />
 
@@ -971,6 +976,91 @@ function Text({
 }
 
 type OtherProps = { value: string; onChange: (v: string) => void };
+
+/**
+ * The investment question (2026-11-21). A normal single choice, except the
+ * last option ("I’m on a tight budget, I can only invest upto Rs. __ on my
+ * health") has an amount box sitting in the "__". The box is mandatory when
+ * that option is picked, takes whole rupees only, and grows with the number:
+ * 4 digits wide by default, one digit wider per extra digit.
+ * Focusing or typing in the box selects its option, so the buyer never has
+ * to tap the radio first.
+ */
+function InvestmentChoice({
+  question,
+  value,
+  amount,
+  onChange,
+  onAmount,
+  bad,
+  error = '',
+}: {
+  question: string;
+  value: string;
+  amount: string;
+  onChange: (v: string) => void;
+  onAmount: (v: string) => void;
+  bad: boolean;
+  error?: string;
+}) {
+  const id = 'q-investment';
+  const [before, after] = INVESTMENT_BUDGET.split(BUDGET_BLANK);
+  const amountBad = bad && value === INVESTMENT_BUDGET && !isBudgetAmount(amount);
+  return (
+    <div className="bk-q" data-bad={bad || undefined}>
+      <p className="bk-q-text" id={id}>
+        {question} <Req />
+      </p>
+      <div className="bk-opts" role="radiogroup" aria-labelledby={id}>
+        {INVESTMENT.map((o) => {
+          const on = value === o;
+          if (o !== INVESTMENT_BUDGET) {
+            return (
+              <label key={o} className={on ? 'bk-opt on' : 'bk-opt'}>
+                <input type="radio" name="investment" value={o} checked={on} onChange={() => onChange(o)} />
+                <span className="bk-opt-mark radio" aria-hidden />
+                <span className="bk-opt-text">{o}</span>
+              </label>
+            );
+          }
+          return (
+            <label key={o} className={on ? 'bk-opt bk-opt-budget on' : 'bk-opt bk-opt-budget'}>
+              <input type="radio" name="investment" value={o} checked={on} onChange={() => onChange(o)} />
+              <span className="bk-opt-mark radio" aria-hidden />
+              <span className="bk-opt-text">
+                {before.replace(/Rs\. $/, '')}
+                {/* "Rs." and the box never wrap apart */}
+                <span className="bk-budget">
+                  Rs.
+                  <input
+                    className="bk-budget-input"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    autoComplete="off"
+                    placeholder="0000"
+                    aria-label="Amount you can invest, in rupees"
+                    value={amount}
+                    style={{ width: `calc(${Math.max(4, amount.length)}ch + 22px)` }}
+                    onFocus={() => !on && onChange(o)}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={(e) => {
+                      if (!on) onChange(o);
+                      onAmount(e.target.value);
+                    }}
+                    aria-invalid={amountBad || undefined}
+                  />
+                </span>
+                {after}
+              </span>
+            </label>
+          );
+        })}
+      </div>
+      {error && <span className="bk-err">{error}</span>}
+    </div>
+  );
+}
 
 function Choice({
   name,

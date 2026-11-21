@@ -205,6 +205,8 @@ re-validates and forwards a FLAT payload to the NEW env var
 Checkout now writes name/email/phone/city to sessionStorage (`dp_buyer`) so
 the form prefills. Older Cal notes below are history.
 
+**2026-11-21:** investment question has 4 options (35k / 25k / 15k / "I’m on a tight budget, I can only invest upto Rs. __ on my health"); the last has an inline, mandatory, integer-only amount box (4-digit default width, grows per digit) and reaches the webhook in the SAME `investment_level` key with the amount written in ("...upto Rs.5000 on my health"); no new webhook params. Profession question label now carries the full "(Please mention your designation and company. For example: Associate VP @ IBM.)".
+
 **2026-11-16:** step 4 is now **Preferred Language** (English only / Hindi only / I am comfortable with both), replacing the preferred date & time pickers; the webhook sends `preferred_language` and no longer sends any `preferred_date*`/`preferred_time*`/`preferred_slot*` fields. The team schedules the call itself.
 
 **Same day, revised:** the form is now a FOUR-STEP stepper (About you · Your

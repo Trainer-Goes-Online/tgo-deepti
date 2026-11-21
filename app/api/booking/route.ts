@@ -4,6 +4,7 @@ import { isTestMode } from '@/lib/checkout-config';
 import {
   OTHER,
   allValid,
+  investmentForWebhook,
   validateBooking,
   type BookingAnswers,
 } from '@/lib/booking-form';
@@ -115,6 +116,7 @@ export async function POST(req: Request) {
     tried: arr(body.tried),
     whyNow: str(body.whyNow),
     investment: str(body.investment),
+    investmentAmount: str(body.investmentAmount),
     commitment: str(body.commitment),
     profession: str(body.profession),
     decision: str(body.decision),
@@ -171,7 +173,9 @@ export async function POST(req: Request) {
     health_concerns: concerns,
     already_tried: a.tried.join(' | '),
     why_now: a.whyNow,
-    investment_level: a.investment,
+    /* same key as before; the budget option arrives with its amount
+       written in, e.g. "...invest upto Rs.5000 on my health" */
+    investment_level: investmentForWebhook(a.investment, a.investmentAmount),
     commitment_score: Number(a.commitment),
     profession: a.profession,
     decision_maker: a.decision,

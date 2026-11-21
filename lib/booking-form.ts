@@ -63,11 +63,32 @@ export const WHY_NOW = [
   'I am interested in improving my health, but the timing does not feel urgent right now',
 ] as const;
 
+/* Investment options (2026-11-21, client's wording). The last one carries a
+   typed amount: the buyer fills the "__" with a whole number of rupees, and
+   the webhook receives the sentence with the amount in place, e.g.
+   "I’m on a tight budget, I can only invest upto Rs.5000 on my health". */
+export const BUDGET_BLANK = '__';
+export const INVESTMENT_BUDGET = `I’m on a tight budget, I can only invest upto Rs. ${BUDGET_BLANK} on my health`;
 export const INVESTMENT = [
-  '35k for 3 months (6 meal plans + Weekly detox strategies + guided 1-1 workout planning + emotional health support + WhatsApp coaching support + a roadmap at the end of the journey + option to pause anytime)',
-  '25k for 3 months (6 Meal plans + WhatsApp coaching support)',
-  'I am not ready to invest at these levels',
+  '35k for 3 months (6 meal plans + Weekly Consultation + Weekly detox strategies + guided 1-1 workout planning + emotional health support + WhatsApp coaching support + a roadmap at the end of the journey + option to pause anytime)',
+  '25k for 3 months (6 Meal plans + Fortnightly Consultation + WhatsApp coaching support)',
+  '15k (3 meal plans + Monthly consultation + WhatsApp support)',
+  INVESTMENT_BUDGET,
 ] as const;
+
+/** Whole rupees, 1 to 8 digits, no leading zero. */
+export const isBudgetAmount = (s: string) => /^[1-9]\d{0,7}$/.test(s);
+
+/** Amount box sanitiser: digits only, no leading zeros, at most 8 digits. */
+export const cleanBudgetAmount = (s: string) => s.replace(/\D/g, '').replace(/^0+/, '').slice(0, 8);
+
+/** The investment answer as the webhook receives it: the budget option gets
+ *  its amount written into the blank, every other option is sent as is. */
+export function investmentForWebhook(investment: string, amount: string) {
+  return investment === INVESTMENT_BUDGET
+    ? INVESTMENT_BUDGET.replace(`Rs. ${BUDGET_BLANK}`, `Rs.${amount}`)
+    : investment;
+}
 
 export const DECISION = [
   'The sole decision-maker',
@@ -103,6 +124,8 @@ export type BookingAnswers = {
   tried: string[];
   whyNow: string;
   investment: string;
+  /** Rupees typed into the budget option's blank; '' for other options. */
+  investmentAmount: string;
   commitment: string;
   profession: string;
   decision: string;
@@ -205,6 +228,13 @@ export function fieldError(a: BookingAnswers, k: keyof ReturnType<typeof validat
         : 'Please select at least one.';
     case 'tried':
       return 'Please select at least one.';
+    case 'investment':
+      if (a.investment === INVESTMENT_BUDGET) {
+        return a.investmentAmount
+          ? 'Enter the amount in whole rupees, numbers only (e.g. 5000).'
+          : 'Please enter the amount you can invest, in rupees.';
+      }
+      return 'Please choose one option.';
     case 'commitment':
       return 'Please drag the slider to choose a score.';
     case 'preferredLanguage':
@@ -237,7 +267,9 @@ export function validateBooking(a: BookingAnswers) {
       (!a.concerns.includes(OTHER) || otherOk(a.concernsOther)),
     tried: a.tried.length > 0 && a.tried.every((t) => oneOf(TRIED, t)),
     whyNow: oneOf(WHY_NOW, a.whyNow),
-    investment: oneOf(INVESTMENT, a.investment),
+    investment:
+      oneOf(INVESTMENT, a.investment) &&
+      (a.investment !== INVESTMENT_BUDGET || isBudgetAmount(a.investmentAmount)),
     commitment: Number.isInteger(commitment) && commitment >= 1 && commitment <= 10,
     profession: a.profession.trim().length > 1 && a.profession.trim().length <= 120 && hasLetter(a.profession),
     decision: oneOf(DECISION, a.decision),
